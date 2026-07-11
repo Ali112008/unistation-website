@@ -120,13 +120,13 @@ export function Header() {
 
           {/* CENTER LOGO */}
           <Link href="/" className="flex-shrink-0 mx-4">
-            <div className={`rounded-lg p-1.5 transition-all duration-300 ${scrolled ? "bg-transparent" : "bg-white/90 backdrop-blur-sm shadow-sm"}`}>
+            <div className={`rounded-xl p-1.5 transition-all duration-300 ${scrolled ? "bg-transparent" : "bg-white/90 backdrop-blur-sm shadow-sm"}`}>
               <Image
                 src="/logo-01.png"
                 alt={siteConfig.brand.name}
-                width={48}
-                height={48}
-                className={`h-10 w-auto transition-all duration-300 ${scrolled ? "brightness-100" : "brightness-0"}`}
+                width={56}
+                height={56}
+                className={`h-14 w-auto transition-all duration-300 ${scrolled ? "brightness-100" : "brightness-0"}`}
                 priority
               />
             </div>
@@ -203,13 +203,13 @@ export function Header() {
 
           {/* CENTER LOGO */}
           <Link href="/" className="flex-shrink-0">
-            <div className={`rounded-lg p-1 transition-all duration-300 ${scrolled ? "bg-transparent" : "bg-white/90 backdrop-blur-sm shadow-sm"}`}>
+            <div className={`rounded-xl p-1 transition-all duration-300 ${scrolled ? "bg-transparent" : "bg-white/90 backdrop-blur-sm shadow-sm"}`}>
               <Image
                 src="/logo-01.png"
                 alt={siteConfig.brand.name}
-                width={40}
-                height={40}
-                className={`h-8 w-auto transition-all duration-300 ${scrolled ? "brightness-100" : "brightness-0"}`}
+                width={48}
+                height={48}
+                className={`h-11 w-auto transition-all duration-300 ${scrolled ? "brightness-100" : "brightness-0"}`}
                 priority
               />
             </div>

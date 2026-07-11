@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 
@@ -85,12 +86,12 @@ export function CTASection() {
             team of experts is ready to guide you every step of the way.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a
+            <Link
               href="/contact"
               className="inline-flex items-center justify-center px-8 py-3.5 bg-brand-teal hover:bg-brand-teal-light text-white font-semibold rounded-lg btn-primary-hover transition-colors"
             >
               Book Free Consultation
-            </a>
+            </Link>
             <a
               href="https://wa.me/971522732589"
               target="_blank"

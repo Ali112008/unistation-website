@@ -213,43 +213,51 @@ export default function HomePage() {
               <div className="relative">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-4">
-                    <div className="rounded-2xl overflow-hidden h-48">
+                    <div className="rounded-2xl overflow-hidden h-48 group relative cursor-pointer">
                       <Image
                         src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=400&h=300&fit=crop"
                         alt="Graduation ceremony"
                         width={400}
                         height={300}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-75"
                       />
+                      <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                      <div className="absolute bottom-3 left-3 text-white text-xs font-medium opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-500">Graduation Day</div>
                     </div>
-                    <div className="rounded-2xl overflow-hidden h-64">
+                    <div className="rounded-2xl overflow-hidden h-64 group relative cursor-pointer">
                       <Image
                         src="https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=400&h=400&fit=crop"
                         alt="Students studying together"
                         width={400}
                         height={400}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-75"
                       />
+                      <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                      <div className="absolute bottom-3 left-3 text-white text-xs font-medium opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-500">Student Life</div>
                     </div>
                   </div>
                   <div className="space-y-4 pt-8">
-                    <div className="rounded-2xl overflow-hidden h-64">
+                    <div className="rounded-2xl overflow-hidden h-64 group relative cursor-pointer">
                       <Image
                         src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=400&h=400&fit=crop"
                         alt="University building"
                         width={400}
                         height={400}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-75"
                       />
+                      <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                      <div className="absolute bottom-3 left-3 text-white text-xs font-medium opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-500">Global Campuses</div>
                     </div>
-                    <div className="rounded-2xl overflow-hidden h-48">
+                    <div className="rounded-2xl overflow-hidden h-48 group relative cursor-pointer">
                       <Image
                         src="https://images.unsplash.com/photo-1559223607-a43c990c692c?w=400&h=300&fit=crop"
                         alt="Library with books"
                         width={400}
                         height={300}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-75"
                       />
+                      <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                      <div className="absolute bottom-3 left-3 text-white text-xs font-medium opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-500">Research & Study</div>
                     </div>
                   </div>
                 </div>
@@ -413,22 +421,37 @@ export default function HomePage() {
               Book a Free Consultation
             </h3>
             <p className="text-white/80 mb-8 max-w-xl mx-auto">
-              Stay up to date with the latest opportunities and get personalized
-              guidance from our experts.
+              Take the first step towards your international academic journey. Our
+              team of experts is ready to guide you every step of the way.
             </p>
-            <form
-              onSubmit={(e) => e.preventDefault()}
-              className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
-            >
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder:text-white/60 focus:outline-none focus:ring-2 focus:ring-white/40 text-sm"
-              />
-              <Button className="bg-white text-brand-teal hover:bg-gray-100 font-semibold rounded-lg px-6 btn-primary-hover">
-                Subscribe
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button
+                asChild
+                size="lg"
+                className="bg-white text-brand-teal hover:bg-gray-100 font-semibold rounded-lg px-8 btn-primary-hover"
+              >
+                <Link href="/contact">
+                  Book Free Consultation
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Link>
               </Button>
-            </form>
+              <Button
+                asChild
+                size="lg"
+                className="border-2 border-white/40 text-white hover:bg-white/15 font-semibold rounded-lg px-8"
+              >
+                <a
+                  href={siteConfig.brand.whatsappUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  WhatsApp Us
+                  <svg className="w-5 h-5 ml-2" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                  </svg>
+                </a>
+              </Button>
+            </div>
           </ScrollAnimator>
         </div>
       </section>

@@ -14,13 +14,13 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Brand Column */}
           <div className="lg:col-span-1">
-            <Link href="/" className="flex items-center gap-2 mb-4">
+            <Link href="/" className="inline-flex items-center gap-2 mb-4 rounded-lg bg-white/10 p-1.5">
               <Image
                 src="/logo-01.png"
                 alt={siteConfig.brand.name}
-                width={40}
-                height={40}
-                className="h-10 w-auto"
+                width={44}
+                height={44}
+                className="h-11 w-auto brightness-0 invert"
               />
               <span className="text-xl font-bold">{siteConfig.brand.name}</span>
             </Link>

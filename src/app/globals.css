@@ -149,17 +149,6 @@ html {
 .hero-delay-3 { animation-delay: 0.6s; }
 .hero-delay-4 { animation-delay: 0.8s; }
 
-/* Scroll-triggered animations */
-.scroll-animate {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-}
-.scroll-animate.is-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
 /* Button hover effects */
 .btn-primary-hover {
   transition: all 0.3s ease;
@@ -183,11 +172,11 @@ html {
 
 /* Card hover */
 .card-hover {
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 .card-hover:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-6px);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
 }
 
 /* Marquee animation */
@@ -244,4 +233,34 @@ html {
   z-index: 9999;
   transition: width 0.1s linear;
   pointer-events: none;
+}
+
+/* Gentle float animation for decorative elements */
+@keyframes gentleFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33% { transform: translateY(-8px) rotate(1deg); }
+  66% { transform: translateY(4px) rotate(-1deg); }
+}
+.animate-gentle-float {
+  animation: gentleFloat 6s ease-in-out infinite;
+}
+
+/* Pulse glow for accent elements */
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 20px rgba(201, 168, 76, 0.15); }
+  50% { box-shadow: 0 0 40px rgba(201, 168, 76, 0.3); }
+}
+.animate-pulse-glow {
+  animation: pulseGlow 3s ease-in-out infinite;
+}
+
+/* Smooth scale-in for scroll animate */
+.scroll-animate {
+  opacity: 0;
+  transform: translateY(30px) scale(0.98);
+  transition: opacity 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.scroll-animate.is-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
 }
