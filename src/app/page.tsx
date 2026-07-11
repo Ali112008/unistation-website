@@ -369,13 +369,13 @@ export default function HomePage() {
                   <p className="text-gray-500 text-xs">Email Us</p>
                 </div>
               </a>
-              <a href={siteConfig.brand.whatsappUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center shrink-0">
-                  <Phone className="w-5 h-5 text-green-600" />
+              <a href={`tel:+${siteConfig.brand.whatsapp}`} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                <div className="w-10 h-10 bg-brand-teal/10 rounded-lg flex items-center justify-center shrink-0">
+                  <Phone className="w-5 h-5 text-brand-teal" />
                 </div>
                 <div>
-                  <p className="font-semibold text-brand-navy text-sm">{siteConfig.brand.whatsapp}</p>
-                  <p className="text-gray-500 text-xs">WhatsApp</p>
+                  <p className="font-semibold text-brand-navy text-sm">+{siteConfig.brand.whatsapp}</p>
+                  <p className="text-gray-500 text-xs">Call Us</p>
                 </div>
               </a>
               <div className="flex items-center gap-3">
