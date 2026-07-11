@@ -41,14 +41,14 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --color-brand-teal: #0d9488;
-  --color-brand-teal-light: #14b8a6;
-  --color-brand-teal-dark: #0f766e;
-  --color-brand-amber: #f59e0b;
-  --color-brand-amber-light: #fbbf24;
-  --color-brand-navy: #0f172a;
-  --color-brand-navy-light: #1e293b;
-  --color-brand-slate: #334155;
+  --color-brand-teal: #C9A84C;
+  --color-brand-teal-light: #DBBF6E;
+  --color-brand-teal-dark: #A68A3A;
+  --color-brand-amber: #C4363A;
+  --color-brand-amber-light: #E04E52;
+  --color-brand-navy: #1C0F13;
+  --color-brand-navy-light: #2E1A22;
+  --color-brand-slate: #3A1E28;
 }
 
 :root {
@@ -59,10 +59,10 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.45 0.12 180);
+  --primary: oklch(0.72 0.12 85);
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0.005 180);
-  --secondary-foreground: oklch(0.25 0.05 180);
+  --secondary: oklch(0.97 0.008 85);
+  --secondary-foreground: oklch(0.35 0.08 85);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
   --accent: oklch(0.97 0 0);
@@ -70,20 +70,20 @@
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
-  --ring: oklch(0.45 0.12 180);
-  --chart-1: oklch(0.55 0.15 180);
-  --chart-2: oklch(0.65 0.15 85);
-  --chart-3: oklch(0.4 0.1 250);
-  --chart-4: oklch(0.7 0.15 60);
-  --chart-5: oklch(0.6 0.2 25);
+  --ring: oklch(0.72 0.12 85);
+  --chart-1: oklch(0.72 0.12 85);
+  --chart-2: oklch(0.55 0.2 25);
+  --chart-3: oklch(0.5 0.12 150);
+  --chart-4: oklch(0.78 0.1 85);
+  --chart-5: oklch(0.5 0.18 15);
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.45 0.12 180);
+  --sidebar-primary: oklch(0.72 0.12 85);
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: oklch(0.97 0 0);
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.45 0.12 180);
+  --sidebar-ring: oklch(0.72 0.12 85);
 }
 
 @layer base {
@@ -99,9 +99,9 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Teal gradient text */
+/* Gold gradient text */
 .text-teal-gradient {
-  background: linear-gradient(135deg, #0d9488, #14b8a6, #0d9488);
+  background: linear-gradient(135deg, #A68A3A, #C9A84C, #DBBF6E, #C9A84C);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -111,19 +111,19 @@ html {
 .brand-line {
   width: 60px;
   height: 3px;
-  background: linear-gradient(90deg, #0d9488, #14b8a6);
+  background: linear-gradient(90deg, #A68A3A, #C9A84C);
   border-radius: 2px;
 }
 
 /* Custom scrollbar */
 ::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: #f1f5f9; }
+::-webkit-scrollbar-track { background: #F9F6F0; }
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #0d9488, #0f766e);
+  background: linear-gradient(180deg, #C9A84C, #A68A3A);
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #14b8a6, #0d9488);
+  background: linear-gradient(180deg, #DBBF6E, #C9A84C);
 }
 
 /* Navbar entrance */
@@ -166,7 +166,7 @@ html {
 }
 .btn-primary-hover:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 30px -8px rgba(13, 148, 136, 0.4);
+  box-shadow: 0 12px 30px -8px rgba(201, 168, 76, 0.4);
 }
 .btn-primary-hover:active {
   transform: translateY(0);
@@ -177,8 +177,8 @@ html {
 }
 .btn-outline-hover:hover {
   transform: translateY(-2px);
-  border-color: #0d9488 !important;
-  color: #0d9488 !important;
+  border-color: #C9A84C !important;
+  color: #C9A84C !important;
 }
 
 /* Card hover */
@@ -216,7 +216,7 @@ html {
   100% { background-position: -200% center; }
 }
 .text-teal-shimmer {
-  background: linear-gradient(110deg, #0d9488 0%, #14b8a6 25%, #5eead4 50%, #14b8a6 75%, #0d9488 100%);
+  background: linear-gradient(110deg, #A68A3A 0%, #C9A84C 25%, #E8D48B 50%, #C9A84C 75%, #A68A3A 100%);
   background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -240,7 +240,7 @@ html {
   top: 0;
   left: 0;
   height: 3px;
-  background: linear-gradient(90deg, #0d9488, #14b8a6, #0d9488);
+  background: linear-gradient(90deg, #A68A3A, #C9A84C, #DBBF6E);
   z-index: 9999;
   transition: width 0.1s linear;
   pointer-events: none;
