@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
-import { ScrollAnimator, SectionHeading, CTASection } from "@/components/shared";
-import { BookOpen, Video, Calendar, Loader2 } from "lucide-react";
+import { ScrollAnimator, SectionHeading } from "@/components/shared";
+import { BookOpen, Video, Calendar, Loader2, Play, ExternalLink } from "lucide-react";
 
 interface BlogPost {
   id: string;
@@ -27,6 +27,81 @@ interface VideoItem {
   category: string;
 }
 
+/* ───────── Branded Video Player ───────── */
+function VideoPlayer({
+  youtubeUrl,
+  title,
+  className = "",
+}: {
+  youtubeUrl: string;
+  title: string;
+  className?: string;
+}) {
+  const [playing, setPlaying] = useState(false);
+
+  const ytId = (() => {
+    if (!youtubeUrl) return null;
+    const match = youtubeUrl.match(
+      /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+    );
+    return match ? match[1] : null;
+  })();
+
+  const thumb = ytId
+    ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`
+    : "";
+
+  const embedSrc = ytId
+    ? `https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0&modestbranding=1&showinfo=0`
+    : "";
+
+  const handlePlay = useCallback(() => {
+    setPlaying(true);
+  }, []);
+
+  if (!ytId) return null;
+
+  return (
+    <div className={`relative overflow-hidden rounded-2xl ${className}`}>
+      {playing ? (
+        <iframe
+          src={embedSrc}
+          title={title}
+          className="w-full aspect-video"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        />
+      ) : (
+        <button
+          onClick={handlePlay}
+          className="group relative block w-full aspect-video cursor-pointer focus:outline-none"
+          aria-label={`Play ${title}`}
+        >
+          {/* Thumbnail */}
+          <Image
+            src={thumb}
+            alt={title}
+            fill
+            unoptimized
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+
+          {/* Dark overlay */}
+          <div className="absolute inset-0 bg-brand-navy/30 group-hover:bg-brand-navy/40 transition-colors duration-300" />
+
+          {/* Branded Play Button */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-brand-teal/90 group-hover:bg-brand-teal flex items-center justify-center shadow-lg shadow-brand-teal/30 transition-all duration-300 group-hover:scale-110">
+              <Play className="w-7 h-7 md:w-8 md:h-8 text-white ml-1" fill="white" />
+            </div>
+          </div>
+        </button>
+      )}
+    </div>
+  );
+}
+
+/* ───────── Library Page ───────── */
 export default function LibraryPage() {
   const [activeTab, setActiveTab] = useState<"blogs" | "videos">("blogs");
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
@@ -70,21 +145,6 @@ export default function LibraryPage() {
     const words = (content || "").split(/\s+/).length;
     const minutes = Math.max(1, Math.ceil(words / 200));
     return `${minutes} min`;
-  };
-
-  const getYouTubeId = (url: string) => {
-    if (!url) return null;
-    // Match /shorts/ID, /watch?v=ID, /embed/ID, youtu.be/ID
-    const match = url.match(
-      /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
-    );
-    return match ? match[1] : null;
-  };
-
-  const getYouTubeThumbnail = (url: string) => {
-    const ytId = getYouTubeId(url);
-    if (!ytId) return "";
-    return `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
   };
 
   const isShort = (url: string) => url?.includes("/shorts/");
@@ -227,114 +287,79 @@ export default function LibraryPage() {
                 </p>
               ) : (
                 <div className="mt-12 space-y-12">
-                  {/* Featured Long-Form Video - Embedded */}
-                  {featuredVideo && (() => {
-                    const ytId = getYouTubeId(featuredVideo.youtubeUrl);
-                    return ytId ? (
-                      <ScrollAnimator>
-                        <div className="max-w-4xl mx-auto">
-                          <div className="relative rounded-2xl overflow-hidden shadow-lg">
-                            <iframe
-                              src={`https://www.youtube.com/embed/${ytId}`}
-                              title={featuredVideo.title}
-                              className="w-full aspect-video"
-                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                              allowFullScreen
-                            />
-                          </div>
-                          <div className="mt-4 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-                            <div>
-                              {featuredVideo.category && (
-                                <span className="inline-block px-3 py-1 bg-brand-teal/10 text-brand-teal text-xs font-bold rounded-full mb-2">
-                                  {featuredVideo.category}
-                                </span>
-                              )}
-                              <h3 className="text-lg md:text-xl font-bold text-brand-navy">
-                                {featuredVideo.title}
-                              </h3>
-                              <p className="text-gray-600 text-sm mt-1 line-clamp-2">
-                                {featuredVideo.description}
-                              </p>
-                            </div>
-                            <a
-                              href={featuredVideo.youtubeUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-2 px-4 py-2 border border-gray-200 text-gray-600 hover:border-brand-teal hover:text-brand-teal rounded-lg text-sm font-medium transition-colors shrink-0"
-                            >
-                              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-                              Watch on YouTube
-                            </a>
+                  {/* Featured Long-Form Video */}
+                  {featuredVideo && (
+                    <ScrollAnimator>
+                      <div className="max-w-4xl mx-auto">
+                        <VideoPlayer
+                          youtubeUrl={featuredVideo.youtubeUrl}
+                          title={featuredVideo.title}
+                          className="shadow-lg"
+                        />
+                        <div className="mt-4 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                          <div>
+                            {featuredVideo.category && (
+                              <span className="inline-block px-3 py-1 bg-brand-teal/10 text-brand-teal text-xs font-bold rounded-full mb-2">
+                                {featuredVideo.category}
+                              </span>
+                            )}
+                            <h3 className="text-lg md:text-xl font-bold text-brand-navy">
+                              {featuredVideo.title}
+                            </h3>
+                            <p className="text-gray-600 text-sm mt-1 line-clamp-2">
+                              {featuredVideo.description}
+                            </p>
                           </div>
                         </div>
-                      </ScrollAnimator>
-                    ) : null;
-                  })()}
+                      </div>
+                    </ScrollAnimator>
+                  )}
 
-                  {/* Shorts Section - Embedded */}
+                  {/* Shorts Section */}
                   {shortVideos.length > 0 && (
                     <div>
                       <h3 className="text-lg font-bold text-brand-navy mb-4 flex items-center gap-2">
-                        <svg className="w-5 h-5 text-brand-teal" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M10 15l5.19-3L10 9v6m11.56-7.83c.13.47.22 1.1.28 1.9.07.8.1 1.49.1 2.09L22 12c0 2.19-.16 3.8-.44 4.83-.25.9-.83 1.48-1.73 1.73-.47.13-1.33.22-2.65.28-1.3.07-2.49.1-3.59.1L12 19c-4.19 0-6.8-.16-7.83-.44-.9-.25-1.48-.83-1.73-1.73-.13-.47-.22-1.1-.28-1.9-.07-.8-.1-1.49-.1-2.09L2 12c0-2.19.16-3.8.44-4.83.25-.9.83-1.48 1.73-1.73.47-.13 1.33-.22 2.65-.28 1.3-.07 2.49-.1 3.59-.1L12 5c4.19 0 6.8.16 7.83.44.9.25 1.48.83 1.73 1.73z"/>
-                        </svg>
+                        <Video className="w-5 h-5 text-brand-teal" />
                         Shorts
                       </h3>
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                        {shortVideos.map((video, i) => {
-                          const ytId = getYouTubeId(video.youtubeUrl);
-                          return ytId ? (
-                            <ScrollAnimator key={video.id} delay={i * 80}>
-                              <div className="rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow">
-                                <div className="relative">
-                                  <iframe
-                                    src={`https://www.youtube.com/embed/${ytId}`}
-                                    title={video.title}
-                                    className="w-full aspect-video"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                    allowFullScreen
-                                  />
-                                </div>
-                                <div className="p-3 bg-white">
-                                  <h4 className="font-semibold text-sm text-brand-navy line-clamp-1">
-                                    {video.title}
-                                  </h4>
-                                  <div className="flex items-center justify-between mt-1.5">
-                                    {video.category && (
-                                      <span className="text-brand-teal text-xs font-medium">
-                                        {video.category}
-                                      </span>
-                                    )}
-                                    <a
-                                      href={video.youtubeUrl}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="text-gray-400 hover:text-brand-teal transition-colors ml-auto"
-                                      title="Watch on YouTube"
-                                    >
-                                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-                                    </a>
-                                  </div>
-                                </div>
+                        {shortVideos.map((video, i) => (
+                          <ScrollAnimator key={video.id} delay={i * 80}>
+                            <div className="rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow">
+                              <VideoPlayer
+                                youtubeUrl={video.youtubeUrl}
+                                title={video.title}
+                                className="!rounded-xl"
+                              />
+                              <div className="p-3 bg-white">
+                                <h4 className="font-semibold text-sm text-brand-navy line-clamp-1">
+                                  {video.title}
+                                </h4>
+                                {video.category && (
+                                  <span className="text-brand-teal text-xs font-medium mt-1 block">
+                                    {video.category}
+                                  </span>
+                                )}
                               </div>
-                            </ScrollAnimator>
-                          ) : null;
-                        })}
+                            </div>
+                          </ScrollAnimator>
+                        ))}
                       </div>
                     </div>
                   )}
 
-                  {/* Visit Channel Button */}
+                  {/* Watch Channel Button - CTA */}
                   <ScrollAnimator>
                     <div className="flex justify-center pt-4">
                       <a
                         href="https://www.youtube.com/@UniStation_DXB"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-3 px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl transition-colors shadow-md hover:shadow-lg"
+                        className="inline-flex items-center gap-3 px-7 py-3.5 bg-brand-teal hover:bg-brand-teal-dark text-white font-semibold rounded-xl transition-all duration-300 shadow-md hover:shadow-lg hover:shadow-brand-teal/25"
                       >
-                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-                        Visit Our YouTube Channel
+                        <Play className="w-5 h-5" fill="white" />
+                        Watch Our Channel
+                        <ExternalLink className="w-4 h-4 opacity-70" />
                       </a>
                     </div>
                   </ScrollAnimator>
@@ -344,8 +369,6 @@ export default function LibraryPage() {
           )}
         </div>
       </section>
-
-      <CTASection />
     </>
   );
 }
