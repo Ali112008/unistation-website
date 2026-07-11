@@ -52,10 +52,10 @@ export default function GermanCoursePage() {
     <>
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 bg-brand-navy overflow-hidden">
-        <div className="absolute inset-0 opacity-25">
+        <div className="absolute inset-0 opacity-60">
           <Image src="https://images.unsplash.com/photo-1555848962-6e79363ec58f?w=1920&h=600&fit=crop" alt="Brandenburg Gate Berlin" fill className="object-cover" />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-r from-brand-navy to-brand-navy/80" />
+        <div className="absolute inset-0 bg-gradient-to-r from-brand-navy via-brand-navy/70 to-brand-navy/30" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 hero-animate">
           <span className="text-4xl mb-4 block">🇩🇪</span>
           <h1 className="text-4xl md:text-5xl font-bold text-white">German for Academic Purposes</h1>
