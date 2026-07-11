@@ -118,7 +118,7 @@ export async function PATCH(request: Request) {
   const { searchParams } = new URL(request.url);
   const action = searchParams.get("action");
 
-  if (action !== "sync-team-bios") {
+  if (action !== "sync-team-bios" && action !== "fix-bassel") {
     return NextResponse.json({ error: "Invalid action" }, { status: 400 });
   }
 
@@ -148,12 +148,15 @@ export async function PATCH(request: Request) {
 
   // Fetch current team items
   const items = await fetchWebflowItems(TEAM_COLLECTION);
-  const results: { name: string; success: boolean; error?: string }[] = [];
+  const results: { name: string; success: boolean; error?: string; raw?: unknown }[] = [];
 
   for (const item of items) {
     const fd = item.fieldData as Record<string, unknown>;
     const name = (fd["name"] as string) || "";
     const data = teamData[name];
+
+    // If action is fix-bassel, only process Bassel
+    if (action === "fix-bassel" && !name.includes("Bassel")) continue;
 
     if (!data) {
       results.push({ name, success: false, error: "No data found for this member" });
@@ -180,11 +183,12 @@ export async function PATCH(request: Request) {
         }
       );
 
+      const raw = await patchRes.json();
+
       if (!patchRes.ok) {
-        const errText = await patchRes.text();
-        results.push({ name, success: false, error: `API ${patchRes.status}: ${errText}` });
+        results.push({ name, success: false, error: `API ${patchRes.status}`, raw });
       } else {
-        results.push({ name, success: true });
+        results.push({ name, success: true, raw });
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
@@ -195,7 +199,7 @@ export async function PATCH(request: Request) {
   // Publish the changes
   try {
     const siteId = "68fd63e9503df62b019b5c75";
-    await fetch(`https://api.webflow.com/v2/sites/${siteId}/publish`, {
+    const pubRes = await fetch(`https://api.webflow.com/v2/sites/${siteId}/publish`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${WEBFLOW_API_TOKEN}`,
@@ -206,8 +210,10 @@ export async function PATCH(request: Request) {
         itemIds: items.map((i) => i.id),
       }),
     });
+    const pubData = await pubRes.json();
+    results.push({ name: "PUBLISH", success: pubRes.ok, raw: pubData } as never);
   } catch {
-    // Publishing is optional, items are saved either way
+    results.push({ name: "PUBLISH", success: false, error: "Failed to publish" });
   }
 
   return NextResponse.json({ results });
