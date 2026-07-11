@@ -58,7 +58,7 @@ export default function PackagesPage() {
                   />
 
                   {/* Hover Overlay */}
-                  <div className="absolute inset-0 bg-brand-navy/0 group-hover:bg-brand-navy/75 transition-all duration-500 ease-out" />
+                  <div className="absolute inset-0 bg-brand-navy/0 group-hover:bg-brand-navy/55 transition-all duration-500 ease-out" />
 
                   {/* Content - always visible name, description on hover */}
                   <div className="absolute inset-0 z-10 flex flex-col justify-end p-5 md:p-7">

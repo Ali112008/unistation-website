@@ -13,7 +13,7 @@ export const siteConfig = {
     tiktok: "#",
     facebook: "#",
     twitter: "#",
-    youtube: "#",
+    youtube: "https://www.youtube.com/@UniStation_DXB",
   },
   stats: [
     { value: "25+", label: "Destinations" },
