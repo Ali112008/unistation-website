@@ -138,7 +138,11 @@ export default function TeamMemberPage() {
                       <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
                         <GraduationCap className="w-4 h-4" /> Qualifications
                       </h3>
-                      <p className="text-gray-700 text-sm leading-relaxed">{member.qualifications}</p>
+                      <div className="text-gray-700 text-sm leading-relaxed">
+                        {member.qualifications.split("\n").map((line, i) => (
+                          <p key={i} className={i > 0 ? "mt-1" : ""}>{line}</p>
+                        ))}
+                      </div>
                     </div>
                   )}
                   {member.languages && (
