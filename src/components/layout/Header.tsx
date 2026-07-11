@@ -120,14 +120,16 @@ export function Header() {
 
           {/* CENTER LOGO */}
           <Link href="/" className="flex-shrink-0 mx-4">
-            <Image
-              src="/logo-01.png"
-              alt={siteConfig.brand.name}
-              width={48}
-              height={48}
-              className="h-12 w-auto"
-              priority
-            />
+            <div className={`rounded-lg p-1.5 transition-all duration-300 ${scrolled ? "bg-transparent" : "bg-white/90 backdrop-blur-sm shadow-sm"}`}>
+              <Image
+                src="/logo-01.png"
+                alt={siteConfig.brand.name}
+                width={48}
+                height={48}
+                className={`h-10 w-auto transition-all duration-300 ${scrolled ? "brightness-100" : "brightness-0"}`}
+                priority
+              />
+            </div>
           </Link>
 
           {/* RIGHT NAV + WHATSAPP */}
@@ -201,14 +203,16 @@ export function Header() {
 
           {/* CENTER LOGO */}
           <Link href="/" className="flex-shrink-0">
-            <Image
-              src="/logo-01.png"
-              alt={siteConfig.brand.name}
-              width={40}
-              height={40}
-              className="h-9 w-auto"
-              priority
-            />
+            <div className={`rounded-lg p-1 transition-all duration-300 ${scrolled ? "bg-transparent" : "bg-white/90 backdrop-blur-sm shadow-sm"}`}>
+              <Image
+                src="/logo-01.png"
+                alt={siteConfig.brand.name}
+                width={40}
+                height={40}
+                className={`h-8 w-auto transition-all duration-300 ${scrolled ? "brightness-100" : "brightness-0"}`}
+                priority
+              />
+            </div>
           </Link>
 
           {/* RIGHT: Hamburger */}
@@ -231,7 +235,7 @@ export function Header() {
                       alt={siteConfig.brand.name}
                       width={36}
                       height={36}
-                      className="h-8 w-auto"
+                      className="h-8 w-auto brightness-0"
                     />
                   </Link>
                 </div>
