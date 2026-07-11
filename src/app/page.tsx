@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -61,9 +61,19 @@ function CountUp({ target, suffix = "" }: { target: number; suffix?: string }) {
   );
 }
 
-import { useState } from "react";
-
 export default function HomePage() {
+  const [cmsTeam, setCmsTeam] = useState<{ name: string; role: string; image: string; bio: string }[]>([]);
+
+  useEffect(() => {
+    fetch("/api/webflow?type=team")
+      .then((r) => r.json())
+      .then((d) => setCmsTeam(d.team || []))
+      .catch(() => {});
+  }, []);
+
+  const teamDisplay = cmsTeam.length > 0
+    ? cmsTeam.map((m) => ({ ...m, shortBio: m.bio?.replace(/<[^>]*>/g, "").slice(0, 150) || "" }))
+    : siteConfig.team;
   return (
     <>
       {/* Hero Section */}
@@ -282,7 +292,7 @@ export default function HomePage() {
             </p>
           </ScrollAnimator>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
-            {siteConfig.team.map((member, i) => (
+            {teamDisplay.map((member, i) => (
               <ScrollAnimator key={member.name} delay={i * 100}>
                 <Card className="group card-hover border-0 shadow-sm overflow-hidden">
                   <div className="relative h-64 overflow-hidden">
@@ -291,6 +301,7 @@ export default function HomePage() {
                       alt={member.name}
                       fill
                       className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      unoptimized={member.image.startsWith("http")}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                     <div className="absolute bottom-4 left-4 right-4">

@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 const WEBFLOW_API_TOKEN = process.env.WEBFLOW_API_TOKEN!;
 const BLOG_COLLECTION = "6a51d3b689432b9105b65065";
 const VIDEO_COLLECTION = "6a51d3c85a1355ad6711662d";
+const TEAM_COLLECTION = "68fd63e9503df62b019b5c9e";
 
 interface WebflowImage {
   fileId: string;
@@ -56,6 +57,27 @@ async function fetchWebflowItems(collectionId: string): Promise<WebflowItem[]> {
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const type = searchParams.get("type") || "blogs";
+
+  if (type === "team") {
+    const items = await fetchWebflowItems(TEAM_COLLECTION);
+    const team = items.map((item) => {
+      const fd = item.fieldData as Record<string, unknown>;
+      const photo = fd["profile-picture"] as { url: string; alt: string | null } | undefined;
+      return {
+        id: item.id,
+        name: (fd["name"] as string) || "",
+        slug: (fd["slug"] as string) || "",
+        role: (fd["job-title"] as string) || "",
+        bio: (fd["bio"] as string) || (fd["bio-summary"] as string) || "",
+        image: photo?.url || "",
+        email: (fd["email"] as string) || "",
+        phone: (fd["phone-number"] as string) || "",
+        twitter: (fd["twitter-link"] as string) || "",
+        facebook: (fd["facebook-link"] as string) || "",
+      };
+    });
+    return NextResponse.json({ team });
+  }
 
   if (type === "videos") {
     const items = await fetchWebflowItems(VIDEO_COLLECTION);
