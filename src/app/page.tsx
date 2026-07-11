@@ -94,11 +94,11 @@ export default function HomePage() {
             loop
             playsInline
             poster="https://cdn.prod.website-files.com/68f96cf6ade48fa155ef7a60/68fcda3e1e9ba482da3661eb_8061028-hd_1920_1080_25fps-poster-00001.jpg"
-            className="absolute inset-0 w-full h-full object-cover opacity-30"
+            className="absolute inset-0 w-full h-full object-cover opacity-50"
           >
             <source src="https://cdn.prod.website-files.com/68fd63e9503df62b019b5c75/68fd63e9503df62b019b5d0f_8061028-hd_1920_1080_25fps-transcode.mp4" type="video/mp4" />
           </video>
-          <div className="absolute inset-0 bg-gradient-to-r from-brand-navy via-brand-navy/90 to-brand-navy/60" />
+          <div className="absolute inset-0 bg-gradient-to-r from-brand-navy/80 via-brand-navy/60 to-brand-navy/40" />
         </div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32">
@@ -131,7 +131,7 @@ export default function HomePage() {
                 asChild
                 variant="outline"
                 size="lg"
-                className="border-white/30 text-white hover:bg-white/10 rounded-lg text-base px-8"
+                className="border-white/40 text-white bg-transparent hover:bg-white/15 hover:border-white/60 rounded-lg text-base px-8"
               >
                 <Link href="/about">Learn More</Link>
               </Button>
