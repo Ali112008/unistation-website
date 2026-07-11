@@ -129,17 +129,17 @@ export default function HomePage() {
       </section>
 
       {/* Stats Marquee */}
-      <section className="bg-brand-teal py-6 overflow-hidden">
+      <section className="bg-brand-teal py-4 md:py-6 overflow-hidden">
         <div className="flex animate-marquee whitespace-nowrap">
-          {[...siteConfig.stats, ...siteConfig.stats].map((stat, i) => (
-            <div key={i} className="flex items-center gap-3 mx-12">
-              <span className="text-3xl md:text-4xl font-bold text-white">
+          {[...siteConfig.stats, ...siteConfig.stats, ...siteConfig.stats, ...siteConfig.stats].map((stat, i) => (
+            <div key={i} className="flex items-center gap-2 md:gap-3 mx-6 md:mx-12 shrink-0">
+              <span className="text-xl md:text-3xl lg:text-4xl font-bold text-white">
                 {stat.value}
               </span>
-              <span className="text-white/80 text-sm font-medium uppercase tracking-wider">
+              <span className="text-white/80 text-xs md:text-sm font-medium uppercase tracking-wider">
                 {stat.label}
               </span>
-              <span className="text-white/30">|</span>
+              <span className="text-white/30 text-lg">|</span>
             </div>
           ))}
         </div>

@@ -18,7 +18,7 @@ export const siteConfig = {
   stats: [
     { value: "25+", label: "Destinations" },
     { value: "800+", label: "Students Guided" },
-    { value: "30+", label: "Countries" },
+    { value: "50+", label: "Countries" },
     { value: "10+", label: "Years of Experience" },
   ],
   team: [

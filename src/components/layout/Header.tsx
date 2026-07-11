@@ -117,17 +117,25 @@ export function Header() {
             )}
           </nav>
 
-          {/* CENTER LOGO */}
+          {/* CENTER LOGO — hidden on mobile to avoid duplicate with mobile section */}
           <Link
             href="/"
-            className="flex items-center justify-center lg:justify-center"
+            className="hidden lg:flex items-center justify-center gap-2"
           >
+            <Image
+              src="/logo-01.png"
+              alt={siteConfig.brand.name}
+              width={40}
+              height={40}
+              className="w-9 h-9"
+              priority
+            />
             <Image
               src={siteConfig.brand.logoUrl}
               alt={siteConfig.brand.name}
               width={120}
               height={48}
-              className="w-[80px] lg:w-[120px] h-auto"
+              className="w-[120px] h-auto"
               priority
             />
           </Link>
