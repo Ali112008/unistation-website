@@ -14,6 +14,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ScrollAnimator, SectionHeading } from "@/components/shared";
+import { LibrarySection } from "@/components/LibrarySection";
 import {
   CheckCircle2,
   BookOpen,
@@ -477,6 +478,8 @@ export default function EnglishCoursePage() {
       </section>
 
       {/* Final CTA Section */}
+      <LibrarySection topicName="IELTS" tags={["english", "ielts"]} />
+
       <section className="py-24 bg-brand-teal">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <ScrollAnimator>

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { siteConfig } from "@/data/site-data";
 import { ScrollAnimator, CTASection } from "@/components/shared";
 import { ArrowRight } from "lucide-react";
+import { LibrarySection } from "@/components/LibrarySection";
 
 export const metadata: Metadata = {
   title: "University Admission Packages",
@@ -53,7 +54,8 @@ export default function PackagesPage() {
           <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
             {siteConfig.packages.map((pkg, i) => (
               <ScrollAnimator key={pkg.name} delay={i * 80}>
-                <li className="group relative h-80 md:h-96 rounded-xl overflow-hidden cursor-pointer shadow-md hover:shadow-2xl transition-shadow duration-500">
+                <li>
+                  <Link href={`/packages/${pkg.slug}`} className="group block relative h-80 md:h-96 rounded-xl overflow-hidden shadow-md hover:shadow-2xl transition-shadow duration-500">
                   {/* Image */}
                   <Image
                     src={pkg.image}
@@ -87,12 +89,16 @@ export default function PackagesPage() {
                       </div>
                     </div>
                   </div>
+                  </Link>
                 </li>
               </ScrollAnimator>
             ))}
           </ul>
         </div>
       </section>
+
+      {/* Library Section — general (no filter) */}
+      <LibrarySection />
 
       <CTASection />
     </>

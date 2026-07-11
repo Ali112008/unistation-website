@@ -4,6 +4,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { ScrollAnimator, SectionHeading } from "@/components/shared";
+import { LibrarySection } from "@/components/LibrarySection";
 import {
   CheckCircle2,
   BookOpen,
@@ -174,6 +175,8 @@ export default function GermanCoursePage() {
       </section>
 
       {/* Final CTA */}
+      <LibrarySection topicName="German" tags={["german", "germany", "testdaf", "dsh", "goethe"]} />
+
       <section className="py-24 bg-brand-teal">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <ScrollAnimator>

@@ -26,6 +26,7 @@ interface WebflowItem {
     description?: string;
     "youtube-url"?: string;
     category?: string;
+    tags?: string;
     "created-on"?: string;
     "updated-on"?: string;
   };
@@ -105,6 +106,7 @@ export async function GET(request: Request) {
       youtubeUrl: item.fieldData["youtube-url"] || "",
       thumbnail: item.fieldData.thumbnail?.url || "",
       category: item.fieldData.category || "",
+      tags: item.fieldData.tags || "",
       createdOn: item.createdOn,
     }));
     return NextResponse.json({ videos });
@@ -122,6 +124,7 @@ export async function GET(request: Request) {
       author: item.fieldData.author || "UniStation Team",
       featured: item.fieldData.featured || false,
       coverImage: item.fieldData["cover-image"]?.url || "",
+      tags: item.fieldData.tags || "",
       createdOn: item.createdOn,
       updatedOn: item.updatedOn,
     }))

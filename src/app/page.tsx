@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/accordion";
 import { siteConfig } from "@/data/site-data";
 import { ScrollAnimator, SectionHeading } from "@/components/shared";
+import { LibrarySection } from "@/components/LibrarySection";
 import {
   Globe2,
   Users,
@@ -424,6 +425,8 @@ export default function HomePage() {
       </section>
 
       {/* Book a Video Call - Calendly */}
+      <LibrarySection />
+
       <section className="py-20 bg-brand-navy">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <ScrollAnimator>

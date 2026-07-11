@@ -124,16 +124,24 @@ export function Footer() {
               Top Destinations
             </h3>
             <ul className="space-y-2.5">
-              {siteConfig.topDestinations.map((d) => (
-                <li key={d.name}>
-                  <Link
-                    href="/destinations"
-                    className="text-gray-400 hover:text-white text-sm transition-colors"
-                  >
-                    {d.name}
-                  </Link>
-                </li>
-              ))}
+              {siteConfig.topDestinations.map((d) => {
+                const matchingPkg = siteConfig.packages.find(
+                  (p) => p.name.toLowerCase() === d.name.toLowerCase()
+                );
+                const href = matchingPkg
+                  ? `/packages/${matchingPkg.slug}`
+                  : "/destinations";
+                return (
+                  <li key={d.name}>
+                    <Link
+                      href={href}
+                      className="text-gray-400 hover:text-white text-sm transition-colors"
+                    >
+                      {d.name}
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
           </div>
 
