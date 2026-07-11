@@ -4,16 +4,6 @@ const WEBFLOW_API_TOKEN = process.env.WEBFLOW_API_TOKEN!;
 const BLOG_COLLECTION = "6a51d3b689432b9105b65065";
 const VIDEO_COLLECTION = "6a51d3c85a1355ad6711662d";
 
-// Local cover image overrides — maps post ID to a meaningful image
-const BLOG_COVER_OVERRIDES: Record<string, string> = {
-  "6a51eef0be182732939d54c7": "/blog-covers/scholarship-medical.jpg",
-  "6a51d5e05e9255c011cc3749": "/blog-covers/georgia-medical.jpg",
-  "6a51d5e05e9255c011cc3746": "/blog-covers/tbilisi-guide.jpg",
-  "6a51d5e05e9255c011cc3743": "/blog-covers/cost-of-living.jpg",
-  "6a51d5e05e9255c011cc3740": "/blog-covers/eastern-europe-medical.jpg",
-  "6a51d5e05e9255c011cc373d": "/blog-covers/degree-recognition.jpg",
-};
-
 interface WebflowImage {
   fileId: string;
   url: string;
@@ -92,7 +82,7 @@ export async function GET(request: Request) {
       content: item.fieldData.content || "",
       author: item.fieldData.author || "UniStation Team",
       featured: item.fieldData.featured || false,
-      coverImage: BLOG_COVER_OVERRIDES[item.id] || item.fieldData["cover-image"]?.url || "",
+      coverImage: item.fieldData["cover-image"]?.url || "",
       createdOn: item.createdOn,
       updatedOn: item.updatedOn,
     }))
