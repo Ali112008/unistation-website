@@ -9,7 +9,7 @@ export default function PackagesPage() {
     <>
       <section className="relative pt-32 pb-20 bg-brand-navy overflow-hidden">
         <div className="absolute inset-0 opacity-20">
-          <Image src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1920&h=600&fit=crop" alt="University admission" fill className="object-cover" />
+          <Image src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=1920&h=600&fit=crop" alt="University admission" fill className="object-cover" />
         </div>
         <div className="absolute inset-0 bg-gradient-to-r from-brand-navy to-brand-navy/80" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 hero-animate">

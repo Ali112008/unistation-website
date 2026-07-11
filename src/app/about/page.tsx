@@ -55,7 +55,7 @@ export default function AboutPage() {
             <ScrollAnimator delay={200}>
               <div className="relative rounded-2xl overflow-hidden h-[500px]">
                 <Image
-                  src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=600&h=500&fit=crop"
+            src="https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=600&h=500&fit=crop"
                   alt="Students celebrating graduation"
                   fill
                   className="object-cover"

@@ -21,7 +21,7 @@ const sampleVideos = [
   { title: "University Application Process Step by Step", thumbnail: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&h=400&fit=crop", duration: "15:30", views: "2.3K" },
   { title: "Student Life in Germany: What to Expect", thumbnail: "https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=600&h=400&fit=crop", duration: "12:45", views: "1.8K" },
   { title: "How to Prepare for IELTS at Home", thumbnail: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=600&h=400&fit=crop", duration: "20:10", views: "3.1K" },
-  { title: "Scholarship Application Tips from Experts", thumbnail: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=600&h=400&fit=crop", duration: "18:20", views: "1.5K" },
+  { title: "Scholarship Application Tips from Experts", thumbnail: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=600&h=400&fit=crop", duration: "18:20", views: "1.5K" },
 ];
 
 export default function LibraryPage() {

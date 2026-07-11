@@ -73,7 +73,7 @@ export const siteConfig = {
       city: "Idlib",
       country: "Syria",
       description: "Personalized guidance for ambitious students",
-      image: "https://images.unsplash.com/photo-1590076082090-3a2a37fe0e04?w=600&h=400&fit=crop",
+      image: "https://images.unsplash.com/photo-1531973576160-7125cd663d86?w=600&h=400&fit=crop",
     },
   ],
   topDestinations: [
