@@ -4,9 +4,9 @@ const WEBFLOW_API_TOKEN = process.env.WEBFLOW_API_TOKEN!;
 const TEAM_COLLECTION = "68fd63e9503df62b019b5c9e";
 
 const FIELDS_TO_ADD = [
-  { name: "qualifications", displayName: "Qualifications", type: "Rich Text" as const, helpText: "Academic qualifications and degrees" },
-  { name: "languages", displayName: "Languages", type: "Rich Text" as const, helpText: "Languages spoken" },
-  { name: "hobbies", displayName: "Hobbies", type: "Rich Text" as const, helpText: "Personal hobbies and interests" },
+  { name: "qualifications", displayName: "Qualifications", type: "RichText" as const, helpText: "Academic qualifications and degrees" },
+  { name: "languages", displayName: "Languages", type: "RichText" as const, helpText: "Languages spoken" },
+  { name: "hobbies", displayName: "Hobbies", type: "RichText" as const, helpText: "Personal hobbies and interests" },
 ];
 
 const TEAM_DATA: Record<string, { qualifications: string; languages: string; hobbies: string }> = {
