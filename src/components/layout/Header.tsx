@@ -2,17 +2,21 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { siteConfig } from "@/data/site-data";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { ChevronDown, Menu, X } from "lucide-react";
+import { ChevronDown, Menu } from "lucide-react";
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const pathname = usePathname();
+
+  const leftNav = siteConfig.navigation.filter((item) => item.side === "left");
+  const rightNav = siteConfig.navigation.filter((item) => item.side === "right");
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -32,6 +36,28 @@ export function Header() {
     return pathname.startsWith(href);
   };
 
+  const navLinkClass = (href: string) =>
+    `px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+      isActive(href)
+        ? scrolled
+          ? "text-brand-teal"
+          : "text-white"
+        : scrolled
+        ? "text-gray-700 hover:text-brand-teal hover:bg-teal-50"
+        : "text-white/90 hover:text-white hover:bg-white/10"
+    }`;
+
+  const dropdownTriggerClass = (href: string, isOpen: boolean) =>
+    `flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+      isActive(href) || isOpen
+        ? scrolled
+          ? "text-brand-teal"
+          : "text-white"
+        : scrolled
+        ? "text-gray-700 hover:text-brand-teal hover:bg-teal-50"
+        : "text-white/90 hover:text-white hover:bg-white/10"
+    }`;
+
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 animate-nav-entrance ${
@@ -41,24 +67,10 @@ export function Header() {
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 lg:h-20">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-10 h-10 bg-brand-teal rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">U</span>
-            </div>
-            <span
-              className={`text-xl font-bold transition-colors ${
-                scrolled ? "text-brand-navy" : "text-white"
-              }`}
-            >
-              UniStation
-            </span>
-          </Link>
-
-          {/* Desktop Nav */}
+        <div className="grid grid-cols-[1fr_auto_1fr] items-center h-16 lg:h-20">
+          {/* LEFT NAV */}
           <nav className="hidden lg:flex items-center gap-1">
-            {siteConfig.navigation.map((item) =>
+            {leftNav.map((item) =>
               item.children ? (
                 <div
                   key={item.label}
@@ -68,15 +80,7 @@ export function Header() {
                 >
                   <Link
                     href={item.href}
-                    className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      isActive(item.href)
-                        ? scrolled
-                          ? "text-brand-teal"
-                          : "text-white"
-                        : scrolled
-                        ? "text-gray-700 hover:text-brand-teal hover:bg-teal-50"
-                        : "text-white/90 hover:text-white hover:bg-white/10"
-                    }`}
+                    className={dropdownTriggerClass(item.href, openDropdown === item.label)}
                   >
                     {item.label}
                     <ChevronDown className="w-3.5 h-3.5" />
@@ -105,15 +109,7 @@ export function Header() {
                 <Link
                   key={item.label}
                   href={item.href}
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    isActive(item.href)
-                      ? scrolled
-                        ? "text-brand-teal bg-teal-50"
-                        : "text-white bg-white/15"
-                      : scrolled
-                      ? "text-gray-700 hover:text-brand-teal hover:bg-teal-50"
-                      : "text-white/90 hover:text-white hover:bg-white/10"
-                  }`}
+                  className={navLinkClass(item.href)}
                 >
                   {item.label}
                 </Link>
@@ -121,12 +117,72 @@ export function Header() {
             )}
           </nav>
 
-          {/* Desktop CTA */}
-          <div className="hidden lg:flex items-center gap-3">
+          {/* CENTER LOGO */}
+          <Link
+            href="/"
+            className="flex items-center justify-center lg:justify-center"
+          >
+            <Image
+              src={siteConfig.brand.logoUrl}
+              alt={siteConfig.brand.name}
+              width={120}
+              height={48}
+              className="w-[80px] lg:w-[120px] h-auto"
+              priority
+            />
+          </Link>
+
+          {/* RIGHT NAV + WHATSAPP */}
+          <div className="hidden lg:flex items-center justify-end gap-1">
+            {rightNav.map((item) =>
+              item.children ? (
+                <div
+                  key={item.label}
+                  className="relative group"
+                  onMouseEnter={() => setOpenDropdown(item.label)}
+                  onMouseLeave={() => setOpenDropdown(null)}
+                >
+                  <Link
+                    href={item.href}
+                    className={dropdownTriggerClass(item.href, openDropdown === item.label)}
+                  >
+                    {item.label}
+                    <ChevronDown className="w-3.5 h-3.5" />
+                  </Link>
+                  <div
+                    className={`absolute top-full right-0 pt-2 transition-all duration-200 ${
+                      openDropdown === item.label
+                        ? "opacity-100 translate-y-0 pointer-events-auto"
+                        : "opacity-0 -translate-y-2 pointer-events-none"
+                    }`}
+                  >
+                    <div className="bg-white rounded-xl shadow-lg border border-gray-100 py-2 min-w-[200px]">
+                      {item.children.map((child) => (
+                        <Link
+                          key={child.label}
+                          href={child.href}
+                          className="block px-4 py-2.5 text-sm text-gray-700 hover:text-brand-teal hover:bg-teal-50 transition-colors"
+                        >
+                          {child.label}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  className={navLinkClass(item.href)}
+                >
+                  {item.label}
+                </Link>
+              )
+            )}
             <Button
               asChild
               size="sm"
-              className="bg-brand-teal hover:bg-brand-teal-dark text-white btn-primary-hover rounded-lg"
+              className="ml-2 bg-brand-teal hover:bg-brand-teal-dark text-white btn-primary-hover rounded-lg"
             >
               <a href={siteConfig.brand.whatsappUrl} target="_blank" rel="noopener noreferrer">
                 <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="currentColor">
@@ -135,91 +191,86 @@ export function Header() {
                 WhatsApp
               </a>
             </Button>
-            <Button
-              asChild
-              variant="outline"
-              size="sm"
-              className={`btn-outline-hover rounded-lg ${
-                scrolled
-                  ? "border-gray-300 text-gray-700"
-                  : "border-white/30 text-white hover:bg-white/10"
-              }`}
-            >
-              <Link href="/contact">Book Consultation</Link>
-            </Button>
           </div>
 
-          {/* Mobile Toggle */}
-          <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-            <SheetTrigger asChild className="lg:hidden">
-              <button
-                className={`p-2 rounded-lg ${
-                  scrolled ? "text-gray-700" : "text-white"
-                }`}
-              >
-                <Menu className="w-6 h-6" />
-              </button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-80 p-0">
-              <div className="flex flex-col h-full">
-                <div className="flex items-center justify-between p-4 border-b">
-                  <Link href="/" className="flex items-center gap-2" onClick={() => setMobileOpen(false)}>
-                    <div className="w-8 h-8 bg-brand-teal rounded-lg flex items-center justify-center">
-                      <span className="text-white font-bold text-sm">U</span>
-                    </div>
-                    <span className="font-bold text-brand-navy">UniStation</span>
-                  </Link>
-                </div>
-                <nav className="flex-1 overflow-y-auto py-4">
-                  {siteConfig.navigation.map((item) => (
-                    <div key={item.label}>
-                      {item.children ? (
-                        <MobileDropdown
-                          item={item}
-                          openDropdown={openDropdown}
-                          setOpenDropdown={setOpenDropdown}
-                        />
-                      ) : (
-                        <Link
-                          href={item.href}
-                          onClick={() => setMobileOpen(false)}
-                          className={`block px-4 py-3 text-sm font-medium transition-colors ${
-                            isActive(item.href)
-                              ? "text-brand-teal bg-teal-50"
-                              : "text-gray-700 hover:text-brand-teal hover:bg-gray-50"
-                          }`}
-                        >
-                          {item.label}
-                        </Link>
-                      )}
-                    </div>
-                  ))}
-                </nav>
-                <div className="p-4 border-t space-y-2">
-                  <Button
-                    asChild
-                    className="w-full bg-brand-teal hover:bg-brand-teal-dark text-white rounded-lg"
-                  >
-                    <a
-                      href={siteConfig.brand.whatsappUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
+          {/* MOBILE TOGGLE (centered on mobile) */}
+          <div className="lg:hidden flex items-center justify-between w-full">
+            <Link href="/" onClick={() => setMobileOpen(false)}>
+              <Image
+                src={siteConfig.brand.logoUrl}
+                alt={siteConfig.brand.name}
+                width={100}
+                height={40}
+                className="w-[80px] h-auto"
+                priority
+              />
+            </Link>
+            <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+              <SheetTrigger asChild>
+                <button
+                  className={`p-2 rounded-lg ${
+                    scrolled ? "text-gray-700" : "text-white"
+                  }`}
+                >
+                  <Menu className="w-6 h-6" />
+                </button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-80 p-0">
+                <div className="flex flex-col h-full">
+                  <div className="flex items-center justify-between p-4 border-b">
+                    <Link href="/" className="flex items-center gap-2" onClick={() => setMobileOpen(false)}>
+                      <Image
+                        src={siteConfig.brand.logoUrl}
+                        alt={siteConfig.brand.name}
+                        width={100}
+                        height={40}
+                        className="h-8 w-auto"
+                      />
+                    </Link>
+                  </div>
+                  <nav className="flex-1 overflow-y-auto py-4">
+                    {siteConfig.navigation.map((item) => (
+                      <div key={item.label}>
+                        {item.children ? (
+                          <MobileDropdown
+                            item={item}
+                            openDropdown={openDropdown}
+                            setOpenDropdown={setOpenDropdown}
+                          />
+                        ) : (
+                          <Link
+                            href={item.href}
+                            onClick={() => setMobileOpen(false)}
+                            className={`block px-4 py-3 text-sm font-medium transition-colors ${
+                              isActive(item.href)
+                                ? "text-brand-teal bg-teal-50"
+                                : "text-gray-700 hover:text-brand-teal hover:bg-gray-50"
+                            }`}
+                          >
+                            {item.label}
+                          </Link>
+                        )}
+                      </div>
+                    ))}
+                  </nav>
+                  <div className="p-4 border-t space-y-2">
+                    <Button
+                      asChild
+                      className="w-full bg-brand-teal hover:bg-brand-teal-dark text-white rounded-lg"
                     >
-                      WhatsApp Us
-                    </a>
-                  </Button>
-                  <Button
-                    asChild
-                    variant="outline"
-                    className="w-full rounded-lg"
-                    onClick={() => setMobileOpen(false)}
-                  >
-                    <Link href="/contact">Book Consultation</Link>
-                  </Button>
+                      <a
+                        href={siteConfig.brand.whatsappUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        WhatsApp Us
+                      </a>
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            </SheetContent>
-          </Sheet>
+              </SheetContent>
+            </Sheet>
+          </div>
         </div>
       </div>
     </header>
