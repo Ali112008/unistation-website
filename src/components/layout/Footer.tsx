@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { siteConfig } from "@/data/site-data";
@@ -13,6 +13,13 @@ export function Footer() {
   const [subscribed, setSubscribed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Remember subscription across visits
+  useEffect(() => {
+    if (typeof window !== "undefined" && localStorage.getItem("unistation_newsletter_subscribed")) {
+      setSubscribed(true);
+    }
+  }, []);
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,6 +39,7 @@ export function Footer() {
       });
       if (res.ok) {
         setSubscribed(true);
+        localStorage.setItem("unistation_newsletter_subscribed", "true");
       } else {
         setError("Something went wrong. Please try again.");
       }
@@ -166,9 +174,11 @@ export function Footer() {
             </p>
             {subscribed ? (
               <div className="p-4 bg-brand-teal/10 border border-brand-teal/20 rounded-lg">
-                <p className="text-brand-teal text-sm font-medium">
-                  You&apos;re subscribed! Check your inbox soon.
-                </p>
+                <div className="flex items-center gap-2">
+                  <svg className="w-5 h-5 text-brand-teal shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                  <p className="text-brand-teal text-sm font-medium">You&apos;re subscribed!</p>
+                </div>
+                <p className="text-gray-500 text-xs mt-1.5">You&apos;ll receive our latest updates in your inbox.</p>
               </div>
             ) : (
               <form onSubmit={handleSubscribe} className="space-y-2">
