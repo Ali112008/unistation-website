@@ -170,7 +170,7 @@ export const siteConfig = {
       priceRange: "AED 1,799 – 2,799",
       levels: "A1 to C1",
       format: "Online",
-      exams: ["TestDaF", "Goethe-Zertifikat B2/C1"],
+      exams: ["TestDaF", "DSH", "Goethe-Zertifikat B2/C1"],
       fees: [
         { level: "A1", category: "Beginner", duration: "6 Weeks", price: "1,799 AED" },
         { level: "A2", category: "Beginner", duration: "8 Weeks", price: "1,999 AED" },
