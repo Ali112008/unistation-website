@@ -12,3 +12,4 @@ worklog.md
 db/
 *.db
 tool-results/
+.vercel
