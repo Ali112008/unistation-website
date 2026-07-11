@@ -69,13 +69,16 @@ export default function HomePage() {
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center bg-brand-navy overflow-hidden">
         <div className="absolute inset-0">
-          <Image
-            src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1920&h=1080&fit=crop"
-            alt="University campus with students"
-            fill
-            className="object-cover opacity-30"
-            priority
-          />
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            poster="https://cdn.prod.website-files.com/68f96cf6ade48fa155ef7a60/68fcda3e1e9ba482da3661eb_8061028-hd_1920_1080_25fps-poster-00001.jpg"
+            className="absolute inset-0 w-full h-full object-cover opacity-30"
+          >
+            <source src="https://cdn.prod.website-files.com/68fd63e9503df62b019b5c75/68fd63e9503df62b019b5d0f_8061028-hd_1920_1080_25fps-transcode.mp4" type="video/mp4" />
+          </video>
           <div className="absolute inset-0 bg-gradient-to-r from-brand-navy via-brand-navy/90 to-brand-navy/60" />
         </div>
 
