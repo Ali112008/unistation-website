@@ -27,18 +27,22 @@ interface VideoItem {
   category: string;
 }
 
-/* ───────── Branded Video Player ───────── */
+/* ───────── Branded Video Player (single-play) ───────── */
 function VideoPlayer({
+  videoId,
   youtubeUrl,
   title,
+  activeId,
+  onPlay,
   className = "",
 }: {
+  videoId: string;
   youtubeUrl: string;
   title: string;
+  activeId: string | null;
+  onPlay: (id: string) => void;
   className?: string;
 }) {
-  const [playing, setPlaying] = useState(false);
-
   const ytId = (() => {
     if (!youtubeUrl) return null;
     const match = youtubeUrl.match(
@@ -51,20 +55,25 @@ function VideoPlayer({
     ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`
     : "";
 
-  const embedSrc = ytId
-    ? `https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0&modestbranding=1&showinfo=0`
-    : "";
+  const isPlaying = activeId === videoId;
+
+  // When another video is played, stop this one by unmounting the iframe
+  const embedSrc =
+    isPlaying && ytId
+      ? `https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0&modestbranding=1&showinfo=0`
+      : "";
 
   const handlePlay = useCallback(() => {
-    setPlaying(true);
-  }, []);
+    onPlay(videoId);
+  }, [videoId, onPlay]);
 
   if (!ytId) return null;
 
   return (
     <div className={`relative overflow-hidden rounded-2xl ${className}`}>
-      {playing ? (
+      {isPlaying ? (
         <iframe
+          key={videoId}
           src={embedSrc}
           title={title}
           className="w-full aspect-video"
@@ -107,6 +116,7 @@ export default function LibraryPage() {
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [videos, setVideos] = useState<VideoItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchData() {
@@ -292,8 +302,11 @@ export default function LibraryPage() {
                     <ScrollAnimator>
                       <div className="max-w-4xl mx-auto">
                         <VideoPlayer
+                          videoId={featuredVideo.id}
                           youtubeUrl={featuredVideo.youtubeUrl}
                           title={featuredVideo.title}
+                          activeId={activeVideoId}
+                          onPlay={setActiveVideoId}
                           className="shadow-lg"
                         />
                         <div className="mt-4 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
@@ -327,8 +340,11 @@ export default function LibraryPage() {
                           <ScrollAnimator key={video.id} delay={i * 80}>
                             <div className="rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow">
                               <VideoPlayer
+                                videoId={video.id}
                                 youtubeUrl={video.youtubeUrl}
                                 title={video.title}
+                                activeId={activeVideoId}
+                                onPlay={setActiveVideoId}
                                 className="!rounded-xl"
                               />
                               <div className="p-3 bg-white">

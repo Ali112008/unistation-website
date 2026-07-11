@@ -1,8 +1,14 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollAnimator, SectionHeading, CTASection } from "@/components/shared";
 import { Video, BookOpen, FileText, Headphones } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Resources",
+  description: "Free resources and guides for studying abroad. Scholarships, visa guides, and more from UniStation.",
+};
 
 const resourceCategories = [
   { id: "webinars", title: "Webinars", description: "Live and recorded sessions with education experts covering admission strategies, country guides, and student Q&A.", icon: Video, image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&h=400&fit=crop", items: ["Upcoming Webinars", "Recorded Sessions", "Expert Panels"] },

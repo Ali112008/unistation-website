@@ -1,8 +1,14 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { siteConfig } from "@/data/site-data";
 import { ScrollAnimator, CTASection } from "@/components/shared";
 import { ArrowRight } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "University Admission Packages",
+  description: "Explore UniStation's comprehensive university admission packages designed to help you reach your dream university effortlessly.",
+};
 
 export default function PackagesPage() {
   return (

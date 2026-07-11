@@ -1,9 +1,15 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/data/site-data";
 import { ScrollAnimator, SectionHeading, CTASection } from "@/components/shared";
 import { ArrowRight } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "About Us",
+  description: "Learn about UniStation's mission to help students achieve their dream of studying abroad. Meet our team of expert education consultants.",
+};
 
 export default function AboutPage() {
   return (

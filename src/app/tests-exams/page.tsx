@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
@@ -6,6 +7,11 @@ import { ScrollAnimator, SectionHeading, CTASection } from "@/components/shared"
 import {
   GraduationCap, FileText, BookOpen, Stethoscope, Award, Brain, FlaskConical,
 } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Tests & Exams",
+  description: "Prepare for standardized tests and exams required for university admission. IELTS, TOEFL, SAT, and more with UniStation.",
+};
 
 const examIcons: Record<string, React.ElementType> = {
   SAT: GraduationCap,

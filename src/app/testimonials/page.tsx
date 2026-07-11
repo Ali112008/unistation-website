@@ -1,7 +1,13 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollAnimator, SectionHeading, CTASection } from "@/components/shared";
 import { Star, Quote } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Student Testimonials",
+  description: "Read success stories from UniStation students who achieved their dream of studying abroad at top universities worldwide.",
+};
 
 export default function TestimonialsPage() {
   const testimonials = [

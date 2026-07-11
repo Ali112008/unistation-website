@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,11 @@ import {
 import { siteConfig } from "@/data/site-data";
 import { ScrollAnimator, CTASection } from "@/components/shared";
 import { ArrowRight } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Study Destinations",
+  description: "Discover 25+ study destinations worldwide. Find the perfect country and university for your academic journey with UniStation.",
+};
 
 export default function DestinationsPage() {
   return (

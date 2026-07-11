@@ -1,7 +1,14 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { siteConfig } from "@/data/site-data";
-import { ScrollAnimator, SectionHeading, CTASection } from "@/components/shared";
+import { ScrollAnimator, CTASection } from "@/components/shared";
+
+export const metadata: Metadata = {
+  title: "Language Courses",
+  description: "Master new languages with UniStation. IELTS, TOEFL, German, Turkish, and Spanish courses for university admission preparation.",
+};
 
 export default function LanguageCoursesPage() {
   return (
@@ -38,29 +45,50 @@ export default function LanguageCoursesPage() {
           <div className="grid md:grid-cols-2 gap-8">
             {siteConfig.languageCourses.map((course, i) => (
               <ScrollAnimator key={course.slug} delay={i * 100}>
-                <Link href={`/language-courses/${course.slug}`}>
-                  <div className="bg-white rounded-2xl border shadow-sm p-8 card-hover h-full group">
-                    <div className="flex items-start gap-4">
-                      <span className="text-4xl">{course.flag}</span>
-                      <div>
-                        <h3 className="text-xl font-bold text-brand-navy group-hover:text-brand-teal transition-colors">
-                          {course.name}
-                        </h3>
-                        <p className="text-gray-500 text-sm mt-1">
-                          {course.shortDescription}
-                        </p>
+                <Link href={`/language-courses/${course.slug}`} className="block h-80 md:h-96 group rounded-2xl overflow-hidden relative">
+                  {/* Background Image */}
+                  <Image
+                    src={course.image}
+                    alt={course.name}
+                    fill
+                    unoptimized
+                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                  />
+
+                  {/* Dark overlay on hover */}
+                  <div className="absolute inset-0 bg-brand-navy/0 transition-colors duration-500 group-hover:bg-brand-navy/55" />
+
+                  {/* Flag badge — top-left */}
+                  <span className="absolute top-4 left-4 text-2xl drop-shadow-lg z-10">
+                    {course.flag}
+                  </span>
+
+                  {/* Bottom content — always visible */}
+                  <div className="absolute bottom-0 left-0 right-0 p-6 z-10 transition-transform duration-500 group-hover:-translate-y-2">
+                    <h3 className="text-2xl md:text-3xl font-bold text-white drop-shadow-md">
+                      {course.name}
+                    </h3>
+
+                    {/* Hover-reveal details */}
+                    <div className="mt-3 opacity-0 translate-y-4 transition-all duration-500 delay-75 group-hover:opacity-100 group-hover:translate-y-0">
+                      <p className="text-gray-200 text-sm leading-relaxed line-clamp-2">
+                        {course.shortDescription}
+                      </p>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        <span className="px-3 py-1 bg-white/20 backdrop-blur-sm text-white text-xs font-medium rounded-full">
+                          {course.levels}
+                        </span>
+                        <span className="px-3 py-1 bg-white/20 backdrop-blur-sm text-white text-xs font-medium rounded-full">
+                          {course.format}
+                        </span>
+                        <span className="px-3 py-1 bg-white/20 backdrop-blur-sm text-white text-xs font-medium rounded-full">
+                          {course.priceRange}
+                        </span>
                       </div>
-                    </div>
-                    <div className="mt-6 flex flex-wrap gap-2">
-                      <span className="px-3 py-1 bg-teal-50 text-brand-teal text-xs font-medium rounded-full">
-                        {course.levels}
-                      </span>
-                      <span className="px-3 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-full">
-                        {course.format}
-                      </span>
-                      <span className="px-3 py-1 bg-amber-50 text-amber-700 text-xs font-medium rounded-full">
-                        {course.priceRange}
-                      </span>
+                      <div className="mt-4 inline-flex items-center gap-2 text-brand-teal text-sm font-semibold">
+                        Learn More
+                        <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+                      </div>
                     </div>
                   </div>
                 </Link>
