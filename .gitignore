@@ -1,15 +1,42 @@
-node_modules
-.next
-.turbo
+# Dependencies
+node_modules/
+.turbo/
+
+# Next.js
+.next/
 *.tsbuildinfo
 next-env.d.ts
+out/
+
+# Environment
 .env
 .env.local
 .env.production
+
+# Build & Logs
 dev.log
 server.log
 worklog.md
+
+# Database
 db/
 *.db
+prisma/
+
+# Vercel
+.vercel/
+
+# Tool artifacts
 tool-results/
-.vercel
+skills/
+upload/
+scripts/
+
+# Scraping artifacts
+scrape_*.json
+*-scrape.json
+full_extraction.json
+seed.ts
+sanity.config.ts
+unistation-header.json
+bun.lock
