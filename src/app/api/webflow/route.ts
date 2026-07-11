@@ -112,3 +112,103 @@ export async function GET(request: Request) {
 
   return NextResponse.json({ blogs });
 }
+
+// TEMPORARY: Remove after running once
+export async function PATCH(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const action = searchParams.get("action");
+
+  if (action !== "sync-team-bios") {
+    return NextResponse.json({ error: "Invalid action" }, { status: 400 });
+  }
+
+  // Team bios scraped from original site JSON-LD
+  const teamData: Record<string, { bio: string; "bio-summary": string; "job-title": string }> = {
+    "Bassel Fayad": {
+      "job-title": "General Director",
+      "bio-summary": "With a vision to redefine the study abroad experience, Basel brings a modern approach to academic consulting. Known for his leadership and strategic mindset, he ensures every student journey with Uni Station is guided by clarity, innovation, and trust.",
+      "bio": "<p>With a vision to redefine the study abroad experience, Basel brings a modern approach to academic consulting. Known for his leadership and strategic mindset, he ensures every student journey with Uni Station is guided by clarity, innovation, and trust. His passion lies in building bridges between ambition and opportunity.</p>",
+    },
+    "Ahmed Mansour": {
+      "job-title": "Operations Manager & Team Lead",
+      "bio-summary": "Ahmed combines precision with empathy. As the backbone of the operations team, he ensures every application, consultation, and process runs smoothly.",
+      "bio": "<p>Ahmed combines precision with empathy. As the backbone of the operations team, he ensures every application, consultation, and process runs smoothly. His ability to connect with students and staff alike makes him the perfect link between vision and execution.</p>",
+    },
+    "Layla Karim": {
+      "job-title": "Academic Advisor",
+      "bio-summary": "Layla specializes in guiding students through complex admission pathways. With over eight years in academic counseling, she has helped countless students gain entry to top universities worldwide.",
+      "bio": "<p>Layla specializes in guiding students through complex admission pathways. With over eight years in academic counseling, she has helped countless students gain entry to top universities worldwide. Her approach blends structure with inspiration, empowering students to aim higher. Layla stays constantly updated on admission requirements, scholarship opportunities, and program changes across universities in multiple countries, ensuring her students always receive the most current and relevant advice.</p>",
+    },
+    "Omar Haddad": {
+      "job-title": "Language Program Coordinator",
+      "bio-summary": "Omar oversees UniStation language preparation programs, ensuring students master English, German, Turkish, or Spanish before their journey abroad.",
+      "bio": "<p>Omar oversees UniStation language preparation programs, ensuring students master English, German, Turkish, or Spanish before their journey abroad. His background in linguistics and education technology brings a modern, engaging edge to traditional language learning. Omar has designed curricula that combine proven teaching methodologies with digital tools, creating an interactive learning experience that prepares students not just for exams, but for real academic environments.</p>",
+    },
+  };
+
+  // Fetch current team items
+  const items = await fetchWebflowItems(TEAM_COLLECTION);
+  const results: { name: string; success: boolean; error?: string }[] = [];
+
+  for (const item of items) {
+    const fd = item.fieldData as Record<string, unknown>;
+    const name = (fd["name"] as string) || "";
+    const data = teamData[name];
+
+    if (!data) {
+      results.push({ name, success: false, error: "No data found for this member" });
+      continue;
+    }
+
+    try {
+      const patchRes = await fetch(
+        `https://api.webflow.com/v2/collections/${TEAM_COLLECTION}/items/${item.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${WEBFLOW_API_TOKEN}`,
+            "Content-Type": "application/json",
+            accept: "application/json",
+          },
+          body: JSON.stringify({
+            fieldData: {
+              "job-title": data["job-title"],
+              "bio-summary": data["bio-summary"],
+              bio: data["bio"],
+            },
+          }),
+        }
+      );
+
+      if (!patchRes.ok) {
+        const errText = await patchRes.text();
+        results.push({ name, success: false, error: `API ${patchRes.status}: ${errText}` });
+      } else {
+        results.push({ name, success: true });
+      }
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      results.push({ name, success: false, error: message });
+    }
+  }
+
+  // Publish the changes
+  try {
+    const siteId = "68fd63e9503df62b019b5c75";
+    await fetch(`https://api.webflow.com/v2/sites/${siteId}/publish`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${WEBFLOW_API_TOKEN}`,
+        "Content-Type": "application/json",
+        accept: "application/json",
+      },
+      body: JSON.stringify({
+        itemIds: items.map((i) => i.id),
+      }),
+    });
+  } catch {
+    // Publishing is optional, items are saved either way
+  }
+
+  return NextResponse.json({ results });
+}
