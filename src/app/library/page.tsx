@@ -227,50 +227,51 @@ export default function LibraryPage() {
                 </p>
               ) : (
                 <div className="mt-12 space-y-12">
-                  {/* Featured Long-Form Video */}
-                  {featuredVideo && (
-                    <ScrollAnimator>
-                      <a
-                        href={featuredVideo.youtubeUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="group block relative rounded-2xl overflow-hidden aspect-video max-w-4xl mx-auto shadow-lg hover:shadow-2xl transition-shadow duration-300"
-                      >
-                        <Image
-                          src={getYouTubeThumbnail(featuredVideo.youtubeUrl)}
-                          alt={featuredVideo.title}
-                          fill
-                          className="object-cover transition-transform duration-700 group-hover:scale-105"
-                          unoptimized
-                        />
-                        <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors" />
-                        {/* Play Button */}
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="w-20 h-20 bg-white/95 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-xl">
-                            <svg className="w-8 h-8 text-brand-teal ml-1" fill="currentColor" viewBox="0 0 24 24">
-                              <path d="M8 5v14l11-7z" />
-                            </svg>
+                  {/* Featured Long-Form Video - Embedded */}
+                  {featuredVideo && (() => {
+                    const ytId = getYouTubeId(featuredVideo.youtubeUrl);
+                    return ytId ? (
+                      <ScrollAnimator>
+                        <div className="max-w-4xl mx-auto">
+                          <div className="relative rounded-2xl overflow-hidden shadow-lg">
+                            <iframe
+                              src={`https://www.youtube.com/embed/${ytId}`}
+                              title={featuredVideo.title}
+                              className="w-full aspect-video"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              allowFullScreen
+                            />
+                          </div>
+                          <div className="mt-4 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                            <div>
+                              {featuredVideo.category && (
+                                <span className="inline-block px-3 py-1 bg-brand-teal/10 text-brand-teal text-xs font-bold rounded-full mb-2">
+                                  {featuredVideo.category}
+                                </span>
+                              )}
+                              <h3 className="text-lg md:text-xl font-bold text-brand-navy">
+                                {featuredVideo.title}
+                              </h3>
+                              <p className="text-gray-600 text-sm mt-1 line-clamp-2">
+                                {featuredVideo.description}
+                              </p>
+                            </div>
+                            <a
+                              href={featuredVideo.youtubeUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-2 px-4 py-2 border border-gray-200 text-gray-600 hover:border-brand-teal hover:text-brand-teal rounded-lg text-sm font-medium transition-colors shrink-0"
+                            >
+                              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                              Watch on YouTube
+                            </a>
                           </div>
                         </div>
-                        {/* Info Bar */}
-                        <div className="absolute bottom-0 left-0 right-0 p-5 md:p-6 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
-                          {featuredVideo.category && (
-                            <span className="inline-block px-3 py-1 bg-brand-teal text-white text-xs font-bold rounded-full mb-2">
-                              {featuredVideo.category}
-                            </span>
-                          )}
-                          <h3 className="text-white font-bold text-lg md:text-xl line-clamp-2">
-                            {featuredVideo.title}
-                          </h3>
-                          <p className="text-gray-300 text-sm mt-1 line-clamp-2 max-w-2xl">
-                            {featuredVideo.description}
-                          </p>
-                        </div>
-                      </a>
-                    </ScrollAnimator>
-                  )}
+                      </ScrollAnimator>
+                    ) : null;
+                  })()}
 
-                  {/* Shorts Section */}
+                  {/* Shorts Section - Embedded */}
                   {shortVideos.length > 0 && (
                     <div>
                       <h3 className="text-lg font-bold text-brand-navy mb-4 flex items-center gap-2">
@@ -279,48 +280,64 @@ export default function LibraryPage() {
                         </svg>
                         Shorts
                       </h3>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                        {shortVideos.map((video, i) => (
-                          <ScrollAnimator key={video.id} delay={i * 60}>
-                            <a
-                              href={video.youtubeUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="group block relative rounded-xl overflow-hidden aspect-[9/16] card-hover"
-                            >
-                              <Image
-                                src={getYouTubeThumbnail(video.youtubeUrl)}
-                                alt={video.title}
-                                fill
-                                className="object-cover transition-transform duration-500 group-hover:scale-105"
-                                unoptimized
-                              />
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-                              {/* Play icon */}
-                              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                <div className="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center">
-                                  <svg className="w-5 h-5 text-brand-teal ml-0.5" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M8 5v14l11-7z" />
-                                  </svg>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                        {shortVideos.map((video, i) => {
+                          const ytId = getYouTubeId(video.youtubeUrl);
+                          return ytId ? (
+                            <ScrollAnimator key={video.id} delay={i * 80}>
+                              <div className="rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow">
+                                <div className="relative">
+                                  <iframe
+                                    src={`https://www.youtube.com/embed/${ytId}`}
+                                    title={video.title}
+                                    className="w-full aspect-video"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                  />
+                                </div>
+                                <div className="p-3 bg-white">
+                                  <h4 className="font-semibold text-sm text-brand-navy line-clamp-1">
+                                    {video.title}
+                                  </h4>
+                                  <div className="flex items-center justify-between mt-1.5">
+                                    {video.category && (
+                                      <span className="text-brand-teal text-xs font-medium">
+                                        {video.category}
+                                      </span>
+                                    )}
+                                    <a
+                                      href={video.youtubeUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-gray-400 hover:text-brand-teal transition-colors ml-auto"
+                                      title="Watch on YouTube"
+                                    >
+                                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                                    </a>
+                                  </div>
                                 </div>
                               </div>
-                              {/* Info */}
-                              <div className="absolute bottom-0 left-0 right-0 p-3">
-                                <h4 className="text-white font-semibold text-xs line-clamp-2">
-                                  {video.title}
-                                </h4>
-                                {video.category && (
-                                  <span className="text-brand-teal-light text-[10px] mt-0.5 block">
-                                    {video.category}
-                                  </span>
-                                )}
-                              </div>
-                            </a>
-                          </ScrollAnimator>
-                        ))}
+                            </ScrollAnimator>
+                          ) : null;
+                        })}
                       </div>
                     </div>
                   )}
+
+                  {/* Visit Channel Button */}
+                  <ScrollAnimator>
+                    <div className="flex justify-center pt-4">
+                      <a
+                        href="https://www.youtube.com/@UniStation_DXB"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-3 px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl transition-colors shadow-md hover:shadow-lg"
+                      >
+                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        Visit Our YouTube Channel
+                      </a>
+                    </div>
+                  </ScrollAnimator>
                 </div>
               )}
             </div>

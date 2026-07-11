@@ -10,8 +10,8 @@ export const siteConfig = {
   },
   social: {
     instagram: "https://www.instagram.com/unistation1/",
-    tiktok: "#",
-    facebook: "#",
+    tiktok: "https://www.tiktok.com/@uni.station1",
+    facebook: "https://www.facebook.com/share/1BuHxjz611/",
     twitter: "#",
     youtube: "https://www.youtube.com/@UniStation_DXB",
   },
