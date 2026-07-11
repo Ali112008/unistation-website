@@ -63,6 +63,20 @@ export async function GET(request: Request) {
     const team = items.map((item) => {
       const fd = item.fieldData as Record<string, unknown>;
       const photo = fd["profile-picture"] as { url: string; alt: string | null } | undefined;
+
+      // Extract plain text from Webflow rich text or use as-is
+      const extractText = (val: unknown): string => {
+        if (!val) return "";
+        if (typeof val === "string") return val;
+        if (typeof val === "object" && val !== null && "children" in (val as object)) {
+          const rt = val as { children: Array<{ children: Array<{ text: string }> }>; type: string };
+          return rt.children
+            ?.map((block) => block.children?.map((c) => c.text).join("") || "")
+            .join("\n") || "";
+        }
+        return String(val);
+      };
+
       return {
         id: item.id,
         name: (fd["name"] as string) || "",
@@ -74,6 +88,9 @@ export async function GET(request: Request) {
         phone: (fd["phone-number"] as string) || "",
         twitter: (fd["twitter-link"] as string) || "",
         facebook: (fd["facebook-link"] as string) || "",
+        qualifications: extractText(fd["qualifications"]),
+        languages: extractText(fd["languages"]),
+        hobbies: extractText(fd["hobbies"]),
       };
     });
     return NextResponse.json({ team });
