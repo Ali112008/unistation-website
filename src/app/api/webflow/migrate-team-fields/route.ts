@@ -111,24 +111,16 @@ export async function POST() {
         continue;
       }
 
-      // Convert plain text to rich text format for Webflow
-      const toRichText = (text: string) => ({
-        type: "root" as const,
-        children: text.split("\n").map((line) => ({
-          type: "block" as const,
-          children: [{ type: "text" as const, text: line }],
-        })),
-      });
-
+      // Webflow v2 RichText fields accept plain strings on update
       const updateRes = await webflowFetch(
         `https://api.webflow.com/v2/collections/${TEAM_COLLECTION}/items/${item.id}`,
         {
           method: "PATCH",
           body: JSON.stringify({
             fieldData: {
-              qualifications: toRichText(data.qualifications),
-              languages: toRichText(data.languages),
-              hobbies: toRichText(data.hobbies),
+              qualifications: data.qualifications,
+              languages: data.languages,
+              hobbies: data.hobbies,
             },
           }),
         }
