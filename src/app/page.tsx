@@ -323,7 +323,7 @@ export default function HomePage() {
                       {member.shortBio}
                     </p>
                     <Link
-                      href={`/team#${member.slug || member.name.toLowerCase().replace(/\s+/g, "-")}`}
+                      href={`/team/${member.slug || member.name.toLowerCase().replace(/\s+/g, "-")}`}
                       className="inline-flex items-center text-brand-teal text-sm font-medium mt-3 hover:gap-2 transition-all"
                     >
                       Learn More <ChevronRight className="w-4 h-4" />
