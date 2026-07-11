@@ -41,7 +41,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${montserrat.variable} antialiased bg-background text-foreground`}>
         <Header />
-        <main className="min-h-screen">{children}</main>
+        <main>{children}</main>
         <Footer />
         <FloatingWhatsApp />
       </body>
