@@ -46,7 +46,7 @@ export default function DestinationsPage() {
                     className="object-cover transition-transform duration-500 group-hover:scale-110"
                     sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 16vw"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/80 via-brand-navy/20 to-transparent" />
                   <div className="absolute bottom-5 left-5 right-5">
                     <h3 className="text-white text-xl sm:text-2xl font-bold">
                       {dest.name}
@@ -106,7 +106,7 @@ export default function DestinationsPage() {
                         className="object-cover transition-transform duration-500 group-hover:scale-110"
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/80 via-brand-navy/20 to-transparent" />
                       <div className="absolute bottom-4 left-4 right-4">
                         <h3 className="text-white text-lg font-bold">
                           {dest.name}

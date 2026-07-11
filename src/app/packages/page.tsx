@@ -63,8 +63,11 @@ export default function PackagesPage() {
                     unoptimized
                   />
 
-                  {/* Hover Overlay */}
-                  <div className="absolute inset-0 bg-brand-navy/0 group-hover:bg-brand-navy/55 transition-all duration-500 ease-out" />
+                  {/* Base gradient overlay — always visible for readability */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/80 via-brand-navy/30 to-brand-navy/10" />
+
+                  {/* Extra dark overlay on hover */}
+                  <div className="absolute inset-0 bg-brand-navy/0 group-hover:bg-brand-navy/20 transition-all duration-500 ease-out" />
 
                   {/* Content - always visible name, description on hover */}
                   <div className="absolute inset-0 z-10 flex flex-col justify-end p-5 md:p-7">
