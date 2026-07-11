@@ -17,6 +17,9 @@ import {
   Globe2,
   Users,
   MapPin,
+  Mail,
+  Phone,
+  Clock,
   Award,
   ArrowRight,
   ChevronRight,
@@ -117,16 +120,15 @@ export default function HomePage() {
               their dream universities.
             </p>
             <div className="hero-animate hero-delay-3 flex flex-col sm:flex-row gap-4">
-              <Button
-                asChild
-                size="lg"
-                className="bg-brand-teal hover:bg-brand-teal-light text-white btn-primary-hover rounded-lg text-base px-8"
+              <a
+                href="https://calendly.com/unistation"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center px-8 py-3 bg-brand-teal hover:bg-brand-teal-light text-white font-semibold rounded-lg btn-primary-hover transition-colors text-base"
               >
-                <Link href="/contact">
-                  Get Free Consultation
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Link>
-              </Button>
+                Book a Free Video Call
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </a>
               <Button
                 asChild
                 variant="outline"
@@ -344,41 +346,49 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Locations */}
-      <section className="py-24 bg-gray-50">
+      {/* Contact Info Bar */}
+      <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollAnimator>
-            <SectionHeading
-              subtitle="Global Presence"
-              title="Our Locations"
-            />
-            <p className="text-gray-500 mt-4 max-w-2xl mx-auto">
-              Ready to take your academic journey to the next level? Experience
-              expert guidance, global university connections, and a community that
-              inspires success.
-            </p>
-          </ScrollAnimator>
-          <div className="grid md:grid-cols-2 gap-6 mt-12">
-            {siteConfig.offices.map((office, i) => (
-              <ScrollAnimator key={office.city} delay={i * 100}>
-                <div className="relative group rounded-2xl overflow-hidden h-72 card-hover">
-                  <Image
-                    src={office.image}
-                    alt={`${office.city}, ${office.country}`}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                  <div className="absolute bottom-6 left-6 right-6">
-                    <h3 className="text-white text-xl font-bold mb-1">
-                      {office.city}, {office.country}
-                    </h3>
-                    <p className="text-gray-300 text-sm">{office.description}</p>
-                  </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-brand-teal/10 rounded-lg flex items-center justify-center shrink-0">
+                  <MapPin className="w-5 h-5 text-brand-teal" />
                 </div>
-              </ScrollAnimator>
-            ))}
-          </div>
+                <div>
+                  <p className="font-semibold text-brand-navy text-sm">Dubai, UAE</p>
+                  <p className="text-gray-500 text-xs">Head Office</p>
+                </div>
+              </div>
+              <a href={`mailto:${siteConfig.brand.email}`} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                <div className="w-10 h-10 bg-brand-teal/10 rounded-lg flex items-center justify-center shrink-0">
+                  <Mail className="w-5 h-5 text-brand-teal" />
+                </div>
+                <div>
+                  <p className="font-semibold text-brand-navy text-sm">{siteConfig.brand.email}</p>
+                  <p className="text-gray-500 text-xs">Email Us</p>
+                </div>
+              </a>
+              <a href={siteConfig.brand.whatsappUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center shrink-0">
+                  <Phone className="w-5 h-5 text-green-600" />
+                </div>
+                <div>
+                  <p className="font-semibold text-brand-navy text-sm">{siteConfig.brand.whatsapp}</p>
+                  <p className="text-gray-500 text-xs">WhatsApp</p>
+                </div>
+              </a>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-brand-teal/10 rounded-lg flex items-center justify-center shrink-0">
+                  <Clock className="w-5 h-5 text-brand-teal" />
+                </div>
+                <div>
+                  <p className="font-semibold text-brand-navy text-sm">Mon - Sat</p>
+                  <p className="text-gray-500 text-xs">9:00 AM - 6:00 PM</p>
+                </div>
+              </div>
+            </div>
+          </ScrollAnimator>
         </div>
       </section>
 
@@ -413,45 +423,27 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Book Consultation */}
-      <section className="py-16 bg-brand-teal">
+      {/* Book a Video Call - Calendly */}
+      <section className="py-20 bg-brand-navy">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <ScrollAnimator>
             <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">
-              Book a Free Consultation
+              Book Your Free Video Call With Us Now
             </h3>
-            <p className="text-white/80 mb-8 max-w-xl mx-auto">
-              Take the first step towards your international academic journey. Our
-              team of experts is ready to guide you every step of the way.
+            <p className="text-gray-300 mb-8 max-w-xl mx-auto">
+              Take the first step towards your international academic journey. Our team of experts is ready to guide you every step of the way.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button
-                asChild
-                size="lg"
-                className="bg-white text-brand-teal hover:bg-gray-100 font-semibold rounded-lg px-8 btn-primary-hover"
-              >
-                <Link href="/contact">
-                  Book Free Consultation
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Link>
-              </Button>
-              <Button
-                asChild
-                size="lg"
-                className="border-2 border-white/40 text-white hover:bg-white/15 font-semibold rounded-lg px-8"
-              >
-                <a
-                  href={siteConfig.brand.whatsappUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  WhatsApp Us
-                  <svg className="w-5 h-5 ml-2" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-                  </svg>
-                </a>
-              </Button>
-            </div>
+            <a
+              href="https://calendly.com/unistation"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center px-8 py-4 bg-brand-teal hover:bg-brand-teal-light text-white font-semibold rounded-xl btn-primary-hover transition-colors text-lg shadow-lg hover:shadow-xl hover:shadow-brand-teal/20"
+            >
+              <svg className="w-5 h-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+              Book Your Free Video Call
+            </a>
           </ScrollAnimator>
         </div>
       </section>

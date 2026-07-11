@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
-import { ScrollAnimator, SectionHeading, CTASection } from "@/components/shared";
+import { ScrollAnimator, SectionHeading } from "@/components/shared";
 import { ChevronRight } from "lucide-react";
 
 interface TeamMember {
@@ -141,7 +141,6 @@ export default function TeamPage() {
         </section>
       )}
 
-      <CTASection />
     </>
   );
 }

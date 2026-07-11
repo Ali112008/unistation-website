@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { siteConfig } from "@/data/site-data";
@@ -7,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 export function Footer() {
+  const [subscribed, setSubscribed] = useState(false);
+
   return (
     <footer className="bg-brand-navy text-white">
       {/* Main Footer */}
@@ -111,22 +114,31 @@ export function Footer() {
               Stay updated with the latest study abroad opportunities, scholarship
               openings, webinars, and student success stories.
             </p>
-            <form
-              onSubmit={(e) => e.preventDefault()}
-              className="flex gap-2"
-            >
-              <Input
-                type="email"
-                placeholder="Your email address"
-                className="bg-white/10 border-white/20 text-white placeholder:text-gray-500 text-sm rounded-lg focus:ring-brand-teal"
-              />
-              <Button
-                type="submit"
-                className="bg-brand-teal hover:bg-brand-teal-dark text-white rounded-lg shrink-0"
+            {subscribed ? (
+              <p className="text-brand-teal text-sm font-medium">
+                Thank you for subscribing!
+              </p>
+            ) : (
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  setSubscribed(true);
+                }}
+                className="flex gap-2"
               >
-                Subscribe
-              </Button>
-            </form>
+                <Input
+                  type="email"
+                  placeholder="Your email address"
+                  className="bg-white/10 border-white/20 text-white placeholder:text-gray-500 text-sm rounded-lg focus:ring-brand-teal"
+                />
+                <Button
+                  type="submit"
+                  className="bg-brand-teal hover:bg-brand-teal-dark text-white rounded-lg shrink-0"
+                >
+                  Subscribe
+                </Button>
+              </form>
+            )}
           </div>
         </div>
       </div>

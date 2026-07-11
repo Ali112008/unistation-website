@@ -4,8 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, Mail, Phone } from "lucide-react";
-import { CTASection } from "@/components/shared";
+import { ArrowLeft, Mail, Phone, GraduationCap, Languages, Heart } from "lucide-react";
 
 interface TeamMember {
   id: string;
@@ -18,6 +17,9 @@ interface TeamMember {
   phone: string;
   twitter: string;
   facebook: string;
+  qualifications: string;
+  languages: string;
+  hobbies: string;
 }
 
 export default function TeamMemberPage() {
@@ -48,7 +50,6 @@ export default function TeamMemberPage() {
             <p className="text-gray-400 text-lg">Loading...</p>
           </div>
         </section>
-        <CTASection />
       </>
     );
   }
@@ -112,6 +113,36 @@ export default function TeamMemberPage() {
                 />
               ) : (
                 <p className="text-gray-400 italic">No bio available yet.</p>
+              )}
+
+              {/* Qualifications, Languages, Hobbies */}
+              {(member.qualifications || member.languages || member.hobbies) && (
+                <div className="mt-8 pt-6 border-t border-gray-200 grid sm:grid-cols-3 gap-6">
+                  {member.qualifications && (
+                    <div>
+                      <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <GraduationCap className="w-4 h-4" /> Qualifications
+                      </h3>
+                      <p className="text-gray-700 text-sm leading-relaxed">{member.qualifications}</p>
+                    </div>
+                  )}
+                  {member.languages && (
+                    <div>
+                      <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <Languages className="w-4 h-4" /> Languages
+                      </h3>
+                      <p className="text-gray-700 text-sm leading-relaxed">{member.languages}</p>
+                    </div>
+                  )}
+                  {member.hobbies && (
+                    <div>
+                      <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <Heart className="w-4 h-4" /> Hobbies
+                      </h3>
+                      <p className="text-gray-700 text-sm leading-relaxed">{member.hobbies}</p>
+                    </div>
+                  )}
+                </div>
               )}
 
               {/* Contact */}
@@ -188,7 +219,6 @@ export default function TeamMemberPage() {
         </section>
       )}
 
-      <CTASection />
     </>
   );
 }

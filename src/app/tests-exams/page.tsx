@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { siteConfig } from "@/data/site-data";
-import { ScrollAnimator, SectionHeading, CTASection } from "@/components/shared";
+import { ScrollAnimator, SectionHeading } from "@/components/shared";
 import {
   GraduationCap, FileText, BookOpen, Stethoscope, Award, Brain, FlaskConical,
 } from "lucide-react";
@@ -52,21 +52,23 @@ export default function TestsExamsPage() {
               const Icon = examIcons[exam.name] || FileText;
               return (
                 <ScrollAnimator key={exam.name} delay={i * 100}>
-                  <Card className="border-0 shadow-sm card-hover h-full">
-                    <CardContent className="p-6">
-                      <div className="w-12 h-12 bg-brand-teal/10 rounded-xl flex items-center justify-center mb-4">
-                        <Icon className="w-6 h-6 text-brand-teal" />
-                      </div>
-                      <h3 className="text-lg font-bold text-brand-navy">{exam.name}</h3>
-                      <p className="text-brand-teal text-sm font-medium">{exam.fullName}</p>
-                      <p className="text-gray-600 text-sm leading-relaxed mt-3">{exam.description}</p>
-                      <div className="mt-4 pt-4 border-t">
-                        <p className="text-xs text-gray-500">
-                          <span className="font-semibold text-brand-navy">Best for:</span> {exam.whoFor}
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <Link href={`/tests-exams/${exam.slug}`}>
+                    <Card className="border-0 shadow-sm card-hover h-full">
+                      <CardContent className="p-6">
+                        <div className="w-12 h-12 bg-brand-teal/10 rounded-xl flex items-center justify-center mb-4">
+                          <Icon className="w-6 h-6 text-brand-teal" />
+                        </div>
+                        <h3 className="text-lg font-bold text-brand-navy">{exam.name}</h3>
+                        <p className="text-brand-teal text-sm font-medium">{exam.fullName}</p>
+                        <p className="text-gray-600 text-sm leading-relaxed mt-3">{exam.description}</p>
+                        <div className="mt-4 pt-4 border-t">
+                          <p className="text-xs text-gray-500">
+                            <span className="font-semibold text-brand-navy">Best for:</span> {exam.whoFor}
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
                 </ScrollAnimator>
               );
             })}
@@ -86,7 +88,6 @@ export default function TestsExamsPage() {
         </div>
       </section>
 
-      <CTASection />
     </>
   );
 }
