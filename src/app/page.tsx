@@ -62,12 +62,21 @@ function CountUp({ target, suffix = "" }: { target: number; suffix?: string }) {
 }
 
 export default function HomePage() {
-  const [cmsTeam, setCmsTeam] = useState<{ name: string; role: string; image: string; bio: string }[]>([]);
+  const [cmsTeam, setCmsTeam] = useState<{ name: string; role: string; image: string; bio: string; slug: string }[]>([]);
 
   useEffect(() => {
     fetch("/api/webflow?type=team")
       .then((r) => r.json())
-      .then((d) => setCmsTeam(d.team || []))
+      .then((d) => {
+        const raw = d.team || [];
+        // Sort: General Director first, then rest
+        const sorted = [...raw].sort((a, b) => {
+          const aIsDirector = a.role?.toLowerCase().includes("director") || a.role?.toLowerCase().includes("founder") ? 0 : 1;
+          const bIsDirector = b.role?.toLowerCase().includes("director") || b.role?.toLowerCase().includes("founder") ? 0 : 1;
+          return aIsDirector - bIsDirector;
+        });
+        setCmsTeam(sorted);
+      })
       .catch(() => {});
   }, []);
 
@@ -314,7 +323,7 @@ export default function HomePage() {
                       {member.shortBio}
                     </p>
                     <Link
-                      href="/team"
+                      href={`/team#${member.slug || member.name.toLowerCase().replace(/\s+/g, "-")}`}
                       className="inline-flex items-center text-brand-teal text-sm font-medium mt-3 hover:gap-2 transition-all"
                     >
                       Learn More <ChevronRight className="w-4 h-4" />

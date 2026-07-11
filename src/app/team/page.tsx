@@ -24,8 +24,31 @@ export default function TeamPage() {
   useEffect(() => {
     fetch("/api/webflow?type=team")
       .then((r) => r.json())
-      .then((d) => setTeam(d.team || []))
+      .then((d) => {
+        const raw = d.team || [];
+        // Sort: General Director / Founder first, then rest
+        const sorted = [...raw].sort((a, b) => {
+          const aIsDirector = a.role?.toLowerCase().includes("director") || a.role?.toLowerCase().includes("founder") ? 0 : 1;
+          const bIsDirector = b.role?.toLowerCase().includes("director") || b.role?.toLowerCase().includes("founder") ? 0 : 1;
+          return aIsDirector - bIsDirector;
+        });
+        setTeam(sorted);
+      })
       .catch(() => {});
+
+    // Handle hash scroll after data loads
+    const handleHash = () => {
+      const hash = window.location.hash.slice(1);
+      if (hash) {
+        setTimeout(() => {
+          const el = document.getElementById(hash);
+          if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+        }, 300);
+      }
+    };
+    handleHash();
+    window.addEventListener("hashchange", handleHash);
+    return () => window.removeEventListener("hashchange", handleHash);
   }, []);
 
   const founder = team[0];
@@ -53,7 +76,7 @@ export default function TeamPage() {
               <SectionHeading subtitle="Leadership" title="Founder & Director" />
             </ScrollAnimator>
             <ScrollAnimator delay={100}>
-              <div className="mt-12 bg-gray-50 rounded-2xl p-8 md:p-12 grid md:grid-cols-3 gap-8 items-start">
+              <div id={founder.slug || founder.name.toLowerCase().replace(/\s+/g, "-")} className="mt-12 bg-gray-50 rounded-2xl p-8 md:p-12 grid md:grid-cols-3 gap-8 items-start scroll-mt-24">
                 <div className="relative rounded-xl overflow-hidden h-80 md:h-[420px]">
                   {founder.image && (
                     <Image src={founder.image} alt={founder.name} fill className="object-cover" unoptimized />
@@ -86,7 +109,7 @@ export default function TeamPage() {
             <div className="grid md:grid-cols-3 gap-8 mt-12">
               {rest.map((member, i) => (
                 <ScrollAnimator key={member.id} delay={i * 150}>
-                  <Card className="border-0 shadow-sm overflow-hidden card-hover h-full">
+                  <Card id={member.slug || member.name.toLowerCase().replace(/\s+/g, "-")} className="border-0 shadow-sm overflow-hidden card-hover h-full scroll-mt-24">
                     <div className="relative h-72">
                       {member.image && (
                         <Image src={member.image} alt={member.name} fill className="object-cover" unoptimized />
