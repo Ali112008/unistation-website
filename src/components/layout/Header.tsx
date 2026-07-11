@@ -37,7 +37,7 @@ export function Header() {
   };
 
   const navLinkClass = (href: string) =>
-    `px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+    `px-3 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
       isActive(href)
         ? scrolled
           ? "text-brand-teal"
@@ -48,7 +48,7 @@ export function Header() {
     }`;
 
   const dropdownTriggerClass = (href: string, isOpen: boolean) =>
-    `flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+    `flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
       isActive(href) || isOpen
         ? scrolled
           ? "text-brand-teal"
@@ -66,15 +66,16 @@ export function Header() {
           : "bg-transparent"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-[1fr_auto_1fr] items-center h-16 lg:h-20">
+      {/* ── DESKTOP HEADER ── */}
+      <div className="hidden lg:block">
+        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-20">
           {/* LEFT NAV */}
-          <nav className="hidden lg:flex items-center gap-1">
+          <nav className="flex items-center gap-1">
             {leftNav.map((item) =>
               item.children ? (
                 <div
                   key={item.label}
-                  className="relative group"
+                  className="relative"
                   onMouseEnter={() => setOpenDropdown(item.label)}
                   onMouseLeave={() => setOpenDropdown(null)}
                 >
@@ -117,36 +118,25 @@ export function Header() {
             )}
           </nav>
 
-          {/* CENTER LOGO — hidden on mobile to avoid duplicate with mobile section */}
-          <Link
-            href="/"
-            className="hidden lg:flex items-center justify-center gap-2"
-          >
+          {/* CENTER LOGO */}
+          <Link href="/" className="flex-shrink-0 mx-4">
             <Image
               src="/logo-01.png"
               alt={siteConfig.brand.name}
-              width={40}
-              height={40}
-              className="w-9 h-9"
-              priority
-            />
-            <Image
-              src={siteConfig.brand.logoUrl}
-              alt={siteConfig.brand.name}
-              width={120}
+              width={48}
               height={48}
-              className="w-[120px] h-auto"
+              className="h-12 w-auto"
               priority
             />
           </Link>
 
           {/* RIGHT NAV + WHATSAPP */}
-          <div className="hidden lg:flex items-center justify-end gap-1">
+          <div className="flex items-center gap-1">
             {rightNav.map((item) =>
               item.children ? (
                 <div
                   key={item.label}
-                  className="relative group"
+                  className="relative"
                   onMouseEnter={() => setOpenDropdown(item.label)}
                   onMouseLeave={() => setOpenDropdown(null)}
                 >
@@ -190,7 +180,7 @@ export function Header() {
             <Button
               asChild
               size="sm"
-              className="ml-2 bg-brand-teal hover:bg-brand-teal-dark text-white btn-primary-hover rounded-lg"
+              className="ml-2 bg-brand-teal hover:bg-brand-teal-dark text-white btn-primary-hover rounded-lg whitespace-nowrap"
             >
               <a href={siteConfig.brand.whatsappUrl} target="_blank" rel="noopener noreferrer">
                 <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="currentColor">
@@ -200,85 +190,93 @@ export function Header() {
               </a>
             </Button>
           </div>
+        </div>
+      </div>
 
-          {/* MOBILE TOGGLE (centered on mobile) */}
-          <div className="lg:hidden flex items-center justify-between w-full">
-            <Link href="/" onClick={() => setMobileOpen(false)}>
-              <Image
-                src={siteConfig.brand.logoUrl}
-                alt={siteConfig.brand.name}
-                width={100}
-                height={40}
-                className="w-[80px] h-auto"
-                priority
-              />
-            </Link>
-            <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-              <SheetTrigger asChild>
-                <button
-                  className={`p-2 rounded-lg ${
-                    scrolled ? "text-gray-700" : "text-white"
-                  }`}
-                >
-                  <Menu className="w-6 h-6" />
-                </button>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-80 p-0">
-                <div className="flex flex-col h-full">
-                  <div className="flex items-center justify-between p-4 border-b">
-                    <Link href="/" className="flex items-center gap-2" onClick={() => setMobileOpen(false)}>
-                      <Image
-                        src={siteConfig.brand.logoUrl}
-                        alt={siteConfig.brand.name}
-                        width={100}
-                        height={40}
-                        className="h-8 w-auto"
-                      />
-                    </Link>
-                  </div>
-                  <nav className="flex-1 overflow-y-auto py-4">
-                    {siteConfig.navigation.map((item) => (
-                      <div key={item.label}>
-                        {item.children ? (
-                          <MobileDropdown
-                            item={item}
-                            openDropdown={openDropdown}
-                            setOpenDropdown={setOpenDropdown}
-                          />
-                        ) : (
-                          <Link
-                            href={item.href}
-                            onClick={() => setMobileOpen(false)}
-                            className={`block px-4 py-3 text-sm font-medium transition-colors ${
-                              isActive(item.href)
-                                ? "text-brand-teal bg-teal-50"
-                                : "text-gray-700 hover:text-brand-teal hover:bg-gray-50"
-                            }`}
-                          >
-                            {item.label}
-                          </Link>
-                        )}
-                      </div>
-                    ))}
-                  </nav>
-                  <div className="p-4 border-t space-y-2">
-                    <Button
-                      asChild
-                      className="w-full bg-brand-teal hover:bg-brand-teal-dark text-white rounded-lg"
-                    >
-                      <a
-                        href={siteConfig.brand.whatsappUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        WhatsApp Us
-                      </a>
-                    </Button>
-                  </div>
+      {/* ── MOBILE HEADER ── */}
+      <div className="lg:hidden">
+        <div className="flex items-center justify-between h-14 px-4">
+          {/* LEFT spacer to keep logo centered */}
+          <div className="w-10" />
+
+          {/* CENTER LOGO */}
+          <Link href="/" className="flex-shrink-0">
+            <Image
+              src="/logo-01.png"
+              alt={siteConfig.brand.name}
+              width={40}
+              height={40}
+              className="h-9 w-auto"
+              priority
+            />
+          </Link>
+
+          {/* RIGHT: Hamburger */}
+          <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+            <SheetTrigger asChild>
+              <button
+                className={`p-2 rounded-lg w-10 h-10 flex items-center justify-center ${
+                  scrolled ? "text-gray-700" : "text-white"
+                }`}
+              >
+                <Menu className="w-6 h-6" />
+              </button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-80 p-0">
+              <div className="flex flex-col h-full">
+                <div className="flex items-center justify-between p-4 border-b">
+                  <Link href="/" className="flex items-center gap-2" onClick={() => setMobileOpen(false)}>
+                    <Image
+                      src="/logo-01.png"
+                      alt={siteConfig.brand.name}
+                      width={36}
+                      height={36}
+                      className="h-8 w-auto"
+                    />
+                  </Link>
                 </div>
-              </SheetContent>
-            </Sheet>
-          </div>
+                <nav className="flex-1 overflow-y-auto py-4">
+                  {siteConfig.navigation.map((item) => (
+                    <div key={item.label}>
+                      {item.children ? (
+                        <MobileDropdown
+                          item={item}
+                          openDropdown={openDropdown}
+                          setOpenDropdown={setOpenDropdown}
+                        />
+                      ) : (
+                        <Link
+                          href={item.href}
+                          onClick={() => setMobileOpen(false)}
+                          className={`block px-4 py-3 text-sm font-medium transition-colors ${
+                            isActive(item.href)
+                              ? "text-brand-teal bg-teal-50"
+                              : "text-gray-700 hover:text-brand-teal hover:bg-gray-50"
+                          }`}
+                        >
+                          {item.label}
+                        </Link>
+                      )}
+                    </div>
+                  ))}
+                </nav>
+                <div className="p-4 border-t space-y-2">
+                  <Button
+                    asChild
+                    className="w-full bg-brand-teal hover:bg-brand-teal-dark text-white rounded-lg"
+                  >
+                    <a
+                      href={siteConfig.brand.whatsappUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      WhatsApp Us
+                    </a>
+                  </Button>
+                </div>
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
     </header>
