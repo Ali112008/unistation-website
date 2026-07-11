@@ -100,7 +100,7 @@ export const siteConfig = {
     { name: "Romania", image: "https://cdn.prod.website-files.com/68fd63e9503df62b019b5c75/6918187b7f0a63c03c73aa77_Romania.webp" },
     { name: "Malaysia", image: "https://cdn.prod.website-files.com/68fd63e9503df62b019b5c75/6918187714c6481629e7a951_Malaysia.jpg" },
     { name: "China", image: "https://cdn.prod.website-files.com/68fd63e9503df62b019b5c75/69181a8389a71e853f5e12e2_China.jpg" },
-    { name: "Spain", image: "https://cdn.prod.website-files.com/68fd63e9503df62b019b5c75/69181a82d7f65d78ba3a31e5_Spain.avif" },
+    { name: "Spain", image: "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=800&h=600&fit=crop" },
   ],
   comparisonTable: {
     headers: ["Metric", "USA", "Canada", "UK", "Germany"],
@@ -161,7 +161,7 @@ export const siteConfig = {
       slug: "german",
       name: "German",
       flag: "🇩🇪",
-      image: "https://images.unsplash.com/photo-1551365338-e9e87989b89c?w=800&h=600&fit=crop",
+      image: "https://images.unsplash.com/photo-1555848962-6e79363ec58f?w=800&h=600&fit=crop",
       shortDescription: "Academic German for university admission in Germany",
       description: "Our German for Academic Purposes course is designed to help students meet the language requirements for university admission and achieve academic success in Germany.",
       priceRange: "AED 1,799 – 2,799",

@@ -55,8 +55,11 @@ export default function LanguageCoursesPage() {
                     className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                   />
 
-                  {/* Dark overlay on hover */}
-                  <div className="absolute inset-0 bg-brand-navy/0 transition-colors duration-500 group-hover:bg-brand-navy/55" />
+                  {/* Base gradient overlay — always visible for readability */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/70 via-brand-navy/20 to-transparent" />
+
+                  {/* Extra dark overlay on hover */}
+                  <div className="absolute inset-0 bg-brand-navy/0 transition-colors duration-500 group-hover:bg-brand-navy/30" />
 
                   {/* Flag badge — top-left */}
                   <span className="absolute top-4 left-4 text-2xl drop-shadow-lg z-10">

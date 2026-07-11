@@ -12,7 +12,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { siteConfig } from "@/data/site-data";
-import { ScrollAnimator, SectionHeading, CTASection } from "@/components/shared";
+import { ScrollAnimator, SectionHeading } from "@/components/shared";
 import {
   Globe2,
   Users,
@@ -456,7 +456,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      <CTASection />
     </>
   );
 }
