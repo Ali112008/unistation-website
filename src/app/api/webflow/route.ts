@@ -199,6 +199,15 @@ export async function PATCH(request: Request) {
   // Publish the changes
   try {
     const siteId = "68fd63e9503df62b019b5c75";
+    const targetIds = items
+      .filter((i) => {
+        const fd = i.fieldData as Record<string, unknown>;
+        const name = (fd["name"] as string) || "";
+        return action === "fix-bassel" ? name.includes("Bassel") : !!teamData[name];
+      })
+      .map((i) => i.id);
+
+    // Try v2 collection-level publish with ids field
     const pubRes = await fetch(
       `https://api.webflow.com/v2/sites/${siteId}/collections/${TEAM_COLLECTION}/items/publish`,
       {
@@ -208,15 +217,7 @@ export async function PATCH(request: Request) {
           "Content-Type": "application/json",
           accept: "application/json",
         },
-        body: JSON.stringify({
-          itemIds: items
-            .filter((i) => {
-              const fd = i.fieldData as Record<string, unknown>;
-              const name = (fd["name"] as string) || "";
-              return action === "fix-bassel" ? name.includes("Bassel") : !!teamData[name];
-            })
-            .map((i) => i.id),
-        }),
+        body: JSON.stringify({ ids: targetIds }),
       }
     );
     const pubData = await pubRes.json();
