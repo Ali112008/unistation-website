@@ -29,10 +29,25 @@ export default function TeamMemberPage() {
   const [team, setTeam] = useState<TeamMember[]>([]);
 
   useEffect(() => {
+    // Try sessionStorage cache first for instant render (no flash)
+    const cached = sessionStorage.getItem('unistation_team_data');
+    if (cached) {
+      try {
+        const raw = JSON.parse(cached);
+        setTeam(raw);
+        const found = raw.find(
+          (m: TeamMember) => m.slug === slug || m.name.toLowerCase().replace(/\s+/g, "-") === slug
+        );
+        if (found) setMember(found);
+      } catch {}
+    }
+
+    // Always fetch fresh data in background to keep cache warm
     fetch("/api/webflow?type=team")
       .then((r) => r.json())
       .then((d) => {
         const raw = d.team || [];
+        sessionStorage.setItem('unistation_team_data', JSON.stringify(raw));
         setTeam(raw);
         const found = raw.find(
           (m: TeamMember) => m.slug === slug || m.name.toLowerCase().replace(/\s+/g, "-") === slug

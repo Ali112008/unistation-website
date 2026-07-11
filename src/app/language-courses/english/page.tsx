@@ -179,10 +179,10 @@ export default function EnglishCoursePage() {
     <>
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 bg-brand-navy overflow-hidden">
-        <div className="absolute inset-0 opacity-20">
+        <div className="absolute inset-0 opacity-25">
           <Image
-            src="https://images.unsplash.com/photo-1543165796-5426273eaab3?w=1920&h=600&fit=crop"
-            alt="IELTS preparation"
+            src="https://images.unsplash.com/photo-1529655683826-aba9b3e77383?w=1920&h=600&fit=crop"
+            alt="London landmarks"
             fill
             className="object-cover"
           />

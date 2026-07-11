@@ -24,10 +24,27 @@ export default function TeamPage() {
   const [team, setTeam] = useState<TeamMember[]>([]);
 
   useEffect(() => {
+    // Check sessionStorage cache first for instant load
+    const cached = sessionStorage.getItem('unistation_team_data');
+    if (cached) {
+      try {
+        const raw = JSON.parse(cached);
+        const sorted = [...raw].sort((a, b) => {
+          const aIsDirector = a.role?.toLowerCase().includes("director") || a.role?.toLowerCase().includes("founder") ? 0 : 1;
+          const bIsDirector = b.role?.toLowerCase().includes("director") || b.role?.toLowerCase().includes("founder") ? 0 : 1;
+          return aIsDirector - bIsDirector;
+        });
+        setTeam(sorted);
+      } catch {}
+    }
+
+    // Always fetch fresh data in background
     fetch("/api/webflow?type=team")
       .then((r) => r.json())
       .then((d) => {
         const raw = d.team || [];
+        // Cache raw data for detail pages
+        sessionStorage.setItem('unistation_team_data', JSON.stringify(raw));
         // Sort: General Director / Founder first, then rest
         const sorted = [...raw].sort((a, b) => {
           const aIsDirector = a.role?.toLowerCase().includes("director") || a.role?.toLowerCase().includes("founder") ? 0 : 1;

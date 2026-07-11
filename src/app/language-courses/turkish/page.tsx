@@ -11,8 +11,8 @@ export default function TurkishCoursePage() {
   return (
     <>
       <section className="relative pt-32 pb-20 bg-brand-navy overflow-hidden">
-        <div className="absolute inset-0 opacity-20">
-          <Image src="https://images.unsplash.com/photo-1549918864-48ac978761a4?w=1920&h=600&fit=crop" alt="Turkish language" fill className="object-cover" />
+        <div className="absolute inset-0 opacity-25">
+          <Image src="https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?w=1920&h=600&fit=crop" alt="Istanbul skyline and Bosphorus" fill className="object-cover" />
         </div>
         <div className="absolute inset-0 bg-gradient-to-r from-brand-navy to-brand-navy/80" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 hero-animate">
