@@ -199,17 +199,26 @@ export async function PATCH(request: Request) {
   // Publish the changes
   try {
     const siteId = "68fd63e9503df62b019b5c75";
-    const pubRes = await fetch(`https://api.webflow.com/v2/sites/${siteId}/publish`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${WEBFLOW_API_TOKEN}`,
-        "Content-Type": "application/json",
-        accept: "application/json",
-      },
-      body: JSON.stringify({
-        itemIds: items.map((i) => i.id),
-      }),
-    });
+    const pubRes = await fetch(
+      `https://api.webflow.com/v2/sites/${siteId}/collections/${TEAM_COLLECTION}/items/publish`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${WEBFLOW_API_TOKEN}`,
+          "Content-Type": "application/json",
+          accept: "application/json",
+        },
+        body: JSON.stringify({
+          itemIds: items
+            .filter((i) => {
+              const fd = i.fieldData as Record<string, unknown>;
+              const name = (fd["name"] as string) || "";
+              return action === "fix-bassel" ? name.includes("Bassel") : !!teamData[name];
+            })
+            .map((i) => i.id),
+        }),
+      }
+    );
     const pubData = await pubRes.json();
     results.push({ name: "PUBLISH", success: pubRes.ok, raw: pubData } as never);
   } catch {
