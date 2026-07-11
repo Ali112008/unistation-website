@@ -73,11 +73,25 @@ export default function LibraryPage() {
   };
 
   const getYouTubeId = (url: string) => {
+    if (!url) return null;
+    // Match /shorts/ID, /watch?v=ID, /embed/ID, youtu.be/ID
     const match = url.match(
-      /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+      /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
     );
     return match ? match[1] : null;
   };
+
+  const getYouTubeThumbnail = (url: string) => {
+    const ytId = getYouTubeId(url);
+    if (!ytId) return "";
+    return `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
+  };
+
+  const isShort = (url: string) => url?.includes("/shorts/");
+
+  // Separate featured (long-form) from shorts
+  const featuredVideo = videos.find((v) => !isShort(v.youtubeUrl));
+  const shortVideos = videos.filter((v) => isShort(v.youtubeUrl));
 
   return (
     <>
@@ -212,61 +226,101 @@ export default function LibraryPage() {
                   No videos yet. Check back soon!
                 </p>
               ) : (
-                <div className="grid md:grid-cols-2 gap-6 mt-12">
-                  {videos.map((video, i) => {
-                    const ytId = getYouTubeId(video.youtubeUrl);
-                    return (
-                      <ScrollAnimator key={video.id} delay={i * 100}>
-                        <div className="group relative rounded-2xl overflow-hidden h-64 card-hover cursor-pointer bg-gray-900">
-                          {ytId ? (
-                            <iframe
-                              src={`https://www.youtube.com/embed/${ytId}`}
-                              title={video.title}
-                              className="absolute inset-0 w-full h-full"
-                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                              allowFullScreen
-                            />
-                          ) : (
-                            <>
-                              {video.thumbnail ? (
-                                <Image
-                                  src={video.thumbnail}
-                                  alt={video.title}
-                                  fill
-                                  className="object-cover"
-                                />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center">
-                                  <Video className="w-16 h-16 text-gray-600" />
-                                </div>
-                              )}
-                              <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                                <div className="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                                  <svg
-                                    className="w-6 h-6 text-brand-teal ml-1"
-                                    fill="currentColor"
-                                    viewBox="0 0 24 24"
-                                  >
+                <div className="mt-12 space-y-12">
+                  {/* Featured Long-Form Video */}
+                  {featuredVideo && (
+                    <ScrollAnimator>
+                      <a
+                        href={featuredVideo.youtubeUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group block relative rounded-2xl overflow-hidden aspect-video max-w-4xl mx-auto shadow-lg hover:shadow-2xl transition-shadow duration-300"
+                      >
+                        <Image
+                          src={getYouTubeThumbnail(featuredVideo.youtubeUrl)}
+                          alt={featuredVideo.title}
+                          fill
+                          className="object-cover transition-transform duration-700 group-hover:scale-105"
+                          unoptimized
+                        />
+                        <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors" />
+                        {/* Play Button */}
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="w-20 h-20 bg-white/95 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-xl">
+                            <svg className="w-8 h-8 text-brand-teal ml-1" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M8 5v14l11-7z" />
+                            </svg>
+                          </div>
+                        </div>
+                        {/* Info Bar */}
+                        <div className="absolute bottom-0 left-0 right-0 p-5 md:p-6 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
+                          {featuredVideo.category && (
+                            <span className="inline-block px-3 py-1 bg-brand-teal text-white text-xs font-bold rounded-full mb-2">
+                              {featuredVideo.category}
+                            </span>
+                          )}
+                          <h3 className="text-white font-bold text-lg md:text-xl line-clamp-2">
+                            {featuredVideo.title}
+                          </h3>
+                          <p className="text-gray-300 text-sm mt-1 line-clamp-2 max-w-2xl">
+                            {featuredVideo.description}
+                          </p>
+                        </div>
+                      </a>
+                    </ScrollAnimator>
+                  )}
+
+                  {/* Shorts Section */}
+                  {shortVideos.length > 0 && (
+                    <div>
+                      <h3 className="text-lg font-bold text-brand-navy mb-4 flex items-center gap-2">
+                        <svg className="w-5 h-5 text-brand-teal" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M10 15l5.19-3L10 9v6m11.56-7.83c.13.47.22 1.1.28 1.9.07.8.1 1.49.1 2.09L22 12c0 2.19-.16 3.8-.44 4.83-.25.9-.83 1.48-1.73 1.73-.47.13-1.33.22-2.65.28-1.3.07-2.49.1-3.59.1L12 19c-4.19 0-6.8-.16-7.83-.44-.9-.25-1.48-.83-1.73-1.73-.13-.47-.22-1.1-.28-1.9-.07-.8-.1-1.49-.1-2.09L2 12c0-2.19.16-3.8.44-4.83.25-.9.83-1.48 1.73-1.73.47-.13 1.33-.22 2.65-.28 1.3-.07 2.49-.1 3.59-.1L12 5c4.19 0 6.8.16 7.83.44.9.25 1.48.83 1.73 1.73z"/>
+                        </svg>
+                        Shorts
+                      </h3>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                        {shortVideos.map((video, i) => (
+                          <ScrollAnimator key={video.id} delay={i * 60}>
+                            <a
+                              href={video.youtubeUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="group block relative rounded-xl overflow-hidden aspect-[9/16] card-hover"
+                            >
+                              <Image
+                                src={getYouTubeThumbnail(video.youtubeUrl)}
+                                alt={video.title}
+                                fill
+                                className="object-cover transition-transform duration-500 group-hover:scale-105"
+                                unoptimized
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                              {/* Play icon */}
+                              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <div className="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center">
+                                  <svg className="w-5 h-5 text-brand-teal ml-0.5" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M8 5v14l11-7z" />
                                   </svg>
                                 </div>
                               </div>
-                            </>
-                          )}
-                          <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-                            <h3 className="text-white font-bold text-sm line-clamp-2">
-                              {video.title}
-                            </h3>
-                            {video.category && (
-                              <span className="text-brand-teal-light text-xs mt-1 block">
-                                {video.category}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </ScrollAnimator>
-                    );
-                  })}
+                              {/* Info */}
+                              <div className="absolute bottom-0 left-0 right-0 p-3">
+                                <h4 className="text-white font-semibold text-xs line-clamp-2">
+                                  {video.title}
+                                </h4>
+                                {video.category && (
+                                  <span className="text-brand-teal-light text-[10px] mt-0.5 block">
+                                    {video.category}
+                                  </span>
+                                )}
+                              </div>
+                            </a>
+                          </ScrollAnimator>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
