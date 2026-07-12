@@ -133,15 +133,6 @@ export default function HomePage() {
                 </svg>
                 Book a Free Video Call
               </a>
-              <a
-                href="https://wa.me/971522732589"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center px-8 py-3 bg-[#25D366] hover:bg-[#1ebe5d] text-white font-semibold rounded-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-[#25D366]/30 text-base"
-              >
-                <MessageSquare className="w-5 h-5 mr-2" />
-                WhatsApp Us
-              </a>
               <Button
                 asChild
                 variant="outline"
