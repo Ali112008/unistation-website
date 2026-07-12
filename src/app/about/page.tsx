@@ -1,15 +1,91 @@
-import type { Metadata } from "next";
+"use client";
+
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/data/site-data";
 import { ScrollAnimator, SectionHeading, CTASection } from "@/components/shared";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ChevronRight } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: "About Us",
-  description: "Learn about UniStation's mission to help students achieve their dream of studying abroad. Meet our team of expert education consultants.",
-};
+interface TeamMember {
+  name: string;
+  role: string;
+  image: string;
+  bio: string;
+  slug: string;
+}
+
+function TeamGrid() {
+  const [team, setTeam] = useState<TeamMember[]>([]);
+
+  useEffect(() => {
+    // Try sessionStorage cache first
+    const cached = sessionStorage.getItem("unistation_team_data");
+    if (cached) {
+      try { setTeam(JSON.parse(cached)); } catch {}
+    }
+
+    fetch("/api/webflow?type=team")
+      .then((r) => r.json())
+      .then((d) => {
+        const raw = d.team || [];
+        sessionStorage.setItem("unistation_team_data", JSON.stringify(raw));
+        setTeam(raw);
+      })
+      .catch(() => {});
+  }, []);
+
+  const display = team.length > 0
+    ? team.map((m) => ({
+        ...m,
+        shortBio: m.bio?.replace(/<[^>]*>/g, "").slice(0, 150) || "",
+      }))
+    : siteConfig.team.map((m) => ({
+        ...m,
+        shortBio: m.fullBio?.replace(/<[^>]*>/g, "").slice(0, 150) || m.shortBio || "",
+      }));
+
+  return (
+    <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {display.map((member, i) => (
+        <ScrollAnimator key={member.name} delay={i * 80}>
+          <Link
+            href={`/team/${member.slug || member.name.toLowerCase().replace(/\s+/g, "-")}`}
+            className="block group"
+          >
+            <div className="bg-gray-50 rounded-2xl overflow-hidden card-hover border border-gray-100">
+              <div className="relative h-72 overflow-hidden">
+                <Image
+                  src={member.image}
+                  alt={member.name}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  unoptimized={member.image.startsWith("http")}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                <div className="absolute bottom-4 left-4 right-4">
+                  <p className="text-white font-semibold text-lg">{member.name}</p>
+                  <p className="text-brand-teal-light text-sm font-medium">{member.role}</p>
+                </div>
+                <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <ChevronRight className="w-4 h-4 text-brand-navy" />
+                </div>
+              </div>
+              <div className="p-5">
+                <p className="text-gray-600 text-sm leading-relaxed line-clamp-3">
+                  {member.shortBio}
+                </p>
+                <span className="inline-flex items-center text-brand-teal text-sm font-medium mt-3 group-hover:gap-2 transition-all">
+                  View Profile <ChevronRight className="w-4 h-4" />
+                </span>
+              </div>
+            </div>
+          </Link>
+        </ScrollAnimator>
+      ))}
+    </div>
+  );
+}
 
 export default function AboutPage() {
   return (
@@ -48,20 +124,18 @@ export default function AboutPage() {
                 ))}
               </div>
               <div className="mt-8">
-                <Button
-                  asChild
-                  className="bg-brand-teal hover:bg-brand-teal-dark text-white btn-primary-hover rounded-lg"
+                <Link
+                  href="/contact"
+                  className="inline-flex items-center gap-2 px-7 py-3 bg-brand-teal hover:bg-brand-teal-dark text-white font-semibold rounded-lg btn-primary-hover transition-colors"
                 >
-                  <Link href="/contact">
-                    Start Your Journey <ArrowRight className="w-4 h-4 ml-2" />
-                  </Link>
-                </Button>
+                  Start Your Journey <ArrowRight className="w-4 h-4" />
+                </Link>
               </div>
             </ScrollAnimator>
             <ScrollAnimator delay={200}>
               <div className="relative rounded-2xl overflow-hidden h-[500px]">
                 <Image
-            src="https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=600&h=500&fit=crop"
+                  src="https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=600&h=500&fit=crop"
                   alt="Students celebrating graduation"
                   fill
                   className="object-cover"
@@ -114,42 +188,18 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Team Section */}
+      {/* Team Section - ALL members from CMS */}
       <section className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollAnimator>
-            <SectionHeading subtitle="Our People" title="The Team" />
+            <SectionHeading subtitle="Our People" title="Meet the Team" />
             <p className="text-gray-500 mt-4 max-w-2xl mx-auto">
-              Founder of UniStation | Study Abroad & Education Advisor
+              Our dedicated team of education professionals is here to guide you
+              through every step of your academic journey abroad.
             </p>
           </ScrollAnimator>
-
-          {/* Featured: Basel Fayad */}
           <div className="mt-12">
-            <ScrollAnimator>
-              <div className="bg-gray-50 rounded-2xl p-8 md:p-12 grid md:grid-cols-3 gap-8 items-start">
-                <div className="relative rounded-xl overflow-hidden h-80 md:h-96">
-                  <Image
-                    src={siteConfig.team[0].image}
-                    alt={siteConfig.team[0].name}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <h3 className="text-2xl font-bold text-brand-navy">
-                    {siteConfig.team[0].name}
-                  </h3>
-                  <p className="text-brand-teal font-medium mt-1">
-                    {siteConfig.team[0].role}
-                  </p>
-                  <div className="brand-line mt-3 mb-6" />
-                  <p className="text-gray-600 leading-relaxed">
-                    {siteConfig.team[0].fullBio}
-                  </p>
-                </div>
-              </div>
-            </ScrollAnimator>
+            <TeamGrid />
           </div>
         </div>
       </section>

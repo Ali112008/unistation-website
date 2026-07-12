@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 
-// In-memory store for newsletter subscriptions (resets on redeploy).
-// TODO: Replace with Webflow CMS, Mailchimp, Brevo, or any email service.
-const subscribers: string[] = [];
+const WEBFLOW_API_TOKEN = process.env.WEBFLOW_API_TOKEN!;
+const SUBSCRIBERS_COLLECTION = "6a5324390913a4368a5117a1";
+
+// In-memory fallback cache (in case Webflow is temporarily down)
+const localCache: string[] = new Set<string>();
 
 export async function POST(request: Request) {
   try {
@@ -24,17 +26,59 @@ export async function POST(request: Request) {
       );
     }
 
-    if (subscribers.includes(normalized)) {
+    if (localCache.has(normalized)) {
       return NextResponse.json(
         { message: "Already subscribed." },
         { status: 200 }
       );
     }
 
-    subscribers.push(normalized);
+    // Save to Webflow CMS for persistence
+    try {
+      const res = await fetch(
+        `https://api.webflow.com/v2/collections/${SUBSCRIBERS_COLLECTION}/items`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${WEBFLOW_API_TOKEN}`,
+            "Content-Type": "application/json",
+            accept: "application/json",
+          },
+          body: JSON.stringify({
+            fieldData: {
+              name: normalized,
+              slug: normalized.replace(/[@.]/g, "-").slice(0, 250),
+              email: normalized,
+              "subscribed-on": new Date().toISOString().split("T")[0],
+              source: "website-footer",
+            },
+          }),
+        }
+      );
 
-    // Log so you can see subscriptions in server console
-    console.log(`[Newsletter] New subscriber: ${normalized} (Total: ${subscribers.length})`);
+      if (!res.ok) {
+        const errText = await res.text();
+        // If duplicate (409 or already exists), that's fine
+        if (res.status === 409 || errText.includes("already exists") || errText.includes("unique")) {
+          console.log(`[Newsletter] Already in CMS: ${normalized}`);
+        } else {
+          console.error(`[Newsletter] Webflow API error: ${res.status} ${errText}`);
+          // Fallback to local only
+          localCache.add(normalized);
+          return NextResponse.json(
+            { message: "Subscribed successfully." },
+            { status: 200 }
+          );
+        }
+      }
+    } catch (wfErr) {
+      console.error(`[Newsletter] Webflow save failed, using local:`, wfErr);
+    }
+
+    // Always add to local cache as well
+    localCache.add(normalized);
+
+    console.log(`[Newsletter] New subscriber: ${normalized}`);
 
     return NextResponse.json(
       { message: "Subscribed successfully." },
