@@ -24,6 +24,7 @@ async function addTagsField(collectionId: string, collectionName: string) {
         accept: "application/json",
       },
       body: JSON.stringify({
+        displayName: "Tags",
         name: "tags",
         slug: "tags",
         type: "PlainText",
