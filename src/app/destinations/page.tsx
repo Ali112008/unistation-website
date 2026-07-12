@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/table";
 import { siteConfig } from "@/data/site-data";
 import { ScrollAnimator, CTASection } from "@/components/shared";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Study Destinations",
@@ -38,21 +38,32 @@ export default function DestinationsPage() {
           <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
             {siteConfig.topDestinations.map((dest, i) => (
               <ScrollAnimator key={dest.name} delay={i * 80}>
-                <div className="relative group overflow-hidden rounded-2xl h-[280px] sm:h-[320px] lg:h-[350px] cursor-pointer">
-                  <Image
-                    src={dest.image}
-                    alt={dest.name}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-110"
-                    sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 16vw"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/80 via-brand-navy/20 to-transparent" />
-                  <div className="absolute bottom-5 left-5 right-5">
-                    <h3 className="text-white text-xl sm:text-2xl font-bold">
-                      {dest.name}
-                    </h3>
+                <Link href={dest.link} className="block group">
+                  <div className="relative overflow-hidden rounded-2xl h-[280px] sm:h-[320px] lg:h-[350px]">
+                    <Image
+                      src={dest.image}
+                      alt={dest.name}
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-110"
+                      sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 16vw"
+                    />
+                    {/* Dark overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/80 via-brand-navy/20 to-transparent transition-opacity duration-500 group-hover:from-brand-navy/90" />
+
+                    {/* Hover border glow */}
+                    <div className="absolute inset-0 rounded-2xl border-2 border-transparent transition-all duration-500 group-hover:border-brand-teal/60 group-hover:shadow-[0_0_20px_rgba(45,212,191,0.3)]" />
+
+                    {/* Content */}
+                    <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between">
+                      <h3 className="text-white text-xl sm:text-2xl font-bold transition-transform duration-300 group-hover:-translate-y-1">
+                        {dest.name}
+                      </h3>
+                      <div className="w-9 h-9 rounded-full bg-brand-teal/0 flex items-center justify-center transition-all duration-500 group-hover:bg-brand-teal group-hover:shadow-lg group-hover:shadow-brand-teal/30">
+                        <ArrowUpRight className="w-4 h-4 text-white opacity-0 -translate-x-1 translate-y-1 transition-all duration-500 group-hover:opacity-100 group-hover:translate-x-0 group-hover:translate-y-0" />
+                      </div>
+                    </div>
                   </div>
-                </div>
+                </Link>
               </ScrollAnimator>
             ))}
           </div>
@@ -98,21 +109,32 @@ export default function DestinationsPage() {
               <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
                 {siteConfig.budgetDestinations.map((dest, i) => (
                   <ScrollAnimator key={dest.name} delay={i * 50}>
-                    <div className="relative group overflow-hidden rounded-2xl break-inside-avoid h-[180px] sm:h-[200px] cursor-pointer">
-                      <Image
-                        src={dest.image}
-                        alt={dest.name}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-110"
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/80 via-brand-navy/20 to-transparent" />
-                      <div className="absolute bottom-4 left-4 right-4">
-                        <h3 className="text-white text-lg font-bold">
-                          {dest.name}
-                        </h3>
+                    <Link href={dest.link} className="block group">
+                      <div className="relative overflow-hidden rounded-2xl break-inside-avoid h-[180px] sm:h-[200px]">
+                        <Image
+                          src={dest.image}
+                          alt={dest.name}
+                          fill
+                          className="object-cover transition-transform duration-700 group-hover:scale-110"
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        />
+                        {/* Dark overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/80 via-brand-navy/20 to-transparent transition-opacity duration-500 group-hover:from-brand-navy/90" />
+
+                        {/* Hover border glow */}
+                        <div className="absolute inset-0 rounded-2xl border-2 border-transparent transition-all duration-500 group-hover:border-brand-teal/60 group-hover:shadow-[0_0_20px_rgba(45,212,191,0.3)]" />
+
+                        {/* Content */}
+                        <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between">
+                          <h3 className="text-white text-lg font-bold transition-transform duration-300 group-hover:-translate-y-1">
+                            {dest.name}
+                          </h3>
+                          <div className="w-7 h-7 rounded-full bg-brand-teal/0 flex items-center justify-center transition-all duration-500 group-hover:bg-brand-teal group-hover:shadow-lg group-hover:shadow-brand-teal/30">
+                            <ArrowUpRight className="w-3.5 h-3.5 text-white opacity-0 -translate-x-1 translate-y-1 transition-all duration-500 group-hover:opacity-100 group-hover:translate-x-0 group-hover:translate-y-0" />
+                          </div>
+                        </div>
                       </div>
-                    </div>
+                    </Link>
                   </ScrollAnimator>
                 ))}
               </div>
