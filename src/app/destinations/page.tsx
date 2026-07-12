@@ -39,9 +39,10 @@ export default function DestinationsPage() {
             {siteConfig.topDestinations.map((dest, i) => {
               const isExternal = dest.link.startsWith("http");
               const Wrapper = isExternal ? "a" : Link;
+              const destSlug = dest.name.toLowerCase().replace(/\s+/g, "-");
               const linkProps = isExternal
                 ? { href: dest.link, target: "_blank" as const, rel: "noopener noreferrer" }
-                : { href: dest.link };
+                : { href: `/destinations/${destSlug}` };
               return (
               <ScrollAnimator key={dest.name} delay={i * 80}>
                 <Wrapper {...linkProps} className="block group">
@@ -57,7 +58,7 @@ export default function DestinationsPage() {
                     <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/80 via-brand-navy/20 to-transparent transition-opacity duration-500 group-hover:from-brand-navy/90" />
 
                     {/* Hover border glow */}
-                    <div className="absolute inset-0 rounded-2xl border-2 border-transparent transition-all duration-500 group-hover:border-brand-teal/60 group-hover:shadow-[0_0_20px_rgba(240,180,20,0.3)]" />
+                    <div className="absolute inset-0 rounded-2xl border-2 border-transparent transition-all duration-500 group-hover:border-brand-teal/60 group-hover:shadow-[0_0_20px_rgba(201,168,76,0.3)]" />
 
                     {/* Content */}
                     <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between">
@@ -117,9 +118,10 @@ export default function DestinationsPage() {
                 {siteConfig.budgetDestinations.map((dest, i) => {
                   const isExternal = dest.link.startsWith("http");
                   const Wrapper = isExternal ? "a" : Link;
+                  const destSlug = dest.name.toLowerCase().replace(/\s+/g, "-");
                   const linkProps = isExternal
                     ? { href: dest.link, target: "_blank" as const, rel: "noopener noreferrer" }
-                    : { href: dest.link };
+                    : { href: `/destinations/${destSlug}` };
                   return (
                   <ScrollAnimator key={dest.name} delay={i * 50}>
                     <Wrapper {...linkProps} className="block group">
@@ -135,7 +137,7 @@ export default function DestinationsPage() {
                         <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/80 via-brand-navy/20 to-transparent transition-opacity duration-500 group-hover:from-brand-navy/90" />
 
                         {/* Hover border glow */}
-                        <div className="absolute inset-0 rounded-2xl border-2 border-transparent transition-all duration-500 group-hover:border-brand-teal/60 group-hover:shadow-[0_0_20px_rgba(240,180,20,0.3)]" />
+                        <div className="absolute inset-0 rounded-2xl border-2 border-transparent transition-all duration-500 group-hover:border-brand-teal/60 group-hover:shadow-[0_0_20px_rgba(201,168,76,0.3)]" />
 
                         {/* Content */}
                         <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between">
