@@ -84,7 +84,7 @@ export function Footer() {
               </a>
               <div className="flex items-start gap-3 text-gray-400 text-sm">
                 <MapPin className="w-4 h-4 text-brand-teal shrink-0 mt-0.5" />
-                <span>Dubai, UAE — Head Office</span>
+                <span>Digital Park, A1, Dubai Silicon Oasis, Dubai</span>
               </div>
             </div>
 

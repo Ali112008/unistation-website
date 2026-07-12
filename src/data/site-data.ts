@@ -55,26 +55,9 @@ export const siteConfig = {
     {
       city: "Dubai",
       country: "United Arab Emirates",
+      address: "Digital Park, A1, Dubai Silicon Oasis, Dubai",
       description: "Our regional hub for international and educational services",
       image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=600&h=400&fit=crop",
-    },
-    {
-      city: "Istanbul",
-      country: "Turkey",
-      description: "A bridge connecting students to top European and Asian universities",
-      image: "https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=600&h=400&fit=crop",
-    },
-    {
-      city: "Muscat",
-      country: "Sultanate of Oman",
-      description: "Our origin — guiding Gulf students to top global universities",
-      image: "https://images.unsplash.com/photo-1580674684081-7617fbf3d745?w=600&h=400&fit=crop",
-    },
-    {
-      city: "Idlib",
-      country: "Syria",
-      description: "Personalized guidance for ambitious students",
-      image: "https://images.unsplash.com/photo-1531973576160-7125cd663d86?w=600&h=400&fit=crop",
     },
   ],
   topDestinations: [

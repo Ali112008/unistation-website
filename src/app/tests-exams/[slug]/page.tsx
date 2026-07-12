@@ -66,7 +66,7 @@ export default async function ExamDetailPage({ params }: { params: Promise<{ slu
               <h3 className="text-xl font-bold text-brand-navy mb-2">Need Help Preparing?</h3>
               <p className="text-gray-500 mb-6">Our advisors can help you find the right preparation resources and create a study plan.</p>
               <a
-                href="https://calendly.com/unistation"
+                href="https://calendly.com/unistation-info/30min"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center px-8 py-3.5 bg-brand-teal hover:bg-brand-teal-dark text-white font-semibold rounded-lg btn-primary-hover transition-colors"

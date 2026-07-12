@@ -41,14 +41,14 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --color-brand-teal: #C9A84C;
-  --color-brand-teal-light: #DBBF6E;
-  --color-brand-teal-dark: #A68A3A;
+  --color-brand-teal: #f0b414;
+  --color-brand-teal-light: #f5c94a;
+  --color-brand-teal-dark: #c89310;
   --color-brand-amber: #C4363A;
   --color-brand-amber-light: #E04E52;
-  --color-brand-navy: #1C0F13;
-  --color-brand-navy-light: #2E1A22;
-  --color-brand-slate: #3A1E28;
+  --color-brand-navy: #1a0d28;
+  --color-brand-navy-light: #28143c;
+  --color-brand-slate: #3d1f5e;
 }
 
 :root {
@@ -59,10 +59,10 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.72 0.12 85);
+  --primary: oklch(0.78 0.16 80);
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0.008 85);
-  --secondary-foreground: oklch(0.35 0.08 85);
+  --secondary: oklch(0.95 0.04 80);
+  --secondary-foreground: oklch(0.45 0.1 80);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
   --accent: oklch(0.97 0 0);
@@ -70,8 +70,8 @@
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
-  --ring: oklch(0.72 0.12 85);
-  --chart-1: oklch(0.72 0.12 85);
+  --ring: oklch(0.78 0.16 80);
+  --chart-1: oklch(0.78 0.16 80);
   --chart-2: oklch(0.55 0.2 25);
   --chart-3: oklch(0.5 0.12 150);
   --chart-4: oklch(0.78 0.1 85);
@@ -101,7 +101,7 @@ html {
 
 /* Gold gradient text */
 .text-teal-gradient {
-  background: linear-gradient(135deg, #A68A3A, #C9A84C, #DBBF6E, #C9A84C);
+  background: linear-gradient(135deg, #c89310, #f0b414, #f5c94a, #f0b414);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -111,7 +111,7 @@ html {
 .brand-line {
   width: 60px;
   height: 3px;
-  background: linear-gradient(90deg, #A68A3A, #C9A84C);
+  background: linear-gradient(90deg, #c89310, #f0b414);
   border-radius: 2px;
 }
 
@@ -119,11 +119,11 @@ html {
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: #F9F6F0; }
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #C9A84C, #A68A3A);
+  background: linear-gradient(180deg, #f0b414, #c89310);
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #DBBF6E, #C9A84C);
+  background: linear-gradient(180deg, #f5c94a, #f0b414);
 }
 
 /* Navbar entrance */
@@ -155,7 +155,7 @@ html {
 }
 .btn-primary-hover:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 30px -8px rgba(201, 168, 76, 0.4);
+  box-shadow: 0 12px 30px -8px rgba(240, 180, 20, 0.4);
 }
 .btn-primary-hover:active {
   transform: translateY(0);
@@ -166,8 +166,8 @@ html {
 }
 .btn-outline-hover:hover {
   transform: translateY(-2px);
-  border-color: #C9A84C !important;
-  color: #C9A84C !important;
+  border-color: #f0b414 !important;
+  color: #f0b414 !important;
 }
 
 /* Card hover */
@@ -205,7 +205,7 @@ html {
   100% { background-position: -200% center; }
 }
 .text-teal-shimmer {
-  background: linear-gradient(110deg, #A68A3A 0%, #C9A84C 25%, #E8D48B 50%, #C9A84C 75%, #A68A3A 100%);
+  background: linear-gradient(110deg, #c89310 0%, #f0b414 25%, #f5c94a 50%, #f0b414 75%, #c89310 100%);
   background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -229,7 +229,7 @@ html {
   top: 0;
   left: 0;
   height: 3px;
-  background: linear-gradient(90deg, #A68A3A, #C9A84C, #DBBF6E);
+  background: linear-gradient(90deg, #c89310, #f0b414, #f5c94a);
   z-index: 9999;
   transition: width 0.1s linear;
   pointer-events: none;
@@ -247,8 +247,8 @@ html {
 
 /* Pulse glow for accent elements */
 @keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 20px rgba(201, 168, 76, 0.15); }
-  50% { box-shadow: 0 0 40px rgba(201, 168, 76, 0.3); }
+  0%, 100% { box-shadow: 0 0 20px rgba(240, 180, 20, 0.15); }
+  50% { box-shadow: 0 0 40px rgba(240, 180, 20, 0.3); }
 }
 .animate-pulse-glow {
   animation: pulseGlow 3s ease-in-out infinite;
@@ -269,9 +269,9 @@ html {
 .scrollbar-thin::-webkit-scrollbar { width: 4px; }
 .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: #C9A84C33;
+  background: #f0b41433;
   border-radius: 4px;
 }
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: #C9A84C66;
+  background: #f0b41466;
 }

@@ -25,6 +25,8 @@ import {
   ArrowRight,
   ChevronRight,
   MessageSquare,
+  Star,
+  Quote,
 } from "lucide-react";
 
 function CountUp({ target, suffix = "" }: { target: number; suffix?: string }) {
@@ -68,6 +70,14 @@ function CountUp({ target, suffix = "" }: { target: number; suffix?: string }) {
 
 export default function HomePage() {
   const [cmsTeam, setCmsTeam] = useState<{ name: string; role: string; image: string; bio: string; slug: string }[]>([]);
+  const [reviews, setReviews] = useState<{ name: string; text: string; rating: number; source: string }[]>([]);
+
+  useEffect(() => {
+    fetch("/api/webflow?type=reviews")
+      .then((r) => r.json())
+      .then((d) => setReviews(d.reviews || []))
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     fetch("/api/webflow?type=team")
@@ -123,7 +133,7 @@ export default function HomePage() {
             </p>
             <div className="hero-animate hero-delay-3 flex flex-col sm:flex-row gap-4">
               <a
-                href="https://calendly.com/unistation"
+                href="https://calendly.com/unistation-info/30min"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center px-8 py-3 bg-brand-teal hover:bg-brand-teal-light text-white font-semibold rounded-lg btn-primary-hover transition-colors text-base"
@@ -350,51 +360,54 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Contact Info Bar */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <ScrollAnimator>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-brand-teal/10 rounded-lg flex items-center justify-center shrink-0">
-                  <MapPin className="w-5 h-5 text-brand-teal" />
-                </div>
-                <div>
-                  <p className="font-semibold text-brand-navy text-sm">Dubai, UAE</p>
-                  <p className="text-gray-500 text-xs">Head Office</p>
-                </div>
-              </div>
-              <a href={`mailto:${siteConfig.brand.email}`} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                <div className="w-10 h-10 bg-brand-teal/10 rounded-lg flex items-center justify-center shrink-0">
-                  <Mail className="w-5 h-5 text-brand-teal" />
-                </div>
-                <div>
-                  <p className="font-semibold text-brand-navy text-sm">{siteConfig.brand.email}</p>
-                  <p className="text-gray-500 text-xs">Email Us</p>
-                </div>
-              </a>
-              <a href={`tel:+${siteConfig.brand.whatsapp}`} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                <div className="w-10 h-10 bg-brand-teal/10 rounded-lg flex items-center justify-center shrink-0">
-                  <Phone className="w-5 h-5 text-brand-teal" />
-                </div>
-                <div>
-                  <p className="font-semibold text-brand-navy text-sm">+{siteConfig.brand.whatsapp}</p>
-                  <p className="text-gray-500 text-xs">Call Us</p>
-                </div>
-              </a>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-brand-teal/10 rounded-lg flex items-center justify-center shrink-0">
-                  <Clock className="w-5 h-5 text-brand-teal" />
-                </div>
-                <div>
-                  <p className="font-semibold text-brand-navy text-sm">Mon - Sat</p>
-                  <p className="text-gray-500 text-xs">9:00 AM - 6:00 PM</p>
-                </div>
-              </div>
+      {/* Google Reviews */}
+      {reviews.length > 0 && (
+        <section className="py-24 bg-gray-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <ScrollAnimator>
+              <SectionHeading
+                subtitle="Google Reviews"
+                title="What Our Students Say"
+              />
+              <p className="text-gray-500 mt-4 max-w-2xl mx-auto">
+                Real feedback from students who trusted UniStation with their academic journey
+              </p>
+            </ScrollAnimator>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
+              {reviews.slice(0, 6).map((review, i) => (
+                <ScrollAnimator key={review.name} delay={i * 80}>
+                  <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 h-full flex flex-col card-hover">
+                    <div className="flex items-center gap-1 mb-4">
+                      {Array.from({ length: 5 }).map((_, j) => (
+                        <Star
+                          key={j}
+                          className={`w-4 h-4 ${
+                            j < review.rating
+                              ? "text-brand-teal fill-brand-teal"
+                              : "text-gray-200"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <p className="text-gray-600 text-sm leading-relaxed flex-grow">
+                      &ldquo;{review.text}&rdquo;
+                    </p>
+                    <div className="mt-5 pt-4 border-t border-gray-100 flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-full bg-brand-navy flex items-center justify-center text-white font-bold text-sm">
+                        {review.name.charAt(0)}
+                      </div>
+                      <div>
+                        <p className="font-semibold text-brand-navy text-sm">{review.name}</p>
+                        <p className="text-gray-400 text-xs">{review.source} Review</p>
+                      </div>
+                    </div>
+                  </div>
+                </ScrollAnimator>
+              ))}
             </div>
-          </ScrollAnimator>
-        </div>
-      </section>
+          </div>
+        </section>
+      )}
 
       {/* FAQs */}
       <section className="py-24 bg-white">
@@ -441,7 +454,7 @@ export default function HomePage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
-                href="https://calendly.com/unistation"
+                href="https://calendly.com/unistation-info/30min"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center px-8 py-4 bg-brand-teal hover:bg-brand-teal-light text-white font-semibold rounded-xl btn-primary-hover transition-colors text-lg shadow-lg hover:shadow-xl hover:shadow-brand-teal/20"

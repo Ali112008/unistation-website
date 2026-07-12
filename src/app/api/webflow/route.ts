@@ -4,6 +4,7 @@ const WEBFLOW_API_TOKEN = process.env.WEBFLOW_API_TOKEN!;
 const BLOG_COLLECTION = "6a51d3b689432b9105b65065";
 const VIDEO_COLLECTION = "6a51d3c85a1355ad6711662d";
 const TEAM_COLLECTION = "68fd63e9503df62b019b5c9e";
+const REVIEWS_COLLECTION = "6a537592631ebcfe230a0a7a";
 
 interface WebflowImage {
   fileId: string;
@@ -95,6 +96,33 @@ export async function GET(request: Request) {
       };
     });
     return NextResponse.json({ team });
+  }
+
+  if (type === "reviews") {
+    const items = await fetchWebflowItems(REVIEWS_COLLECTION);
+    const extractText = (val: unknown): string => {
+      if (!val) return "";
+      if (typeof val === "string") return val;
+      if (typeof val === "object" && val !== null && "children" in (val as object)) {
+        const rt = val as { children: Array<{ children: Array<{ text: string }> }>; type: string };
+        return rt.children?.map((block) => block.children?.map((c) => c.text).join("") || "").join("\n") || "";
+      }
+      return String(val);
+    };
+    const reviews = items.map((item) => {
+      const fd = item.fieldData as Record<string, unknown>;
+      const photo = fd["reviewer-photo"] as { url: string; alt: string | null } | undefined;
+      return {
+        id: item.id,
+        name: (fd["reviewer-name"] as string) || (fd["name"] as string) || "",
+        text: extractText(fd["review-text"]),
+        rating: Number(fd["rating"]) || 5,
+        source: (fd["source"] as string) || "Google",
+        photo: photo?.url || "",
+        createdOn: item.createdOn,
+      };
+    });
+    return NextResponse.json({ reviews });
   }
 
   if (type === "videos") {

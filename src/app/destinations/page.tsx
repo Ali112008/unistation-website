@@ -57,7 +57,7 @@ export default function DestinationsPage() {
                     <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/80 via-brand-navy/20 to-transparent transition-opacity duration-500 group-hover:from-brand-navy/90" />
 
                     {/* Hover border glow */}
-                    <div className="absolute inset-0 rounded-2xl border-2 border-transparent transition-all duration-500 group-hover:border-brand-teal/60 group-hover:shadow-[0_0_20px_rgba(45,212,191,0.3)]" />
+                    <div className="absolute inset-0 rounded-2xl border-2 border-transparent transition-all duration-500 group-hover:border-brand-teal/60 group-hover:shadow-[0_0_20px_rgba(240,180,20,0.3)]" />
 
                     {/* Content */}
                     <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between">
@@ -135,7 +135,7 @@ export default function DestinationsPage() {
                         <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/80 via-brand-navy/20 to-transparent transition-opacity duration-500 group-hover:from-brand-navy/90" />
 
                         {/* Hover border glow */}
-                        <div className="absolute inset-0 rounded-2xl border-2 border-transparent transition-all duration-500 group-hover:border-brand-teal/60 group-hover:shadow-[0_0_20px_rgba(45,212,191,0.3)]" />
+                        <div className="absolute inset-0 rounded-2xl border-2 border-transparent transition-all duration-500 group-hover:border-brand-teal/60 group-hover:shadow-[0_0_20px_rgba(240,180,20,0.3)]" />
 
                         {/* Content */}
                         <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between">

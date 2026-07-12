@@ -215,7 +215,7 @@ export default function EnglishCoursePage() {
           </div>
           <div className="mt-8">
             <a
-              href="https://calendly.com/unistation"
+              href="https://calendly.com/unistation-info/30min"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center px-8 py-3.5 bg-brand-teal hover:bg-brand-teal-light text-white font-semibold rounded-lg btn-primary-hover transition-colors"
@@ -437,7 +437,7 @@ export default function EnglishCoursePage() {
           <ScrollAnimator delay={300}>
             <div className="mt-12 text-center">
               <a
-                href="https://calendly.com/unistation"
+                href="https://calendly.com/unistation-info/30min"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center px-8 py-3.5 bg-brand-teal hover:bg-brand-teal-light text-white font-semibold rounded-lg btn-primary-hover transition-colors"
@@ -491,7 +491,7 @@ export default function EnglishCoursePage() {
               confidence
             </p>
             <a
-              href="https://calendly.com/unistation"
+              href="https://calendly.com/unistation-info/30min"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center px-8 py-3.5 bg-white hover:bg-gray-100 text-brand-teal font-semibold rounded-lg transition-colors"
