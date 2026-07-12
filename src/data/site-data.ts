@@ -95,7 +95,7 @@ export const siteConfig = {
     { name: "Turkey", image: "https://cdn.prod.website-files.com/68fd63e9503df62b019b5c75/68fd63e9503df62b019b5d16_360_F_87164057_AAF0KRfPw8ifqoBRjyxOAgzKcvKux0Hy.jpg", link: "/packages/europe" },
     { name: "Malta", image: "https://cdn.prod.website-files.com/68fd63e9503df62b019b5c75/69181877b59aea89eba7b859_Malta.avif", link: "/packages/europe" },
     { name: "Cyprus", image: "https://cdn.prod.website-files.com/68fd63e9503df62b019b5c75/69181877ddd880ccc5b995d0_Cyprus.jpg", link: "/packages/europe" },
-    { name: "Georgia", image: "https://cdn.prod.website-files.com/68fd63e9503df62b019b5c75/69181877ccd7c46fc1a0bd59_Georgia.jpg", link: "/packages/europe" },
+    { name: "Georgia", image: "https://cdn.prod.website-files.com/68fd63e9503df62b019b5c75/69181877ccd7c46fc1a0bd59_Georgia.jpg", link: "https://unistation.org/georgia" },
     { name: "Russia", image: "https://cdn.prod.website-files.com/68fd63e9503df62b019b5c75/6918187b8faa20306888ea54_Russia.jpg", link: "/packages/europe" },
     { name: "Romania", image: "https://cdn.prod.website-files.com/68fd63e9503df62b019b5c75/6918187b7f0a63c03c73aa77_Romania.webp", link: "/packages/europe" },
     { name: "Malaysia", image: "https://cdn.prod.website-files.com/68fd63e9503df62b019b5c75/6918187714c6481629e7a951_Malaysia.jpg", link: "/packages/asia" },

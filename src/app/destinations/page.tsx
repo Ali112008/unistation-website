@@ -36,9 +36,15 @@ export default function DestinationsPage() {
             </div>
           </ScrollAnimator>
           <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
-            {siteConfig.topDestinations.map((dest, i) => (
+            {siteConfig.topDestinations.map((dest, i) => {
+              const isExternal = dest.link.startsWith("http");
+              const Wrapper = isExternal ? "a" : Link;
+              const linkProps = isExternal
+                ? { href: dest.link, target: "_blank" as const, rel: "noopener noreferrer" }
+                : { href: dest.link };
+              return (
               <ScrollAnimator key={dest.name} delay={i * 80}>
-                <Link href={dest.link} className="block group">
+                <Wrapper {...linkProps} className="block group">
                   <div className="relative overflow-hidden rounded-2xl h-[280px] sm:h-[320px] lg:h-[350px]">
                     <Image
                       src={dest.image}
@@ -63,9 +69,10 @@ export default function DestinationsPage() {
                       </div>
                     </div>
                   </div>
-                </Link>
+                </Wrapper>
               </ScrollAnimator>
-            ))}
+            );
+            })}
           </div>
         </div>
       </section>
@@ -107,9 +114,15 @@ export default function DestinationsPage() {
             {/* Right: Masonry Grid of Destination Cards */}
             <div className="lg:col-span-3">
               <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
-                {siteConfig.budgetDestinations.map((dest, i) => (
+                {siteConfig.budgetDestinations.map((dest, i) => {
+                  const isExternal = dest.link.startsWith("http");
+                  const Wrapper = isExternal ? "a" : Link;
+                  const linkProps = isExternal
+                    ? { href: dest.link, target: "_blank" as const, rel: "noopener noreferrer" }
+                    : { href: dest.link };
+                  return (
                   <ScrollAnimator key={dest.name} delay={i * 50}>
-                    <Link href={dest.link} className="block group">
+                    <Wrapper {...linkProps} className="block group">
                       <div className="relative overflow-hidden rounded-2xl break-inside-avoid h-[180px] sm:h-[200px]">
                         <Image
                           src={dest.image}
@@ -134,9 +147,10 @@ export default function DestinationsPage() {
                           </div>
                         </div>
                       </div>
-                    </Link>
+                    </Wrapper>
                   </ScrollAnimator>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>
