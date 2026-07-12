@@ -264,3 +264,14 @@ html {
   opacity: 1;
   transform: translateY(0) scale(1);
 }
+
+/* Thin scrollbar for tier cards */
+.scrollbar-thin::-webkit-scrollbar { width: 4px; }
+.scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #C9A84C33;
+  border-radius: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #C9A84C66;
+}
