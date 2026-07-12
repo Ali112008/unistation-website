@@ -44,11 +44,9 @@
   --color-brand-teal: #C9A84C;
   --color-brand-teal-light: #D9C06A;
   --color-brand-teal-dark: #A68A3A;
-  --color-brand-amber: #C4363A;
-  --color-brand-amber-light: #E04E52;
-  --color-brand-navy: #351f46;
-  --color-brand-navy-light: #4E2D6E;
-  --color-brand-slate: #5C3D7E;
+  --color-brand-navy: #321932;
+  --color-brand-navy-light: #4A2850;
+  --color-brand-slate: #5A3560;
 }
 
 :root {

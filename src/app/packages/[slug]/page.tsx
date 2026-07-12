@@ -192,7 +192,7 @@ function TierCard({
           </div>
         )}
         {isBestValue && (
-          <div className="absolute top-0 right-0 bg-brand-amber text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl z-10">
+          <div className="absolute top-0 right-0 bg-brand-teal-dark text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl z-10">
             <span className="flex items-center gap-1">
               <Sparkles className="w-3 h-3" /> BEST VALUE
             </span>
@@ -200,7 +200,7 @@ function TierCard({
         )}
 
         {/* Header — sticky top */}
-        <div className={`flex-shrink-0 p-6 pb-4 ${isPopular ? "bg-brand-teal/5" : ""} ${isBestValue ? "bg-brand-amber/5" : ""}`}>
+        <div className={`flex-shrink-0 p-6 pb-4 ${isPopular ? "bg-brand-teal/5" : ""} ${isBestValue ? "bg-brand-teal-dark/5" : ""}`}>
           <h3 className="text-xl font-bold text-brand-navy">{tier.name}</h3>
           <p className="text-brand-teal font-medium text-sm mt-1">
             {tier.subtitle}
@@ -258,7 +258,7 @@ function TierCard({
               isPopular
                 ? "bg-brand-teal hover:bg-brand-teal-dark text-white shadow-lg shadow-brand-teal/25 hover:shadow-brand-teal/40"
                 : isBestValue
-                ? "bg-brand-amber hover:bg-brand-amber-light text-white shadow-lg shadow-brand-amber/20 hover:shadow-brand-amber/40"
+                ? "bg-brand-teal-dark hover:bg-brand-teal text-white shadow-lg shadow-brand-teal-dark/20 hover:shadow-brand-teal-dark/40"
                 : "bg-brand-navy hover:bg-brand-navy-light text-white"
             }`}
           >

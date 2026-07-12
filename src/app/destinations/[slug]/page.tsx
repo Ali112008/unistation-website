@@ -20,15 +20,6 @@ function getDestination(slug: string) {
   );
 }
 
-function getRelatedPackages(destName: string) {
-  return siteConfig.packages.filter(
-    (p) =>
-      p.name.toLowerCase() === destName.toLowerCase() ||
-      destName.toLowerCase().includes(p.name.toLowerCase()) ||
-      p.name.toLowerCase().includes(destName.toLowerCase())
-  );
-}
-
 export async function generateMetadata({
   params,
 }: {
@@ -59,8 +50,6 @@ export default async function DestinationPage({
   const dest = getDestination(slug);
 
   if (!dest) notFound();
-
-  const relatedPackages = getRelatedPackages(dest.name);
 
   return (
     <>
@@ -229,79 +218,6 @@ export default async function DestinationPage({
           </div>
         </div>
       </section>
-
-      {/* Related Packages */}
-      {relatedPackages.length > 0 && (
-        <section className="py-24 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <ScrollAnimator>
-              <div className="text-center mb-12">
-                <p className="text-brand-teal font-semibold text-sm uppercase tracking-wider mb-2">
-                  Our Packages
-                </p>
-                <h2 className="text-3xl md:text-4xl font-bold text-brand-navy mb-4">
-                  Admission Packages for {dest.name}
-                </h2>
-                <p className="text-gray-500 max-w-2xl mx-auto">
-                  Choose the package that best fits your needs and start your
-                  application journey today.
-                </p>
-              </div>
-            </ScrollAnimator>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {relatedPackages.map((pkg, i) => (
-                <ScrollAnimator key={pkg.slug} delay={i * 100}>
-                  <Link
-                    href={`/packages/${pkg.slug}`}
-                    className="block group"
-                  >
-                    <div className="bg-gray-50 rounded-2xl overflow-hidden card-hover border border-gray-100 h-full">
-                      <div className="relative h-48 overflow-hidden">
-                        <Image
-                          src={pkg.image}
-                          alt={pkg.name}
-                          fill
-                          className="object-cover transition-transform duration-500 group-hover:scale-105"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                        <div className="absolute bottom-4 left-4">
-                          <h3 className="text-white font-bold text-lg">
-                            {pkg.name}
-                          </h3>
-                          <p className="text-gray-300 text-sm">
-                            {pkg.tagline}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="p-5">
-                        <p className="text-gray-600 text-sm leading-relaxed line-clamp-2">
-                          {pkg.description}
-                        </p>
-                        <span className="inline-flex items-center text-brand-teal text-sm font-medium mt-3 group-hover:gap-2 transition-all">
-                          View Details <ArrowRight className="w-4 h-4" />
-                        </span>
-                      </div>
-                    </div>
-                  </Link>
-                </ScrollAnimator>
-              ))}
-            </div>
-            <div className="text-center mt-10">
-              <Button
-                asChild
-                variant="outline"
-                size="lg"
-                className="border-brand-navy text-brand-navy hover:bg-brand-navy hover:text-white rounded-lg"
-              >
-                <Link href="/packages">
-                  View All Packages
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Link>
-              </Button>
-            </div>
-          </div>
-        </section>
-      )}
 
       <CTASection />
     </>

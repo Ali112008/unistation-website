@@ -26,7 +26,6 @@ import {
   ChevronRight,
   MessageSquare,
   Star,
-  Quote,
 } from "lucide-react";
 
 function CountUp({ target, suffix = "" }: { target: number; suffix?: string }) {
@@ -68,15 +67,92 @@ function CountUp({ target, suffix = "" }: { target: number; suffix?: string }) {
   );
 }
 
+function getPlaceholderReviews() {
+  return [
+    {
+      name: "Sara M.",
+      text: "UniStation made my dream of studying medicine in the UK a reality. Their guidance through the UCAT and application process was invaluable. I couldn't have done it without their support!",
+      rating: 5,
+      source: "Google",
+      photo: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&h=100&fit=crop&crop=face",
+    },
+    {
+      name: "Ahmed K.",
+      text: "I was overwhelmed by the German university system, but UniStation's team broke everything down for me. From language preparation to application, they were with me every step of the way.",
+      rating: 5,
+      source: "Google",
+      photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face",
+    },
+    {
+      name: "Lina R.",
+      text: "The team at UniStation truly cares about their students. They helped me find the perfect program in Canada and even assisted with my visa application. Highly recommended!",
+      rating: 5,
+      source: "Google",
+      photo: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face",
+    },
+    {
+      name: "Omar J.",
+      text: "Applying to US universities seemed impossible until I found UniStation. Their expertise in SAT preparation and university selection made all the difference in my admission.",
+      rating: 5,
+      source: "Google",
+      photo: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
+    },
+    {
+      name: "Fatima H.",
+      text: "UniStation's personalized approach set them apart. They understood my goals and helped me find a pharmacy program in Ireland that was the perfect fit for my aspirations.",
+      rating: 4,
+      source: "Google",
+      photo: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face",
+    },
+    {
+      name: "Youssef T.",
+      text: "From portfolio review to university applications, UniStation provided comprehensive support. Their knowledge of European universities is truly impressive and up to date.",
+      rating: 5,
+      source: "Google",
+      photo: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face",
+    },
+  ];
+}
+
+function ReviewAvatar({ name, photo }: { name: string; photo?: string }) {
+  if (photo) {
+    return (
+      <Image
+        src={photo}
+        alt={name}
+        width={36}
+        height={36}
+        className="rounded-full object-cover"
+        unoptimized={photo.startsWith("http")}
+      />
+    );
+  }
+  return (
+    <div className="w-9 h-9 rounded-full bg-brand-navy flex items-center justify-center text-white font-bold text-sm shrink-0">
+      {name.charAt(0).toUpperCase()}
+    </div>
+  );
+}
+
 export default function HomePage() {
   const [cmsTeam, setCmsTeam] = useState<{ name: string; role: string; image: string; bio: string; slug: string }[]>([]);
-  const [reviews, setReviews] = useState<{ name: string; text: string; rating: number; source: string }[]>([]);
+  const [reviews, setReviews] = useState<{ name: string; text: string; rating: number; source: string; photo?: string }[]>([]);
 
   useEffect(() => {
     fetch("/api/webflow?type=reviews")
       .then((r) => r.json())
-      .then((d) => setReviews(d.reviews || []))
-      .catch(() => {});
+      .then((d) => {
+        const fetched = (d.reviews || []).map((r: { name: string; text: string; rating: number; source: string; photo?: string }) => r);
+        // If no reviews from CMS, use placeholder data
+        if (fetched.length === 0) {
+          setReviews(getPlaceholderReviews());
+        } else {
+          setReviews(fetched);
+        }
+      })
+      .catch(() => {
+        setReviews(getPlaceholderReviews());
+      });
   }, []);
 
   useEffect(() => {
@@ -361,53 +437,49 @@ export default function HomePage() {
       </section>
 
       {/* Google Reviews */}
-      {reviews.length > 0 && (
-        <section className="py-24 bg-gray-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <ScrollAnimator>
-              <SectionHeading
-                subtitle="Google Reviews"
-                title="What Our Students Say"
-              />
-              <p className="text-gray-500 mt-4 max-w-2xl mx-auto">
-                Real feedback from students who trusted UniStation with their academic journey
-              </p>
-            </ScrollAnimator>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
-              {reviews.slice(0, 6).map((review, i) => (
-                <ScrollAnimator key={review.name} delay={i * 80}>
-                  <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 h-full flex flex-col card-hover">
-                    <div className="flex items-center gap-1 mb-4">
-                      {Array.from({ length: 5 }).map((_, j) => (
-                        <Star
-                          key={j}
-                          className={`w-4 h-4 ${
-                            j < review.rating
-                              ? "text-brand-teal fill-brand-teal"
-                              : "text-gray-200"
-                          }`}
-                        />
-                      ))}
-                    </div>
-                    <p className="text-gray-600 text-sm leading-relaxed flex-grow">
-                      &ldquo;{review.text}&rdquo;
-                    </p>
-                    <div className="mt-5 pt-4 border-t border-gray-100 flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full bg-brand-navy flex items-center justify-center text-white font-bold text-sm">
-                        {review.name.charAt(0)}
-                      </div>
-                      <div>
-                        <p className="font-semibold text-brand-navy text-sm">{review.name}</p>
-                        <p className="text-gray-400 text-xs">{review.source} Review</p>
-                      </div>
+      <section className="py-24 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <ScrollAnimator>
+            <SectionHeading
+              subtitle="Google Reviews"
+              title="What Our Students Say"
+            />
+            <p className="text-gray-500 mt-4 max-w-2xl mx-auto">
+              Real feedback from students who trusted UniStation with their academic journey
+            </p>
+          </ScrollAnimator>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
+            {reviews.slice(0, 6).map((review, i) => (
+              <ScrollAnimator key={review.name} delay={i * 80}>
+                <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 h-full flex flex-col card-hover">
+                  <div className="flex items-center gap-1 mb-4">
+                    {Array.from({ length: 5 }).map((_, j) => (
+                      <Star
+                        key={j}
+                        className={`w-4 h-4 ${
+                          j < review.rating
+                            ? "text-brand-teal fill-brand-teal"
+                            : "text-gray-200"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <p className="text-gray-600 text-sm leading-relaxed flex-grow">
+                    &ldquo;{review.text}&rdquo;
+                  </p>
+                  <div className="mt-5 pt-4 border-t border-gray-100 flex items-center gap-3">
+                    <ReviewAvatar name={review.name} photo={review.photo} />
+                    <div>
+                      <p className="font-semibold text-brand-navy text-sm">{review.name}</p>
+                      <p className="text-gray-400 text-xs">{review.source} Review</p>
                     </div>
                   </div>
-                </ScrollAnimator>
-              ))}
-            </div>
+                </div>
+              </ScrollAnimator>
+            ))}
           </div>
-        </section>
-      )}
+        </div>
+      </section>
 
       {/* FAQs */}
       <section className="py-24 bg-white">

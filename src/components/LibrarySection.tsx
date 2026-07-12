@@ -240,7 +240,7 @@ export function LibrarySection({
                             )}
                             {blog.featured && (
                               <div className="absolute top-3 left-3">
-                                <span className="px-2.5 py-0.5 bg-brand-amber text-white text-[10px] font-bold rounded-full">
+                                <span className="px-2.5 py-0.5 bg-brand-teal-dark text-white text-[10px] font-bold rounded-full">
                                   FEATURED
                                 </span>
                               </div>
