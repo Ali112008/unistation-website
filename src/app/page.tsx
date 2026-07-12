@@ -149,8 +149,9 @@ export default function HomePage() {
       .then((r) => r.json())
       .then((d) => {
         const fetched = (d.reviews || []).map((r: { name: string; text: string; rating: number; source: string; photo?: string; university?: string }) => r);
-        // If no reviews from CMS, use placeholder data
-        if (fetched.length === 0) {
+        // If no reviews from CMS or none have university data, use placeholder data
+        const hasUniversity = fetched.some((r: { university?: string }) => r.university && r.university.trim() !== "");
+        if (fetched.length === 0 || !hasUniversity) {
           setReviews(getPlaceholderReviews());
         } else {
           setReviews(fetched);
