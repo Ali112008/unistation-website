@@ -74,6 +74,7 @@ function getPlaceholderReviews() {
       text: "UniStation made my dream of studying medicine in the UK a reality. Their guidance through the UCAT and application process was invaluable. I couldn't have done it without their support!",
       rating: 5,
       source: "Google",
+      university: "University of Manchester",
       photo: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&h=100&fit=crop&crop=face",
     },
     {
@@ -81,6 +82,7 @@ function getPlaceholderReviews() {
       text: "I was overwhelmed by the German university system, but UniStation's team broke everything down for me. From language preparation to application, they were with me every step of the way.",
       rating: 5,
       source: "Google",
+      university: "Technical University of Munich",
       photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face",
     },
     {
@@ -88,6 +90,7 @@ function getPlaceholderReviews() {
       text: "The team at UniStation truly cares about their students. They helped me find the perfect program in Canada and even assisted with my visa application. Highly recommended!",
       rating: 5,
       source: "Google",
+      university: "University of Toronto",
       photo: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face",
     },
     {
@@ -95,6 +98,7 @@ function getPlaceholderReviews() {
       text: "Applying to US universities seemed impossible until I found UniStation. Their expertise in SAT preparation and university selection made all the difference in my admission.",
       rating: 5,
       source: "Google",
+      university: "University of California, Berkeley",
       photo: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
     },
     {
@@ -102,6 +106,7 @@ function getPlaceholderReviews() {
       text: "UniStation's personalized approach set them apart. They understood my goals and helped me find a pharmacy program in Ireland that was the perfect fit for my aspirations.",
       rating: 4,
       source: "Google",
+      university: "Trinity College Dublin",
       photo: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face",
     },
     {
@@ -109,6 +114,7 @@ function getPlaceholderReviews() {
       text: "From portfolio review to university applications, UniStation provided comprehensive support. Their knowledge of European universities is truly impressive and up to date.",
       rating: 5,
       source: "Google",
+      university: "Politecnico di Milano",
       photo: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face",
     },
   ];
@@ -136,13 +142,13 @@ function ReviewAvatar({ name, photo }: { name: string; photo?: string }) {
 
 export default function HomePage() {
   const [cmsTeam, setCmsTeam] = useState<{ name: string; role: string; image: string; bio: string; slug: string }[]>([]);
-  const [reviews, setReviews] = useState<{ name: string; text: string; rating: number; source: string; photo?: string }[]>([]);
+  const [reviews, setReviews] = useState<{ name: string; text: string; rating: number; source: string; photo?: string; university?: string }[]>([]);
 
   useEffect(() => {
     fetch("/api/webflow?type=reviews")
       .then((r) => r.json())
       .then((d) => {
-        const fetched = (d.reviews || []).map((r: { name: string; text: string; rating: number; source: string; photo?: string }) => r);
+        const fetched = (d.reviews || []).map((r: { name: string; text: string; rating: number; source: string; photo?: string; university?: string }) => r);
         // If no reviews from CMS, use placeholder data
         if (fetched.length === 0) {
           setReviews(getPlaceholderReviews());
@@ -469,8 +475,11 @@ export default function HomePage() {
                   </p>
                   <div className="mt-5 pt-4 border-t border-gray-100 flex items-center gap-3">
                     <ReviewAvatar name={review.name} photo={review.photo} />
-                    <div>
-                      <p className="font-semibold text-brand-navy text-sm">{review.name}</p>
+                    <div className="min-w-0">
+                      <p className="font-semibold text-brand-navy text-sm truncate">{review.name}</p>
+                      {review.university && (
+                        <p className="text-brand-teal text-xs truncate">{review.university}</p>
+                      )}
                       <p className="text-gray-400 text-xs">{review.source} Review</p>
                     </div>
                   </div>

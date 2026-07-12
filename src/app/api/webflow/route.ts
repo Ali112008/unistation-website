@@ -118,6 +118,7 @@ export async function GET(request: Request) {
         text: extractText(fd["review-text"]),
         rating: Number(fd["rating"]) || 5,
         source: (fd["source"] as string) || "Google",
+        university: (fd["university"] as string) || "",
         photo: photo?.url || "",
         createdOn: item.createdOn,
       };
