@@ -491,40 +491,10 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* FAQs */}
-      <section className="py-24 bg-white">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <ScrollAnimator>
-            <SectionHeading subtitle="Support" title="Frequently Asked Questions" />
-            <p className="text-gray-500 mt-4">
-              Can&apos;t find the answer you&apos;re looking for? Please chat to
-              our friendly team or write us an email at{" "}
-              <a
-                href={`mailto:${siteConfig.brand.email}`}
-                className="text-brand-teal hover:underline"
-              >
-                {siteConfig.brand.email}
-              </a>
-            </p>
-          </ScrollAnimator>
-          <Accordion type="single" collapsible className="mt-10">
-            {siteConfig.faqs.map((faq, i) => (
-              <AccordionItem key={i} value={`faq-${i}`}>
-                <AccordionTrigger className="text-left text-gray-800 hover:text-brand-teal">
-                  {faq.q}
-                </AccordionTrigger>
-                <AccordionContent className="text-gray-600 leading-relaxed">
-                  {faq.a}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </div>
-      </section>
-
-      {/* Book a Video Call - Calendly */}
+      {/* Our Library */}
       <LibrarySection />
 
+      {/* Book a Video Call - Calendly */}
       <section className="py-20 bg-brand-navy">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <ScrollAnimator>
@@ -557,6 +527,37 @@ export default function HomePage() {
               </a>
             </div>
           </ScrollAnimator>
+        </div>
+      </section>
+
+      {/* FAQs */}
+      <section className="py-24 bg-white">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <ScrollAnimator>
+            <SectionHeading subtitle="Support" title="Frequently Asked Questions" />
+            <p className="text-gray-500 mt-4">
+              Can&apos;t find the answer you&apos;re looking for? Please chat to
+              our friendly team or write us an email at{" "}
+              <a
+                href={`mailto:${siteConfig.brand.email}`}
+                className="text-brand-teal hover:underline"
+              >
+                {siteConfig.brand.email}
+              </a>
+            </p>
+          </ScrollAnimator>
+          <Accordion type="single" collapsible className="mt-10">
+            {siteConfig.faqs.map((faq, i) => (
+              <AccordionItem key={i} value={`faq-${i}`}>
+                <AccordionTrigger className="text-left text-gray-800 hover:text-brand-teal">
+                  {faq.q}
+                </AccordionTrigger>
+                <AccordionContent className="text-gray-600 leading-relaxed">
+                  {faq.a}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
         </div>
       </section>
 
