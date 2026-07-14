@@ -138,11 +138,10 @@ export default function TeamMemberPage() {
                       <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
                         <GraduationCap className="w-4 h-4" /> Qualifications
                       </h3>
-                      <div className="text-gray-700 text-sm leading-relaxed">
-                        {member.qualifications.split("\n").map((line, i) => (
-                          <p key={i} className={i > 0 ? "mt-1" : ""}>{line}</p>
-                        ))}
-                      </div>
+                      <div
+                        className="text-gray-700 text-sm leading-relaxed"
+                        dangerouslySetInnerHTML={{ __html: member.qualifications }}
+                      />
                     </div>
                   )}
                   {member.languages && (
@@ -150,7 +149,10 @@ export default function TeamMemberPage() {
                       <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
                         <Languages className="w-4 h-4" /> Languages
                       </h3>
-                      <p className="text-gray-700 text-sm leading-relaxed">{member.languages}</p>
+                      <div
+                        className="text-gray-700 text-sm leading-relaxed"
+                        dangerouslySetInnerHTML={{ __html: member.languages }}
+                      />
                     </div>
                   )}
                   {member.hobbies && (
@@ -158,7 +160,10 @@ export default function TeamMemberPage() {
                       <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
                         <Heart className="w-4 h-4" /> Hobbies
                       </h3>
-                      <p className="text-gray-700 text-sm leading-relaxed">{member.hobbies}</p>
+                      <div
+                        className="text-gray-700 text-sm leading-relaxed"
+                        dangerouslySetInnerHTML={{ __html: member.hobbies }}
+                      />
                     </div>
                   )}
                 </div>
