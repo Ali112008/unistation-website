@@ -802,7 +802,6 @@ export const packagesContent: Record<string, PackageContent> = {
       {
         name: "Spain Foundation Year Program",
         subtitle: "Complete Pathway to Spanish Public Universities",
-        badge: "best-value" as const,
         price: "€4,500",
         features: [
           {

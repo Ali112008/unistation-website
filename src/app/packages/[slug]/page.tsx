@@ -439,8 +439,8 @@ export default async function PackageDetailPage({
             </div>
           </section>
 
-          {/* Detailed Features Section (for packages with single tier) */}
-          {content.tiers.length === 1 && (
+          {/* Detailed Features Section (for packages with single tier, skip Spain — already shown in tier card) */}
+          {content.tiers.length === 1 && slug !== "spain-foundation-year" && (
             <section className="py-20 bg-white">
               <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
                 <ScrollAnimator>
@@ -611,7 +611,8 @@ export default async function PackageDetailPage({
         </section>
       )}
 
-      {/* ── How It Works ── */}
+      {/* ── How It Works (skip for Spain) ── */}
+      {slug !== "spain-foundation-year" && (
       <section className="py-20 bg-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollAnimator>
@@ -630,11 +631,9 @@ export default async function PackageDetailPage({
             {PROCESS_STEPS.map((step, i) => (
               <ScrollAnimator key={step.step} delay={i * 100}>
                 <div className="relative text-center group">
-                  {/* Connector line */}
                   {i < PROCESS_STEPS.length - 1 && (
                     <div className="hidden lg:block absolute top-8 left-[60%] w-[80%] h-px bg-gradient-to-r from-brand-teal/30 to-transparent" />
                   )}
-                  {/* Step number */}
                   <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-brand-navy text-white text-xl font-bold mb-5 group-hover:bg-brand-teal transition-colors duration-300">
                     {step.step}
                   </div>
@@ -646,6 +645,7 @@ export default async function PackageDetailPage({
           </div>
         </div>
       </section>
+      )}
 
       {/* ── Library Section (filtered by relevant tags) ── */}
       <LibrarySection topicName={pkg.name} tags={tags} />

@@ -14,11 +14,7 @@ import {
   Globe2,
   Users,
   Zap,
-  BookOpen,
-  Euro,
-  Clock,
   CheckCircle2,
-  ArrowRightLeft,
   UserCheck,
 } from "lucide-react";
 
@@ -108,7 +104,7 @@ function SpainPage({ dest }: { dest: (typeof ALL_DESTINATIONS)[number] }) {
   return (
     <>
       {/* Hero */}
-      <section className="relative pt-32 pb-24 bg-brand-navy overflow-hidden">
+      <section className="relative pt-32 pb-20 bg-brand-navy overflow-hidden">
         <div className="absolute inset-0">
           <Image
             src={dest.image}
@@ -127,9 +123,6 @@ function SpainPage({ dest }: { dest: (typeof ALL_DESTINATIONS)[number] }) {
               <span className="text-white/40">/</span>
               <span>{dest.name}</span>
             </div>
-            <p className="text-brand-teal font-semibold text-sm uppercase tracking-wider mb-3">
-              {content.heroSubtitle}
-            </p>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-5">
               Study in{" "}
               <span className="text-teal-gradient">{dest.name}</span>
@@ -138,27 +131,10 @@ function SpainPage({ dest }: { dest: (typeof ALL_DESTINATIONS)[number] }) {
               {content.heroDescription}
             </p>
           </div>
-
-          {/* Quick Stats Bar */}
-          <ScrollAnimator delay={200}>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12">
-              {content.stats.map((stat, i) => (
-                <div
-                  key={i}
-                  className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4 text-center"
-                >
-                  <p className="text-xl md:text-2xl font-bold text-white">{stat.value}</p>
-                  <p className="text-gray-400 text-xs mt-1 font-medium uppercase tracking-wider">
-                    {stat.label}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </ScrollAnimator>
         </div>
       </section>
 
-      {/* Overview */}
+      {/* Overview — Which Door with highlighted path names */}
       <section className="py-20 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollAnimator>
@@ -168,45 +144,33 @@ function SpainPage({ dest }: { dest: (typeof ALL_DESTINATIONS)[number] }) {
                 {content.overviewTitle}
               </h2>
               <div className="space-y-4 text-gray-600 leading-relaxed text-lg md:pl-6">
-                {content.overviewParagraphs.map((p, i) => (
-                  <p key={i}>{p}</p>
-                ))}
+                {content.overviewParagraphs.map((p, i) => {
+                  // Highlight path names in the text
+                  const parts = p.split(/(private university route|public university route via a foundation year)/gi);
+                  return (
+                    <p key={i}>
+                      {parts.map((part, j) => {
+                        const isMatch = /private university route|public university route via a foundation year/i.test(part);
+                        if (isMatch) {
+                          return (
+                            <span key={j} className="font-bold text-brand-navy bg-brand-teal/10 px-1.5 py-0.5 rounded">
+                              {part}
+                            </span>
+                          );
+                        }
+                        return <span key={j}>{part}</span>;
+                      })}
+                    </p>
+                  );
+                })}
               </div>
-            </div>
-          </ScrollAnimator>
-          <ScrollAnimator delay={100}>
-            <div className="mt-8 flex flex-col sm:flex-row gap-4 md:pl-6">
-              <Button
-                asChild
-                size="lg"
-                className="bg-brand-teal hover:bg-brand-teal-dark text-white btn-primary-hover rounded-lg"
-              >
-                <Link href="/packages/spain-foundation-year">
-                  View Foundation Year Package
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Link>
-              </Button>
-              <Button
-                asChild
-                variant="outline"
-                size="lg"
-                className="border-brand-navy text-brand-navy hover:bg-brand-navy hover:text-white rounded-lg"
-              >
-                <a
-                  href="https://calendly.com/unistation-info/30min"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Book Free Consultation
-                </a>
-              </Button>
             </div>
           </ScrollAnimator>
         </div>
       </section>
 
-      {/* Two Paths Section */}
-      {twoPathsSection && (
+      {/* Combined: Two Paths + Comparison + Who Fits — One Section */}
+      {twoPathsSection && comparisonSection && whoFitsSection && (
         <section className="py-20 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <ScrollAnimator>
@@ -221,7 +185,8 @@ function SpainPage({ dest }: { dest: (typeof ALL_DESTINATIONS)[number] }) {
               </div>
             </ScrollAnimator>
 
-            <div className="grid lg:grid-cols-2 gap-8">
+            {/* Path Cards */}
+            <div className="grid lg:grid-cols-2 gap-8 mb-16">
               {/* Path 1: Private */}
               <ScrollAnimator>
                 <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 h-full flex flex-col">
@@ -261,12 +226,9 @@ function SpainPage({ dest }: { dest: (typeof ALL_DESTINATIONS)[number] }) {
                         </span>
                       ))}
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Euro className="w-4 h-4 text-brand-teal" />
-                      <span className="font-bold text-brand-navy text-lg">
-                        {twoPathsSection.pathOne.costLabel}
-                      </span>
-                    </div>
+                    <p className="font-bold text-brand-navy text-lg">
+                      {twoPathsSection.pathOne.costLabel}
+                    </p>
                   </div>
                 </div>
               </ScrollAnimator>
@@ -281,9 +243,6 @@ function SpainPage({ dest }: { dest: (typeof ALL_DESTINATIONS)[number] }) {
                     <h3 className="text-xl font-bold text-brand-navy">
                       {twoPathsSection.pathTwo.title}
                     </h3>
-                    <span className="ml-auto px-3 py-1 bg-brand-teal/10 text-brand-teal text-xs font-bold rounded-full uppercase">
-                      Best Value
-                    </span>
                   </div>
                   <p className="text-brand-teal font-semibold text-sm mb-4">
                     {twoPathsSection.pathTwo.subtitle}
@@ -340,79 +299,55 @@ function SpainPage({ dest }: { dest: (typeof ALL_DESTINATIONS)[number] }) {
                 </div>
               </ScrollAnimator>
             </div>
-          </div>
-        </section>
-      )}
 
-      {/* Comparison Table */}
-      {comparisonSection && (
-        <section className="py-20 bg-white">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            {/* Comparison Table — embedded in same section */}
             <ScrollAnimator>
-              <div className="text-center mb-12">
-                <p className="text-brand-teal font-semibold text-sm uppercase tracking-wider mb-2">
-                  Side by Side
-                </p>
-                <h2 className="text-3xl md:text-4xl font-bold text-brand-navy mb-4">
+              <div className="mb-16">
+                <h3 className="text-2xl font-bold text-brand-navy mb-6 text-center">
                   The Two Paths, Compared
-                </h2>
-                <div className="brand-line mx-auto" />
-              </div>
-            </ScrollAnimator>
-            <ScrollAnimator delay={100}>
-              <div className="overflow-x-auto rounded-2xl border border-gray-200">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="bg-brand-navy text-white">
-                      {comparisonSection.headers.map((h, i) => (
-                        <th key={i} className="text-left px-5 py-4 font-semibold first:rounded-tl-2xl last:rounded-tr-2xl">
-                          {h}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {comparisonSection.rows.map((row, ri) => (
-                      <tr
-                        key={ri}
-                        className={ri % 2 === 0 ? "bg-white" : "bg-gray-50"}
-                      >
-                        {row.map((cell, ci) => (
-                          <td
-                            key={ci}
-                            className={`px-5 py-4 ${
-                              ci === 0
-                                ? "font-semibold text-brand-navy"
-                                : "text-gray-600"
-                            }`}
-                          >
-                            {cell}
-                          </td>
+                </h3>
+                <div className="overflow-x-auto rounded-2xl border border-gray-200">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="bg-brand-navy text-white">
+                        {comparisonSection.headers.map((h, i) => (
+                          <th key={i} className="text-left px-5 py-4 font-semibold first:rounded-tl-2xl last:rounded-tr-2xl">
+                            {h}
+                          </th>
                         ))}
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {comparisonSection.rows.map((row, ri) => (
+                        <tr
+                          key={ri}
+                          className={ri % 2 === 0 ? "bg-white" : "bg-gray-50"}
+                        >
+                          {row.map((cell, ci) => (
+                            <td
+                              key={ci}
+                              className={`px-5 py-4 ${
+                                ci === 0
+                                  ? "font-semibold text-brand-navy"
+                                  : "text-gray-600"
+                              }`}
+                            >
+                              {cell}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </ScrollAnimator>
-          </div>
-        </section>
-      )}
 
-      {/* Who Fits Which Path */}
-      {whoFitsSection && (
-        <section className="py-20 bg-gray-50">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            {/* Who Fits — embedded in same section */}
             <ScrollAnimator>
-              <div className="text-center mb-12">
-                <p className="text-brand-teal font-semibold text-sm uppercase tracking-wider mb-2">
-                  Find Your Fit
-                </p>
-                <h2 className="text-3xl md:text-4xl font-bold text-brand-navy mb-4">
-                  Which Path Actually Fits You?
-                </h2>
-                <div className="brand-line mx-auto" />
-              </div>
+              <h3 className="text-2xl font-bold text-brand-navy mb-8 text-center">
+                Which Path Actually Fits You?
+              </h3>
             </ScrollAnimator>
             <div className="grid md:grid-cols-2 gap-8">
               <ScrollAnimator>
@@ -421,7 +356,7 @@ function SpainPage({ dest }: { dest: (typeof ALL_DESTINATIONS)[number] }) {
                     <div className="w-10 h-10 rounded-xl bg-brand-teal/10 flex items-center justify-center">
                       <Zap className="w-5 h-5 text-brand-teal" />
                     </div>
-                    <h3 className="text-lg font-bold text-brand-navy">Choose the private path if you&apos;re...</h3>
+                    <h4 className="text-lg font-bold text-brand-navy">Choose the private path if you&apos;re...</h4>
                   </div>
                   <ul className="space-y-3">
                     {whoFitsSection.privateFits.map((item, i) => (
@@ -439,7 +374,7 @@ function SpainPage({ dest }: { dest: (typeof ALL_DESTINATIONS)[number] }) {
                     <div className="w-10 h-10 rounded-xl bg-brand-teal flex items-center justify-center">
                       <GraduationCap className="w-5 h-5 text-white" />
                     </div>
-                    <h3 className="text-lg font-bold text-brand-navy">Choose the public path if you&apos;re...</h3>
+                    <h4 className="text-lg font-bold text-brand-navy">Choose the public path if you&apos;re...</h4>
                   </div>
                   <ul className="space-y-3">
                     {whoFitsSection.publicFits.map((item, i) => (
