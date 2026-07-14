@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, FileText } from "lucide-react";
 import Link from "next/link";
 import { ScrollAnimator } from "@/components/shared";
+import { FAQSection } from "@/components/FAQSection";
+import { pageFaqs } from "@/data/page-faqs";
 
 // Generate static params for all exams
 export function generateStaticParams() {
@@ -84,6 +86,8 @@ export default async function ExamDetailPage({ params }: { params: Promise<{ slu
           </ScrollAnimator>
         </div>
       </section>
+
+      <FAQSection faqs={pageFaqs[`tests-exams/${slug}`]} />
     </>
   );
 }

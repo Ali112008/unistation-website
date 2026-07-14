@@ -9,6 +9,8 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { siteConfig } from "@/data/site-data";
 import { ScrollAnimator, CTASection } from "@/components/shared";
+import { FAQSection } from "@/components/FAQSection";
+import { pageFaqs } from "@/data/page-faqs";
 import { MapPin, Mail, Phone, Instagram } from "lucide-react";
 
 export default function ContactPage() {
@@ -155,6 +157,8 @@ export default function ContactPage() {
           </div>
         </div>
       </section>
+
+      <FAQSection faqs={pageFaqs.contact} />
     </>
   );
 }

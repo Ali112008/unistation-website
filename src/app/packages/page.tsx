@@ -3,6 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { siteConfig } from "@/data/site-data";
 import { ScrollAnimator, CTASection } from "@/components/shared";
+import { FAQSection } from "@/components/FAQSection";
+import { pageFaqs } from "@/data/page-faqs";
 import { ArrowRight } from "lucide-react";
 import { LibrarySection } from "@/components/LibrarySection";
 
@@ -100,6 +102,7 @@ export default function PackagesPage() {
       {/* Library Section — general (no filter) */}
       <LibrarySection />
 
+      <FAQSection faqs={pageFaqs.packages} />
       <CTASection />
     </>
   );

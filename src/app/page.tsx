@@ -5,15 +5,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import { siteConfig } from "@/data/site-data";
 import { ScrollAnimator, SectionHeading } from "@/components/shared";
 import { LibrarySection } from "@/components/LibrarySection";
+import { FAQSection } from "@/components/FAQSection";
 import {
   Globe2,
   Users,
@@ -531,35 +526,7 @@ export default function HomePage() {
       </section>
 
       {/* FAQs */}
-      <section className="py-24 bg-white">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <ScrollAnimator>
-            <SectionHeading subtitle="Support" title="Frequently Asked Questions" />
-            <p className="text-gray-500 mt-4">
-              Can&apos;t find the answer you&apos;re looking for? Please chat to
-              our friendly team or write us an email at{" "}
-              <a
-                href={`mailto:${siteConfig.brand.email}`}
-                className="text-brand-teal hover:underline"
-              >
-                {siteConfig.brand.email}
-              </a>
-            </p>
-          </ScrollAnimator>
-          <Accordion type="single" collapsible className="mt-10">
-            {siteConfig.faqs.map((faq, i) => (
-              <AccordionItem key={i} value={`faq-${i}`}>
-                <AccordionTrigger className="text-left text-gray-800 hover:text-brand-teal">
-                  {faq.q}
-                </AccordionTrigger>
-                <AccordionContent className="text-gray-600 leading-relaxed">
-                  {faq.a}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </div>
-      </section>
+      <FAQSection />
 
     </>
   );

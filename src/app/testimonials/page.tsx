@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollAnimator, SectionHeading, CTASection } from "@/components/shared";
+import { FAQSection } from "@/components/FAQSection";
+import { pageFaqs } from "@/data/page-faqs";
 import { Star, Quote } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -64,6 +66,7 @@ export default function TestimonialsPage() {
         </div>
       </section>
 
+      <FAQSection faqs={pageFaqs.testimonials} />
       <CTASection />
     </>
   );

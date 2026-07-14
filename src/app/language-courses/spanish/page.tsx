@@ -6,6 +6,8 @@ import {
 import { siteConfig } from "@/data/site-data";
 import { ScrollAnimator, CTASection } from "@/components/shared";
 import { LibrarySection } from "@/components/LibrarySection";
+import { FAQSection } from "@/components/FAQSection";
+import { pageFaqs } from "@/data/page-faqs";
 
 export default function SpanishCoursePage() {
   const course = siteConfig.languageCourses.find((c) => c.slug === "spanish")!;
@@ -70,6 +72,7 @@ export default function SpanishCoursePage() {
       </section>
       <LibrarySection topicName="Spanish" tags={["spanish", "spain"]} />
 
+      <FAQSection faqs={pageFaqs["language-courses/spanish"]} />
       <CTASection />
     </>
   );

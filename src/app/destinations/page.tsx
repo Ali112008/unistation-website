@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/table";
 import { siteConfig } from "@/data/site-data";
 import { ScrollAnimator, CTASection } from "@/components/shared";
+import { FAQSection } from "@/components/FAQSection";
+import { pageFaqs } from "@/data/page-faqs";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -215,6 +217,7 @@ export default function DestinationsPage() {
         </div>
       </section>
 
+      <FAQSection faqs={pageFaqs.destinations} />
       <CTASection />
     </>
   );

@@ -5,6 +5,8 @@ import {
 } from "@/components/ui/table";
 import { ScrollAnimator, SectionHeading } from "@/components/shared";
 import { LibrarySection } from "@/components/LibrarySection";
+import { FAQSection } from "@/components/FAQSection";
+import { pageFaqs } from "@/data/page-faqs";
 import {
   CheckCircle2,
   BookOpen,
@@ -193,6 +195,9 @@ export default function GermanCoursePage() {
           </ScrollAnimator>
         </div>
       </section>
+      <LibrarySection topicName="German" tags={["german", "germany"]} />
+
+      <FAQSection faqs={pageFaqs["language-courses/german"]} />
     </>
   );
 }

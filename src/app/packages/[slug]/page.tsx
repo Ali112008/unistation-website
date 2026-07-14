@@ -4,7 +4,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { siteConfig } from "@/data/site-data";
 import { packagesContent } from "@/data/packages-content";
+import { pageFaqs } from "@/data/page-faqs";
 import { CTASection } from "@/components/shared";
+import { FAQSection } from "@/components/FAQSection";
 import { LibrarySection } from "@/components/LibrarySection";
 import { ScrollAnimator } from "@/components/shared";
 import {
@@ -667,6 +669,7 @@ export default async function PackageDetailPage({
       {/* ── Library Section (filtered by relevant tags) ── */}
       <LibrarySection topicName={pkg.name} tags={tags} />
 
+      <FAQSection faqs={pageFaqs[slug]} />
       <CTASection />
     </>
   );

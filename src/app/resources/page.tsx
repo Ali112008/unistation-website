@@ -3,6 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollAnimator, SectionHeading, CTASection } from "@/components/shared";
+import { FAQSection } from "@/components/FAQSection";
+import { pageFaqs } from "@/data/page-faqs";
 import { Video, BookOpen, FileText, Headphones } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -76,6 +78,7 @@ export default function ResourcesPage() {
         </div>
       </section>
 
+      <FAQSection faqs={pageFaqs.resources} />
       <CTASection />
     </>
   );

@@ -5,7 +5,9 @@ import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/data/site-data";
 import { destinationsContent } from "@/data/destinations-content";
+import { pageFaqs } from "@/data/page-faqs";
 import { ScrollAnimator, CTASection } from "@/components/shared";
+import { FAQSection } from "@/components/FAQSection";
 import { LibrarySection } from "@/components/LibrarySection";
 import {
   ArrowRight,
@@ -439,6 +441,7 @@ function SpainPage({ dest }: { dest: (typeof ALL_DESTINATIONS)[number] }) {
       {/* Library Section */}
       <LibrarySection topicName="Spain" tags={["spain", "europe"]} />
 
+      <FAQSection faqs={pageFaqs.spain} />
       <CTASection />
     </>
   );
@@ -611,6 +614,7 @@ function GenericDestinationPage({ dest }: { dest: (typeof ALL_DESTINATIONS)[numb
         </div>
       </section>
 
+      <FAQSection faqs={pageFaqs.destinations} />
       <CTASection />
     </>
   );

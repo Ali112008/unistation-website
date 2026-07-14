@@ -5,6 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollAnimator, SectionHeading } from "@/components/shared";
+import { FAQSection } from "@/components/FAQSection";
+import { pageFaqs } from "@/data/page-faqs";
 import { ChevronRight } from "lucide-react";
 
 interface TeamMember {
@@ -158,6 +160,7 @@ export default function TeamPage() {
         </section>
       )}
 
+      <FAQSection faqs={pageFaqs.team} />
     </>
   );
 }

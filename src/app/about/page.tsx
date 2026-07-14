@@ -5,6 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { siteConfig } from "@/data/site-data";
 import { ScrollAnimator, SectionHeading, CTASection } from "@/components/shared";
+import { FAQSection } from "@/components/FAQSection";
+import { pageFaqs } from "@/data/page-faqs";
 import { ArrowRight, ChevronRight } from "lucide-react";
 
 interface TeamMember {
@@ -204,6 +206,7 @@ export default function AboutPage() {
         </div>
       </section>
 
+      <FAQSection faqs={pageFaqs.about} />
       <CTASection />
     </>
   );

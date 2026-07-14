@@ -26,6 +26,8 @@ import {
   BarChart3,
   MessageSquare,
 } from "lucide-react";
+import { FAQSection } from "@/components/FAQSection";
+import { pageFaqs } from "@/data/page-faqs";
 
 const trustItems = [
   "Certified IELTS Trainers",
@@ -501,6 +503,8 @@ export default function EnglishCoursePage() {
           </ScrollAnimator>
         </div>
       </section>
+
+      <FAQSection faqs={pageFaqs["language-courses/english"]} />
     </>
   );
 }

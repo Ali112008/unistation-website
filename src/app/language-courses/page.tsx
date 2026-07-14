@@ -4,6 +4,8 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { siteConfig } from "@/data/site-data";
 import { ScrollAnimator, CTASection } from "@/components/shared";
+import { FAQSection } from "@/components/FAQSection";
+import { pageFaqs } from "@/data/page-faqs";
 
 export const metadata: Metadata = {
   title: "Language Courses",
@@ -101,6 +103,7 @@ export default function LanguageCoursesPage() {
         </div>
       </section>
 
+      <FAQSection faqs={pageFaqs["language-courses"]} />
       <CTASection />
     </>
   );
