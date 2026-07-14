@@ -794,4 +794,56 @@ export const packagesContent: Record<string, PackageContent> = {
       },
     ],
   },
+  "spain-foundation-year": {
+    slug: "spain-foundation-year",
+    intro:
+      "For students aiming to enter Spanish public universities, UniStation offers a complete foundation year program that combines Spanish language study, university-track preparation, and full support with your travel and settling-in process. This is the most economical way to earn a degree from a Spanish public university — with tuition as low as €1,000 per year after completing the foundation program.",
+    tiers: [
+      {
+        name: "Spain Foundation Year Program",
+        subtitle: "Complete Pathway to Spanish Public Universities",
+        badge: "best-value" as const,
+        price: "€4,500",
+        features: [
+          {
+            title: "Admission & Enrollment at an Accredited Language Institute",
+            description:
+              "Guaranteed placement at a recognized language institute in Spain, handling all admission paperwork and enrollment procedures on your behalf.",
+          },
+          {
+            title: "Intensive Spanish Language Study (Up to B2 Level)",
+            description:
+              "Structured Spanish language courses designed to bring you from your current level to B2 — the proficiency level Spanish universities require for admission.",
+          },
+          {
+            title: "Academic Preparation for Entrance Exams",
+            description:
+              "Subject-specific coursework matched to your intended major, preparing you for the Ministry's admission exams (pruebas de acceso) required for public university entry.",
+          },
+          {
+            title: "Academic Guidance & Major Selection",
+            description:
+              "Expert advisors help you choose the right major and university path based on your academic background, career goals, and the Spanish university landscape.",
+          },
+          {
+            title: "Student Housing Assistance",
+            description:
+              "We help you secure suitable student accommodation before you even arrive in Spain, so you have a place to stay from day one.",
+          },
+          {
+            title: "Student Visa File Preparation",
+            description:
+              "Complete preparation and review of your student visa application, including document checklist, translation guidance, and embassy preparation.",
+          },
+          {
+            title: "Ongoing Support Through Registration & Travel",
+            description:
+              "Continuous guidance from the moment you enroll through to your arrival in Spain — including registration support, travel planning, and airport pickup.",
+          },
+        ],
+        idealFor:
+          "Students looking for the lowest-cost route to a Spanish university degree, those willing to invest a year in language learning, and anyone planning to build a long-term future in Spain or Europe.",
+      },
+    ],
+  },
 };

@@ -83,7 +83,7 @@ export const siteConfig = {
     { name: "Romania", image: "https://cdn.prod.website-files.com/68fd63e9503df62b019b5c75/6918187b7f0a63c03c73aa77_Romania.webp", link: "/packages/europe" },
     { name: "Malaysia", image: "https://cdn.prod.website-files.com/68fd63e9503df62b019b5c75/6918187714c6481629e7a951_Malaysia.jpg", link: "/packages/asia" },
     { name: "China", image: "https://cdn.prod.website-files.com/68fd63e9503df62b019b5c75/69181a8389a71e853f5e12e2_China.jpg", link: "/packages/asia" },
-    { name: "Spain", image: "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=800&h=600&fit=crop", link: "/packages/europe" },
+    { name: "Spain", image: "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=800&h=600&fit=crop", link: "/destinations/spain" },
   ],
   comparisonTable: {
     headers: ["Metric", "USA", "Canada", "UK", "Germany"],
@@ -215,6 +215,7 @@ export const siteConfig = {
     { name: "UK Medicine", tagline: "Your Medical Career Starts in the UK!", description: "Our UK Medicine Package offers expert guidance to help you ace the competitive application process and gain entry into a top UK medical school.", icon: "🩺", image: "https://cdn.prod.website-files.com/68fd63e9503df62b019b5c75/6907c0b2570989703331a340_Study%20in%20UK%2001.webp", slug: "uk-medicine" },
     { name: "UK", tagline: "Study in the UK with Confidence!", description: "Our UK University Admission Packages provide expert advice to help you apply for top universities, ensuring that your path to your chosen degree is a smooth and successful journey.", icon: "🇬🇧", image: "https://cdn.prod.website-files.com/68fd63e9503df62b019b5c75/6907bf9315299fb73a852a87_Study%20in%20UK.jpg", slug: "uk" },
     { name: "USA", tagline: "Your Future in the USA Begins Here!", description: "Our USA University Admissions Packages provide expert advice to help you apply to top US universities with confidence. From applications to scholarships, we have it all!", icon: "🗽", image: "https://cdn.prod.website-files.com/68fd63e9503df62b019b5c75/6907bf931b7a708a0d83e1f1_Study%20in%20USA.png", slug: "usa" },
+    { name: "Spain Foundation Year", tagline: "Your Pathway to Spanish Public Universities!", description: "Our Spain Foundation Year Program combines intensive Spanish language study with academic preparation, setting you on the path to affordable public university education in Spain.", icon: "🇪🇸", image: "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=800&h=600&fit=crop", slug: "spain-foundation-year" },
   ],
   testimonials: [
     { name: "Sara M.", country: "UAE", program: "Medicine, UK", text: "UniStation made my dream of studying medicine in the UK a reality. Their guidance through the UCAT and application process was invaluable. I couldn't have done it without their support." },

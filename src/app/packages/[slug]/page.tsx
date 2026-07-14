@@ -38,6 +38,7 @@ const PACKAGE_TAGS: Record<string, string[]> = {
   "uk-medicine": ["uk", "medicine", "ucat"],
   uk: ["uk"],
   usa: ["usa", "sat"],
+  "spain-foundation-year": ["spain", "europe"],
 };
 
 /* ───────── Stats for each package ───────── */
@@ -95,6 +96,12 @@ const PACKAGE_STATS: Record<string, { label: string; value: string; icon: React.
     { label: "Visa Success Rate", value: "99%", icon: TrendingUp },
     { label: "Students Placed", value: "400+", icon: Users },
     { label: "Work-Study Options", value: "Full", icon: Handshake },
+  ],
+  "spain-foundation-year": [
+    { label: "Public University Tuition", value: "€1K/yr", icon: TrendingUp },
+    { label: "Spanish Level", value: "Up to B2", icon: BookOpen },
+    { label: "Students Placed", value: "200+", icon: Users },
+    { label: "Program Duration", value: "12 Months", icon: ShieldCheck },
   ],
 };
 
@@ -454,6 +461,111 @@ export default async function PackageDetailPage({
                 </div>
               </div>
             </section>
+          )}
+
+          {/* Spain-specific: Not Included + How to Enroll */}
+          {slug === "spain-foundation-year" && (
+            <>
+              <section className="py-16 bg-gray-50">
+                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                  <ScrollAnimator>
+                    <div className="text-center mb-10">
+                      <p className="text-brand-teal font-semibold text-sm uppercase tracking-wider mb-2">
+                        Good to Know
+                      </p>
+                      <h2 className="text-2xl md:text-3xl font-bold text-brand-navy mb-4">
+                        What&apos;s Not Included
+                      </h2>
+                      <div className="brand-line mx-auto" />
+                    </div>
+                  </ScrollAnimator>
+                  <ScrollAnimator delay={100}>
+                    <div className="grid sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
+                      {[
+                        "Visa and embassy fees",
+                        "Health insurance",
+                        "Flights",
+                        "Housing and living costs",
+                      ].map((item) => (
+                        <div
+                          key={item}
+                          className="flex items-center gap-3 bg-white rounded-xl px-5 py-4 border border-gray-100"
+                        >
+                          <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
+                            <span className="text-gray-400 text-xs font-bold">—</span>
+                          </div>
+                          <span className="text-gray-600 text-sm">{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </ScrollAnimator>
+                </div>
+              </section>
+
+              <section className="py-16 bg-white">
+                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                  <ScrollAnimator>
+                    <div className="text-center mb-10">
+                      <p className="text-brand-teal font-semibold text-sm uppercase tracking-wider mb-2">
+                        Get Started
+                      </p>
+                      <h2 className="text-2xl md:text-3xl font-bold text-brand-navy mb-4">
+                        How to Enroll
+                      </h2>
+                      <div className="brand-line mx-auto" />
+                      <p className="text-gray-500 mt-4">
+                        Send us the following documents via WhatsApp or email at{" "}
+                        <a
+                          href="mailto:info@unistation.org"
+                          className="text-brand-teal hover:underline font-medium"
+                        >
+                          info@unistation.org
+                        </a>
+                      </p>
+                    </div>
+                  </ScrollAnimator>
+                  <ScrollAnimator delay={100}>
+                    <div className="grid gap-4 max-w-xl mx-auto">
+                      {[
+                        { label: "A copy of your passport", icon: "1" },
+                        { label: "A personal photo", icon: "2" },
+                        { label: "Your most recent academic transcript", icon: "3" },
+                      ].map((item) => (
+                        <div
+                          key={item.label}
+                          className="flex items-center gap-4 bg-gray-50 rounded-xl px-6 py-5"
+                        >
+                          <span className="w-8 h-8 rounded-lg bg-brand-teal text-white text-sm font-bold flex items-center justify-center shrink-0">
+                            {item.icon}
+                          </span>
+                          <span className="text-gray-700 font-medium">{item.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </ScrollAnimator>
+                  <ScrollAnimator delay={200}>
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center mt-10">
+                      <a
+                        href="https://wa.me/971522732589"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-[#25D366] hover:bg-[#1ebe5d] text-white font-semibold rounded-xl transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-[#25D366]/30"
+                      >
+                        <MessageSquare className="w-4 h-4" />
+                        Send Documents via WhatsApp
+                      </a>
+                      <a
+                        href="mailto:info@unistation.org"
+                        className="inline-flex items-center justify-center gap-2 px-7 py-3.5 border-2 border-brand-navy/20 text-brand-navy hover:bg-brand-navy hover:text-white font-semibold rounded-xl transition-all duration-300"
+                      >
+                        <MapPin className="w-4 h-4" />
+                        Send via Email
+                      </a>
+                    </div>
+                  </ScrollAnimator>
+                </div>
+              </section>
+            </>
           )}
         </>
       ) : (
