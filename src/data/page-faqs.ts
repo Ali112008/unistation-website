@@ -130,4 +130,13 @@ export const pageFaqs: Record<string, FAQItem[]> = {
     { q: "Is accommodation included in the foundation year?", a: "Accommodation is not included in the program fee, but our team can help you find suitable housing near your study location." },
     { q: "Do I need any prior Spanish knowledge to join?", a: "No prior Spanish is required. The foundation year is designed to take you from beginner to B2 level through intensive language study." },
   ],
+  "profile-building": [
+    { q: "How long is the Profile Building program?", a: "The program runs for a minimum of six months. The exact duration depends on your personalized development plan and goals — some students benefit from extending the mentorship." },
+    { q: "Who is this program for?", a: "It's designed for high-achieving students in high school or taking a gap year who aspire to gain admission to the world's leading universities and win competitive merit-based scholarships." },
+    { q: "How is this different from regular admissions consulting?", a: "Unlike one-time consultations, this is a structured, long-term mentorship. You work closely with a dedicated mentor through regular coaching sessions, with ongoing accountability, feedback, and plan adjustments." },
+    { q: "What does a typical coaching session look like?", a: "Each session focuses on reviewing your progress, setting new goals, overcoming challenges, and ensuring every step strengthens your university application. Sessions can be weekly or monthly based on your plan." },
+    { q: "Can I join if I'm already in my final year of high school?", a: "Yes, though starting earlier provides a significant advantage. The strongest applicants begin preparing months or even years before submitting applications." },
+    { q: "Is there a limit on how many students are accepted?", a: "Yes. To maintain the quality of mentorship and personalized support, places in the program are limited per intake. Every applicant completes an initial consultation and profile assessment before admission." },
+    { q: "Does the program include university application support?", a: "The program focuses on building your profile before the application phase. By the end, you'll have a polished CV, outstanding essays, and a clear application strategy — putting you in the strongest position when it's time to apply." },
+  ],
 };

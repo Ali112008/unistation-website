@@ -845,4 +845,48 @@ export const packagesContent: Record<string, PackageContent> = {
       },
     ],
   },
+
+  "profile-building": {
+    slug: "profile-building",
+    intro:
+      "The world's most competitive universities don't admit students based on grades alone. They look for future leaders, innovators, researchers, entrepreneurs, and individuals who have demonstrated exceptional commitment to their academic and personal development. UniStation Profile Building & University Mentorship Program is designed for ambitious students who aspire to gain admission to top universities and compete for highly selective scholarship opportunities.",
+    tiers: [
+      {
+        name: "Profile Building & Mentorship",
+        subtitle: "A structured, long-term mentorship experience",
+        features: [
+          {
+            title: "Comprehensive Profile Evaluation",
+            description: "Every student begins with a thorough assessment covering academic performance, career aspirations, extracurricular profile, leadership experience, volunteer work, research exposure, target universities, and scholarship opportunities.",
+          },
+          {
+            title: "Personalized Development Roadmap",
+            description: "Using your evaluation, we develop a customized plan designed specifically for your goals. No two students follow exactly the same roadmap.",
+          },
+          {
+            title: "Academic Excellence Strategy",
+            description: "Carefully selected university-level courses, certifications, competitions, enrichment programs, and advanced learning opportunities aligned with your intended field of study.",
+          },
+          {
+            title: "Leadership & Impact Development",
+            description: "We help you build leadership experience through clubs, initiatives, volunteering, entrepreneurship, community service, and passion projects that genuinely reflect your interests.",
+          },
+          {
+            title: "Research & Professional Exposure",
+            description: "Guidance finding research opportunities, collaborating with academics, writing scientific papers, participating in conferences, internships, and industry engagement.",
+          },
+          {
+            title: "Personal Branding & Document Preparation",
+            description: "A compelling Personal Statement, Professional Academic CV, Scholarship Essays, Motivation Letters, University Portfolio, and Activity Descriptions — all refined through multiple rounds of feedback.",
+          },
+          {
+            title: "Standardized Test Planning",
+            description: "Personalized preparation strategies for IELTS, TOEFL, SAT, ACT, UCAT, GRE, and GMAT — integrated into your overall admissions strategy.",
+          },
+        ],
+        idealFor:
+          "High-achieving students in high school or taking a gap year who aspire to gain admission to the world's leading universities and win competitive merit-based scholarships.",
+      },
+    ],
+  },
 };
