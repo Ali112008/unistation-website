@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ScrollAnimator, SectionHeading } from "@/components/shared";
 import { FAQSection } from "@/components/FAQSection";
 import { pageFaqs } from "@/data/page-faqs";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Mail } from "lucide-react";
 
 interface TeamMember {
   id: string;
@@ -92,6 +92,15 @@ export default function TeamPage() {
                 <div className="md:col-span-2">
                   <h2 className="text-3xl font-bold text-brand-navy">{founder.name}</h2>
                   <p className="text-brand-teal font-semibold mt-1">{founder.role}</p>
+                  {founder.email && (
+                    <a
+                      href={`mailto:${founder.email}`}
+                      className="inline-flex items-center gap-1.5 text-gray-400 text-sm hover:text-brand-teal transition-colors mt-2"
+                    >
+                      <Mail className="w-3.5 h-3.5" />
+                      {founder.email}
+                    </a>
+                  )}
                   <div className="brand-line mt-3 mb-6" />
                   {founder.bio && (
                     <div
@@ -126,9 +135,19 @@ export default function TeamPage() {
                           <Image src={member.image} alt={member.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" unoptimized />
                         )}
                         <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/80 via-brand-navy/20 to-transparent" />
-                        <div className="absolute bottom-4 left-4">
+                        <div className="absolute bottom-4 left-4 right-4">
                           <p className="text-white font-bold text-lg">{member.name}</p>
                           <p className="text-brand-teal-light text-sm">{member.role}</p>
+                          {member.email && (
+                            <a
+                              href={`mailto:${member.email}`}
+                              className="inline-flex items-center gap-1 text-white/60 text-xs hover:text-white transition-colors mt-1.5"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <Mail className="w-3 h-3" />
+                              {member.email}
+                            </a>
+                          )}
                         </div>
                       </div>
                       <CardContent className="p-6">
