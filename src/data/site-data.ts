@@ -36,20 +36,6 @@ export const siteConfig = {
       shortBio: "Ahmed combines precision with empathy. As the backbone of the operations team, he ensures every application, consultation, and process runs smoothly. His ability to connect with students and staff alike makes him the perfect link between vision and execution.",
       fullBio: "Ahmed combines precision with empathy. As the backbone of the operations team, he ensures every application, consultation, and process runs smoothly. His ability to connect with students and staff alike makes him the perfect link between vision and execution. With years of experience in international education operations, Ahmed has developed streamlined processes that make the complex journey of studying abroad feel manageable and stress-free for every student.",
     },
-    {
-      name: "Layla Karim",
-      role: "Academic Advisor",
-      image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&h=500&fit=crop&crop=face",
-      shortBio: "Layla specializes in guiding students through complex admission pathways. With over eight years in academic counseling, she's helped countless students gain entry to top universities worldwide. Her approach blends structure with inspiration, empowering students to aim higher.",
-      fullBio: "Layla specializes in guiding students through complex admission pathways. With over eight years in academic counseling, she's helped countless students gain entry to top universities worldwide. Her approach blends structure with inspiration, empowering students to aim higher. Layla stays constantly updated on admission requirements, scholarship opportunities, and program changes across universities in multiple countries, ensuring her students always receive the most current and relevant advice.",
-    },
-    {
-      name: "Omar Haddad",
-      role: "Language Program Coordinator",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=500&fit=crop&crop=face",
-      shortBio: "Omar oversees UniStation's language preparation programs, ensuring students master English, German, or Spanish before their journey abroad. His background in linguistics and education technology brings a modern, engaging edge to traditional language learning.",
-      fullBio: "Omar oversees UniStation's language preparation programs, ensuring students master English, German, Turkish, or Spanish before their journey abroad. His background in linguistics and education technology brings a modern, engaging edge to traditional language learning. Omar has designed curricula that combine proven teaching methodologies with digital tools, creating an interactive learning experience that prepares students not just for exams, but for real academic environments.",
-    },
   ],
   offices: [
     {
