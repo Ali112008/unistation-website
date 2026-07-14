@@ -66,8 +66,7 @@ function SpainPage({ dest }: { dest: (typeof ALL_DESTINATIONS)[number] }) {
       description: string;
       highlights: string[];
       majors: string[];
-      costLabel: string;
-      costNote: string;
+      costItems: { label: string; value: string }[];
     };
     pathTwo: {
       title: string;
@@ -226,9 +225,17 @@ function SpainPage({ dest }: { dest: (typeof ALL_DESTINATIONS)[number] }) {
                         </span>
                       ))}
                     </div>
-                    <p className="font-bold text-brand-navy text-lg">
-                      {twoPathsSection.pathOne.costLabel}
+                    <p className="text-xs text-gray-400 uppercase tracking-wider mb-3 font-medium">
+                      What It Costs
                     </p>
+                    <div className="space-y-2">
+                      {twoPathsSection.pathOne.costItems.map((item) => (
+                        <div key={item.label} className="flex items-center justify-between">
+                          <span className="text-gray-500 text-sm">{item.label}</span>
+                          <span className="font-bold text-brand-navy text-sm">{item.value}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </ScrollAnimator>

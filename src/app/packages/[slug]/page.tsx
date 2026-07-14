@@ -356,12 +356,28 @@ export default async function PackageDetailPage({
               {stats.map((stat, i) => {
                 const Icon = stat.icon;
                 return (
-                  <div key={i} className="text-center">
-                    <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-brand-teal/10 mb-3">
-                      <Icon className="w-5 h-5 text-brand-teal" />
-                    </div>
-                    <p className="text-2xl md:text-3xl font-bold text-brand-navy">{stat.value}</p>
-                    <p className="text-xs text-gray-400 mt-1 font-medium uppercase tracking-wider">{stat.label}</p>
+                  <div key={i} className={slug === "spain-foundation-year" && i === 0 ? "" : "text-center"}>
+                    {slug === "spain-foundation-year" && i === 0 ? (
+                      <>
+                        <div className="flex items-center gap-3 mb-1">
+                          <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-brand-teal/10 shrink-0">
+                            <Icon className="w-5 h-5 text-brand-teal" />
+                          </div>
+                          <div>
+                            <p className="text-2xl md:text-3xl font-bold text-brand-navy text-left">{stat.value}</p>
+                            <p className="text-xs text-gray-400 font-medium uppercase tracking-wider text-left">{stat.label}</p>
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-brand-teal/10 mb-3">
+                          <Icon className="w-5 h-5 text-brand-teal" />
+                        </div>
+                        <p className="text-2xl md:text-3xl font-bold text-brand-navy">{stat.value}</p>
+                        <p className="text-xs text-gray-400 mt-1 font-medium uppercase tracking-wider">{stat.label}</p>
+                      </>
+                    )}
                   </div>
                 );
               })}

@@ -54,8 +54,10 @@ export const destinationsContent: Record<string, DestinationContent> = {
               "Computer Science",
               "Psychology",
             ],
-            costLabel: "€6,000 – €25,000 per year",
-            costNote: "Highest-cost field: Dentistry",
+            costItems: [
+              { label: "Tuition per year", value: "€6,000 – €25,000" },
+              { label: "Highest-cost field", value: "Dentistry" },
+            ],
           },
           pathTwo: {
             title: "Public Universities via Foundation Year",
