@@ -272,14 +272,16 @@ function SpainPage({ dest }: { dest: (typeof ALL_DESTINATIONS)[number] }) {
                   </div>
                   <div className="mb-6">
                     <p className="text-xs text-gray-400 uppercase tracking-wider mb-3 font-medium">
-                      Academic Tracks
+                      Available Majors
                     </p>
-                    <div className="space-y-2">
+                    <div className="flex flex-wrap gap-2">
                       {twoPathsSection.pathTwo.tracks.map((track) => (
-                        <div key={track.name} className="flex items-center justify-between bg-gray-50 rounded-lg px-4 py-2.5">
-                          <span className="font-medium text-brand-navy text-sm">{track.name}</span>
-                          <span className="text-gray-500 text-xs">{track.subjects}</span>
-                        </div>
+                        <span
+                          key={track.name}
+                          className="px-3 py-1.5 bg-gray-50 text-brand-navy text-xs font-medium rounded-full"
+                        >
+                          {track.name}
+                        </span>
                       ))}
                     </div>
                   </div>

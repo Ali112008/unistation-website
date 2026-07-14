@@ -101,7 +101,6 @@ export const destinationsContent: Record<string, DestinationContent> = {
             costItems: [
               { label: "Foundation year", value: "€4,500 total" },
               { label: "Public university tuition (per year after)", value: "€1,000 – €4,000" },
-              { label: "Spanish level reached", value: "B2" },
             ],
           },
         },

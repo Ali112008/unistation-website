@@ -98,10 +98,9 @@ const PACKAGE_STATS: Record<string, { label: string; value: string; icon: React.
     { label: "Work-Study Options", value: "Full", icon: Handshake },
   ],
   "spain-foundation-year": [
-    { label: "Public University Tuition", value: "€1K/yr", icon: TrendingUp },
-    { label: "Spanish Level", value: "Up to B2", icon: BookOpen },
-    { label: "Students Placed", value: "200+", icon: Users },
-    { label: "Program Duration", value: "12 Months", icon: ShieldCheck },
+    { label: "Foundation Year Cost", value: "€4,500", icon: TrendingUp },
+    { label: "Program Duration", value: "8–10 Months", icon: BookOpen },
+    { label: "Public Uni Tuition", value: "€1K–4K/yr", icon: GraduationCap },
   ],
 };
 
@@ -353,7 +352,7 @@ export default async function PackageDetailPage({
       <section className="relative -mt-12 z-10">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollAnimator>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-white rounded-2xl shadow-xl border border-gray-100 p-6 md:p-8">
+            <div className={`grid gap-4 bg-white rounded-2xl shadow-xl border border-gray-100 p-6 md:p-8 ${stats.length === 3 ? "grid-cols-3" : "grid-cols-2 md:grid-cols-4"}`}>
               {stats.map((stat, i) => {
                 const Icon = stat.icon;
                 return (
@@ -406,15 +405,17 @@ export default async function PackageDetailPage({
               <ScrollAnimator>
                 <div className="text-center mb-14">
                   <p className="text-brand-teal font-semibold text-sm uppercase tracking-wider mb-2">
-                    Choose Your Plan
+                    {content.tiers.length === 1 ? "Program Package" : "Choose Your Plan"}
                   </p>
                   <h2 className="text-3xl md:text-4xl font-bold text-brand-navy mb-4">
-                    Admission Packages
+                    {content.tiers.length === 1 ? content.tiers[0].name : "Admission Packages"}
                   </h2>
                   <div className="brand-line mx-auto" />
-                  <p className="text-gray-500 mt-4 max-w-xl mx-auto">
-                    Select the package that best fits your needs. All plans include dedicated advisor support throughout your journey.
-                  </p>
+                  {content.tiers.length > 1 && (
+                    <p className="text-gray-500 mt-4 max-w-xl mx-auto">
+                      Select the package that best fits your needs. All plans include dedicated advisor support throughout your journey.
+                    </p>
+                  )}
                 </div>
               </ScrollAnimator>
 
