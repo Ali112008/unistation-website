@@ -75,7 +75,7 @@ export const siteConfig = {
     { name: "Czech Republic", image: "https://cdn.prod.website-files.com/68fd63e9503df62b019b5c75/69181877c73e9915bed2c322_Czech-Republic-1.jpg", link: "/packages/europe" },
     { name: "Hungary", image: "https://cdn.prod.website-files.com/68fd63e9503df62b019b5c75/691818772d5c606051b58da5_Hungary.webp", link: "/packages/europe" },
     { name: "Poland", image: "https://cdn.prod.website-files.com/68fd63e9503df62b019b5c75/69181877fe1a30d3f0ac95ac_Poland.avif", link: "/packages/europe" },
-    { name: "Turkey", image: "https://cdn.prod.website-files.com/68fd63e9503df62b019b5c75/68fd63e9503df62b019b5d16_360_F_87164057_AAF0KRfPw8ifqoBRjyxOAgzKcvKux0Hy.jpg", link: "/packages/europe" },
+    { name: "Turkey", image: "https://sfile.chatglm.cn/images-ppt/d6628d95f1bf.jpg", link: "/destinations/turkey" },
     { name: "Malta", image: "https://cdn.prod.website-files.com/68fd63e9503df62b019b5c75/69181877b59aea89eba7b859_Malta.avif", link: "/packages/europe" },
     { name: "Cyprus", image: "https://cdn.prod.website-files.com/68fd63e9503df62b019b5c75/69181877ddd880ccc5b995d0_Cyprus.jpg", link: "/packages/europe" },
     { name: "Georgia", image: "https://cdn.prod.website-files.com/68fd63e9503df62b019b5c75/69181877ccd7c46fc1a0bd59_Georgia.jpg", link: "https://unistation.org/georgia" },
