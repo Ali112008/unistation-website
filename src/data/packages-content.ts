@@ -96,7 +96,7 @@ export const packagesContent: Record<string, PackageContent> = {
           {
             title: "Profile Building",
             description:
-              "Identifying pertinent extracurricular activities, suggesting internships and research opportunities, and guidance on cultivating leadership skills and documenting experiences valued by UK universities.",
+              "Identifying pertinent extracurricular activities such as volunteering, internships, and research opportunities. Suggesting specific examples of leadership positions and initiative capabilities. Guidance on cultivating leadership skills and documenting experiences valued by UK universities.",
           },
           {
             title: "Visa Application Guidance",
@@ -106,12 +106,12 @@ export const packagesContent: Record<string, PackageContent> = {
           {
             title: "Pre-Departure Guidance",
             description:
-              "Pre-departure training to ensure a smooth transition into UK life, including familiarization with the healthcare system, accommodation, and student life necessities.",
+              "Pre-departure training to ensure a smooth transition into UK life, including familiarization with the healthcare system, accommodation, and student life necessities. Help with securing student accommodation close to your university.",
           },
           {
             title: "Ongoing Support",
             description:
-              "From start to finish, ongoing support via email and phone consultations to ensure you're on the right path with each component of the application process.",
+              "From start to finish, ongoing support via email and phone consultations to ensure you're on the right path with each component of the application process, and beyond.",
           },
         ],
         idealFor:
@@ -143,7 +143,7 @@ export const packagesContent: Record<string, PackageContent> = {
           {
             title: "Personal Statement & Application Guidance",
             description:
-              "Medical school personal statement coaching with detailed feedback to help you write an effective statement reflecting your motivation for medicine, academic abilities, and extra-curricular activities. Full UCAS application support to ensure your application is strong and mistake-free.",
+              "Medical school personal statement coaching with detailed feedback to help you write an effective statement reflecting your motivation for your study program, academic abilities, and extra-curricular activities related to a medical career. Full UCAS application support to ensure your application is strong and mistake-free.",
           },
           {
             title: "MMI & Panel Interview Coaching",
@@ -153,7 +153,7 @@ export const packagesContent: Record<string, PackageContent> = {
           {
             title: "Profile Building for Medical School",
             description:
-              "Identification of pertinent extracurricular activities including volunteering at healthcare organizations, doctor shadowing, and healthcare-related research. Guidance on acquiring hands-on medical experience and cultivating skills valued by medical schools such as teamwork, empathy, problem-solving, and communication.",
+              "Identification of pertinent extracurricular activities including volunteering at healthcare organizations, doctor shadowing, and healthcare-related research. Guidance on acquiring hands-on medical experience and cultivating skills valued by medical schools such as teamwork, empathy, problem-solving, and communication. Support with demonstrating leadership positions, initiative capabilities, and documenting experiences in a way that strengthens your medical school application.",
           },
           {
             title: "Visa Application Guidance",
@@ -163,7 +163,7 @@ export const packagesContent: Record<string, PackageContent> = {
           {
             title: "Pre-Departure Guidance",
             description:
-              "Pre-departure training to ensure a smooth transition into UK life, including familiarization with the healthcare system, accommodation, and student life necessities.",
+              "Pre-departure training to ensure a smooth transition into UK life, including familiarization with the healthcare system, accommodation, and student life necessities. Help with securing student accommodation close to your medical school.",
           },
           {
             title: "Ongoing Support",
@@ -215,7 +215,7 @@ export const packagesContent: Record<string, PackageContent> = {
           {
             title: "Scholarship & Financial Aid Guidance",
             description:
-              "Discover scholarship opportunities and learn how to apply for financial aid. Our team will help you maximize your chances of securing funding.",
+              "Discover scholarship opportunities and learn how to apply for financial aid to support your education. Our team will help you maximize your chances of securing funding.",
           },
           {
             title: "Exclusive Access to Helpful Resources",

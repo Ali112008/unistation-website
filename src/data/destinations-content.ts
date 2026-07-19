@@ -178,6 +178,7 @@ export const destinationsContent: Record<string, DestinationContent> = {
     overviewParagraphs: [
       "Turkey offers an outstanding balance between educational quality, affordability, and student life, making it one of the fastest-growing destinations for international education. Strategically located between Europe and Asia, Turkey is home to more than 250 universities, welcoming hundreds of thousands of international students each year across undergraduate, master's, and doctoral programs.",
       "Whether you dream of studying Medicine, Dentistry, Pharmacy, Engineering, Business, Computer Science, Architecture, or any other discipline, Turkey offers internationally recognized degrees, excellent academic opportunities, and a welcoming environment where students from around the world can thrive.",
+      "At UniStation, we help students identify the right university, navigate the admissions process, secure accommodation, and prepare for a successful academic journey in Turkey.",
     ],
     additionalSections: [
       {
@@ -245,6 +246,7 @@ export const destinationsContent: Record<string, DestinationContent> = {
         type: "things-to-consider",
         data: {
           title: "Things to Consider Before Studying in Turkey",
+          intro: "Like every study destination, Turkey has its own unique characteristics that students should be prepared for.",
           items: [
             {
               title: "University Quality Varies",
@@ -349,6 +351,7 @@ export const destinationsContent: Record<string, DestinationContent> = {
             "Airport pickup and pre-departure guidance",
             "Ongoing support throughout your studies",
           ],
+          closing: "From your first consultation to your arrival in Turkey, we're with you every step of the way.",
         },
       },
       {

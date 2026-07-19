@@ -139,6 +139,18 @@ function SpainPage({ dest }: { dest: (typeof ALL_DESTINATIONS)[number] }) {
               {content.heroDescription}
             </p>
           </div>
+          {/* Stats bar */}
+          <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4">
+            {content.stats.map((stat) => (
+              <div
+                key={stat.label}
+                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4 text-center"
+              >
+                <p className="text-brand-teal font-bold text-2xl md:text-3xl">{stat.value}</p>
+                <p className="text-gray-400 text-sm mt-1">{stat.label}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -292,12 +304,15 @@ function SpainPage({ dest }: { dest: (typeof ALL_DESTINATIONS)[number] }) {
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {twoPathsSection.pathTwo.tracks.map((track) => (
-                        <span
+                        <div
                           key={track.name}
                           className="px-3 py-1.5 bg-gray-50 text-brand-navy text-xs font-medium rounded-full"
                         >
-                          {track.name}
-                        </span>
+                          <span className="font-semibold">{track.name}</span>
+                          {track.subjects && (
+                            <span className="text-gray-400 ml-1">— {track.subjects}</span>
+                          )}
+                        </div>
                       ))}
                     </div>
                   </div>
@@ -472,7 +487,7 @@ function TurkeyPage({ dest }: { dest: (typeof ALL_DESTINATIONS)[number] }) {
 
   const thingsToConsider = content.additionalSections.find(
     (s) => s.type === "things-to-consider"
-  )?.data as { title: string; items: { title: string; description: string }[] } | undefined;
+  )?.data as { title: string; intro?: string; items: { title: string; description: string }[] } | undefined;
 
   const tuitionTable = content.additionalSections.find(
     (s) => s.type === "tuition-table"
@@ -492,7 +507,7 @@ function TurkeyPage({ dest }: { dest: (typeof ALL_DESTINATIONS)[number] }) {
 
   const whyUnistation = content.additionalSections.find(
     (s) => s.type === "why-unistation"
-  )?.data as { title: string; description: string; services: string[] } | undefined;
+  )?.data as { title: string; description: string; services: string[]; closing?: string } | undefined;
 
   const ctaSection = content.additionalSections.find(
     (s) => s.type === "cta"
@@ -643,9 +658,14 @@ function TurkeyPage({ dest }: { dest: (typeof ALL_DESTINATIONS)[number] }) {
         <section className="py-20 bg-gray-50">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <ScrollAnimator>
-              <h2 className="text-2xl md:text-3xl font-bold text-brand-navy mb-10 text-center">
+              <h2 className="text-2xl md:text-3xl font-bold text-brand-navy mb-4 text-center">
                 {thingsToConsider.title}
               </h2>
+              {thingsToConsider.intro && (
+                <p className="text-gray-500 text-center mb-10 max-w-2xl mx-auto">
+                  {thingsToConsider.intro}
+                </p>
+              )}
             </ScrollAnimator>
             <div className="space-y-6">
               {thingsToConsider.items.map((item, i) => (
@@ -829,6 +849,11 @@ function TurkeyPage({ dest }: { dest: (typeof ALL_DESTINATIONS)[number] }) {
                 </ScrollAnimator>
               ))}
             </div>
+            {whyUnistation.closing && (
+              <p className="text-center text-gray-500 mt-8 text-sm italic">
+                {whyUnistation.closing}
+              </p>
+            )}
           </div>
         </section>
       )}
