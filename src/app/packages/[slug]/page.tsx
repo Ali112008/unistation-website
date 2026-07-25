@@ -488,6 +488,38 @@ export default async function PackageDetailPage({
             </section>
           )}
 
+          {/* Why Choose Section (e.g. Early Bird) */}
+          {content.whyChoose && (
+            <section className="py-20 bg-gray-50">
+              <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <ScrollAnimator>
+                  <div className="text-center mb-14">
+                    <p className="text-brand-teal font-semibold text-sm uppercase tracking-wider mb-2">
+                      The Advantage
+                    </p>
+                    <h2 className="text-3xl md:text-4xl font-bold text-brand-navy mb-4">
+                      {content.whyChoose.title}
+                    </h2>
+                    <div className="brand-line mx-auto" />
+                  </div>
+                </ScrollAnimator>
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-4xl mx-auto">
+                  {content.whyChoose.items.map((item, i) => (
+                    <ScrollAnimator key={item.title} delay={i * 100}>
+                      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 h-full">
+                        <div className="w-12 h-12 bg-brand-teal/10 rounded-xl flex items-center justify-center mb-4">
+                          <CheckCircle2 className="w-6 h-6 text-brand-teal" />
+                        </div>
+                        <h3 className="font-bold text-brand-navy text-lg mb-2">{item.title}</h3>
+                        <p className="text-gray-500 text-sm leading-relaxed">{item.description}</p>
+                      </div>
+                    </ScrollAnimator>
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
+
           {/* Spain-specific: Not Included + How to Enroll */}
           {slug === "spain-foundation-year" && (
             <>

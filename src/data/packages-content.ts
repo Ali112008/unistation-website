@@ -12,11 +12,20 @@ export interface PackageTier {
   price?: string;
 }
 
+export interface WhyChooseItem {
+  title: string;
+  description: string;
+}
+
 export interface PackageContent {
   slug: string;
   intro: string;
   countries?: string;
   tiers: PackageTier[];
+  whyChoose?: {
+    title: string;
+    items: WhyChooseItem[];
+  };
 }
 
 export const packagesContent: Record<string, PackageContent> = {
@@ -96,7 +105,7 @@ export const packagesContent: Record<string, PackageContent> = {
           {
             title: "Profile Building",
             description:
-              "Identifying pertinent extracurricular activities such as volunteering, internships, and research opportunities. Suggesting specific examples of leadership positions and initiative capabilities. Guidance on cultivating leadership skills and documenting experiences valued by UK universities.",
+              "Assisting in the identification of pertinent extracurricular activities that will make your application stronger, for example, volunteering at organizations, internships, or conducting field-related research. Plus, suggestions on how to acquire hands-on experience, either through company/factory internships, research internships, or social work in the community. Guidance on how to cultivate imperative skills and hold leadership positions in applicable clubs or volunteer groups, demonstrating your initiative and leadership capabilities. Tips on how to properly document and present your experiences highlighting the skills and qualities most valued by UK universities (e.g., teamwork, empathy, problem-solving, communication).",
           },
           {
             title: "Visa Application Guidance",
@@ -143,7 +152,7 @@ export const packagesContent: Record<string, PackageContent> = {
           {
             title: "Personal Statement & Application Guidance",
             description:
-              "Medical school personal statement coaching with detailed feedback to help you write an effective statement reflecting your motivation for your study program, academic abilities, and extra-curricular activities related to a medical career. Full UCAS application support to ensure your application is strong and mistake-free.",
+              "Medical school personal statement coaching with detailed feedback to help you write an effective statement reflecting your motivation for medicine, academic abilities, and extra-curricular activities related to a medical career. Full UCAS application support to ensure your application is strong and mistake-free.",
           },
           {
             title: "MMI & Panel Interview Coaching",
@@ -153,7 +162,7 @@ export const packagesContent: Record<string, PackageContent> = {
           {
             title: "Profile Building for Medical School",
             description:
-              "Identification of pertinent extracurricular activities including volunteering at healthcare organizations, doctor shadowing, and healthcare-related research. Guidance on acquiring hands-on medical experience and cultivating skills valued by medical schools such as teamwork, empathy, problem-solving, and communication. Support with demonstrating leadership positions, initiative capabilities, and documenting experiences in a way that strengthens your medical school application.",
+              "Assisting in the identification of pertinent extracurricular activities that will make your application stronger, for example, volunteering at healthcare organizations, doctor shadowing, or conducting healthcare-related research. Suggestions on how to acquire hands-on medical experience, either through hospital internships, research internships, or healthcare work in the community. Guidance on how to cultivate imperative skills and hold leadership positions in applicable clubs or volunteer groups, demonstrating your initiative and leadership capabilities. Tips on how to properly document and present your experiences highlighting the skills and qualities most valued by medical schools (e.g., teamwork, empathy, problem-solving, communication).",
           },
           {
             title: "Visa Application Guidance",
@@ -227,6 +236,31 @@ export const packagesContent: Record<string, PackageContent> = {
           "Students who want to get ahead of the competition and start preparing early. Affordable pricing, expert guidance, and peace of mind knowing you're on the right track. Only 20 spots available at this exclusive rate!",
       },
     ],
+    whyChoose: {
+      title: "Why Choose the Early-Bird Package?",
+      items: [
+        {
+          title: "Affordable Pricing",
+          description: "Enjoy discounted rates while committing early to your university journey.",
+        },
+        {
+          title: "Expert Guidance",
+          description: "Our team is dedicated to your success, offering professional advice and personalized support every step of the way.",
+        },
+        {
+          title: "Get Ahead of the Competition",
+          description: "Start preparing now and avoid the rush when application deadlines approach.",
+        },
+        {
+          title: "Peace of Mind",
+          description: "With ongoing support, you'll feel confident knowing you're on the right track.",
+        },
+        {
+          title: "Limited Availability",
+          description: "Only 20 lucky students will get this exclusive package at this discounted rate!",
+        },
+      ],
+    },
   },
 
   europe: {
