@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { siteConfig } from "@/data/site-data";
 import { ScrollAnimator, SectionHeading } from "@/components/shared";
 import { FAQSection } from "@/components/FAQSection";
+import { LibrarySection } from "@/components/LibrarySection";
 import { pageFaqs } from "@/data/page-faqs";
 import {
   GraduationCap, FileText, BookOpen, Stethoscope, Award, Brain, FlaskConical,
@@ -91,6 +92,7 @@ export default function TestsExamsPage() {
       </section>
 
       <FAQSection faqs={pageFaqs["tests-exams"]} />
+      <LibrarySection />
     </>
   );
 }

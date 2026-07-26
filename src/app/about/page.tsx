@@ -6,6 +6,7 @@ import Link from "next/link";
 import { siteConfig } from "@/data/site-data";
 import { ScrollAnimator, SectionHeading, CTASection } from "@/components/shared";
 import { FAQSection } from "@/components/FAQSection";
+import { LibrarySection } from "@/components/LibrarySection";
 import { pageFaqs } from "@/data/page-faqs";
 import { ArrowRight, ChevronRight } from "lucide-react";
 
@@ -207,6 +208,7 @@ export default function AboutPage() {
       </section>
 
       <FAQSection faqs={pageFaqs.about} />
+      <LibrarySection />
       <CTASection />
     </>
   );

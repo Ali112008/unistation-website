@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollAnimator, SectionHeading } from "@/components/shared";
 import { FAQSection } from "@/components/FAQSection";
+import { LibrarySection } from "@/components/LibrarySection";
 import { pageFaqs } from "@/data/page-faqs";
 import { ChevronRight, Mail } from "lucide-react";
 
@@ -178,6 +179,8 @@ export default function TeamPage() {
           </div>
         </section>
       )}
+
+      <LibrarySection />
 
       <FAQSection faqs={pageFaqs.team} />
     </>

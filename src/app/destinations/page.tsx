@@ -13,6 +13,7 @@ import {
 import { siteConfig } from "@/data/site-data";
 import { ScrollAnimator, CTASection } from "@/components/shared";
 import { FAQSection } from "@/components/FAQSection";
+import { LibrarySection } from "@/components/LibrarySection";
 import { pageFaqs } from "@/data/page-faqs";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 
@@ -218,6 +219,7 @@ export default function DestinationsPage() {
       </section>
 
       <FAQSection faqs={pageFaqs.destinations} />
+      <LibrarySection />
       <CTASection />
     </>
   );
