@@ -445,7 +445,7 @@ function SpainPage({ dest }: { dest: (typeof ALL_DESTINATIONS)[number] }) {
                   Book a Free Consultation
                 </a>
                 <Link
-                  href="/packages/spain-foundation-year"
+                  href="/spain-foundation-year"
                   className="inline-flex items-center justify-center px-8 py-4 border border-white/20 text-white hover:bg-white/10 font-semibold rounded-xl backdrop-blur-sm transition-all duration-300 text-lg"
                 >
                   View Foundation Year Package

@@ -44,7 +44,7 @@ export default function DestinationsPage() {
               const destSlug = dest.name.toLowerCase().replace(/\s+/g, "-");
               const linkProps = isExternal
                 ? { href: dest.link, target: "_blank" as const, rel: "noopener noreferrer" }
-                : { href: `/destinations/${destSlug}` };
+                : { href: `/${destSlug}` };
               return (
               <ScrollAnimator key={dest.name} delay={i * 80}>
                 <Wrapper {...linkProps} className="block group">
@@ -123,7 +123,7 @@ export default function DestinationsPage() {
                   const destSlug = dest.name.toLowerCase().replace(/\s+/g, "-");
                   const linkProps = isExternal
                     ? { href: dest.link, target: "_blank" as const, rel: "noopener noreferrer" }
-                    : { href: `/destinations/${destSlug}` };
+                    : { href: `/${destSlug}` };
                   return (
                   <ScrollAnimator key={dest.name} delay={i * 50}>
                     <Wrapper {...linkProps} className="block group">

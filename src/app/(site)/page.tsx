@@ -359,10 +359,10 @@ const navLinks = [
 ];
 
 const languageDropdown = [
-  { label: "English", href: `${BASE_URL}/language-courses/english` },
-  { label: "Turkish", href: `${BASE_URL}/language-courses/turkish` },
-  { label: "German", href: `${BASE_URL}/language-courses/deutsch` },
-  { label: "Spanish", href: `${BASE_URL}/language-courses/espanol` },
+  { label: "English", href: `${BASE_URL}/ielts` },
+  { label: "Turkish", href: `${BASE_URL}/turkish` },
+  { label: "German", href: `${BASE_URL}/german` },
+  { label: "Spanish", href: `${BASE_URL}/spanish` },
 ];
 
 const examDropdown = [

@@ -129,7 +129,7 @@ export function Footer() {
                   (p) => p.name.toLowerCase() === d.name.toLowerCase()
                 );
                 const href = matchingPkg
-                  ? `/packages/${matchingPkg.slug}`
+                  ? `/${matchingPkg.slug}`
                   : "/destinations";
                 return (
                   <li key={d.name}>

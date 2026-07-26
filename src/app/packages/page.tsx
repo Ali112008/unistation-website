@@ -57,7 +57,7 @@ export default function PackagesPage() {
             {siteConfig.packages.map((pkg, i) => (
               <ScrollAnimator key={pkg.name} delay={i * 80}>
                 <li>
-                  <Link href={`/packages/${pkg.slug}`} className="group block relative h-80 md:h-96 rounded-xl overflow-hidden shadow-md hover:shadow-2xl transition-shadow duration-500">
+                  <Link href={`/${pkg.slug}`} className="group block relative h-80 md:h-96 rounded-xl overflow-hidden shadow-md hover:shadow-2xl transition-shadow duration-500">
                   {/* Image */}
                   <Image
                     src={pkg.image}

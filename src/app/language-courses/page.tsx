@@ -47,7 +47,7 @@ export default function LanguageCoursesPage() {
           <div className="grid md:grid-cols-2 gap-8">
             {siteConfig.languageCourses.map((course, i) => (
               <ScrollAnimator key={course.slug} delay={i * 100}>
-                <Link href={`/language-courses/${course.slug}`} className="block h-80 md:h-96 group rounded-2xl overflow-hidden relative">
+                <Link href={course.slug === "english" ? "/ielts" : `/${course.slug}`} className="block h-80 md:h-96 group rounded-2xl overflow-hidden relative">
                   {/* Background Image */}
                   <Image
                     src={course.image}
