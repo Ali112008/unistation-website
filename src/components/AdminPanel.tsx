@@ -407,6 +407,256 @@ function FaqsEditor({ data, onChange }: { data: any; onChange: (d: any) => void 
   );
 }
 
+/* ═══════════════════════════════════════════════════
+   Georgia-specific Editors
+   ═══════════════════════════════════════════════════ */
+
+/* ─── Georgia Stats Editor (target/prefix/suffix/label) ─── */
+function GeorgiaStatsEditor({ data, onChange }: { data: any[]; onChange: (d: any[]) => void }) {
+  const remove = (i: number) => onChange((data || []).filter((_, idx) => idx !== i));
+  const update = (i: number, field: string, value: any) => {
+    const next = [...(data || [])];
+    next[i] = { ...next[i], [field]: value };
+    onChange(next);
+  };
+  return (
+    <div>
+      <div style={{ padding: 12, background: "#eff6ff", borderRadius: 8, marginBottom: 16, fontSize: 13, color: "#1e40af" }}>
+        🎓 إحصائيات صفحة جورجيا — تظهر في قسم الأرقام بالصفحة الرئيسية
+      </div>
+      {(data || []).map((stat, i) => (
+        <div key={i} style={S.card}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+            <strong>الرقم #{i + 1}</strong>
+            <button onClick={() => remove(i)} style={S.deleteBtn}>حذف</button>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            <Field label="القيمة (رقم)"><input type="number" step="0.1" value={stat.target || 0} onChange={e => update(i, "target", parseFloat(e.target.value) || 0)} style={S.input} /></Field>
+            <Field label="العنوان"><TextInput value={stat.label || ""} onChange={v => update(i, "label", v)} placeholder="جامعات معتمدة" /></Field>
+            <Field label="قبل الرقم"><TextInput value={stat.prefix || ""} onChange={v => update(i, "prefix", v)} placeholder="مثل +" /></Field>
+            <Field label="بعد الرقم"><TextInput value={stat.suffix || ""} onChange={v => update(i, "suffix", v)} placeholder="مثل %" /></Field>
+          </div>
+        </div>
+      ))}
+      <button onClick={() => onChange([...(data || []), { target: 0, prefix: "", suffix: "", label: "" }])} style={S.addBtn}>+ إضافة رقم</button>
+    </div>
+  );
+}
+
+/* ─── Georgia Universities Editor ─── */
+function UniversitiesEditor({ data, onChange }: { data: any[]; onChange: (d: any[]) => void }) {
+  const removeUni = (i: number) => onChange((data || []).filter((_, idx) => idx !== i));
+  const update = (i: number, field: string, value: any) => {
+    const next = [...(data || [])];
+    next[i] = { ...next[i], [field]: value };
+    onChange(next);
+  };
+  return (
+    <div>
+      <div style={{ padding: 12, background: "#eff6ff", borderRadius: 8, marginBottom: 16, fontSize: 13, color: "#1e40af" }}>
+        🎓 الجامعات الجورجية — تظهر في قسم الجامعات بالصفحة الرئيسية
+      </div>
+      {(data || []).map((uni, i) => (
+        <div key={i} style={{ ...S.card, borderRight: uni.highlight ? "4px solid #f0b414" : "1px solid #e5e7eb" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+            <strong>#{uni.rank || i + 1} — {uni.nameAr || uni.name}</strong>
+            <button onClick={() => removeUni(i)} style={S.deleteBtn}>حذف</button>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+            <Field label="الاسم بالإنجليزي"><TextInput value={uni.name || ""} onChange={v => update(i, "name", v)} /></Field>
+            <Field label="الاسم بالعربي"><TextInput value={uni.nameAr || ""} onChange={v => update(i, "nameAr", v)} /></Field>
+            <Field label="الاختصار"><TextInput value={uni.abbr || ""} onChange={v => update(i, "abbr", v)} /></Field>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginTop: 8 }}>
+            <Field label="الرسوم"><TextInput value={uni.fee || ""} onChange={v => update(i, "fee", v)} placeholder="$8,000" /></Field>
+            <Field label="النوع"><TextInput value={uni.type || ""} onChange={v => update(i, "type", v)} placeholder="حكومية / خاصة" /></Field>
+            <Field label="الترتيب"><input type="number" value={uni.rank || i + 1} onChange={e => update(i, "rank", parseInt(e.target.value) || 1)} style={S.input} /></Field>
+          </div>
+          <Field label="الوصف"><TextArea value={uni.desc || uni.description || ""} onChange={v => update(i, "desc", v)} /></Field>
+          <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 14, marginTop: 8 }}>
+            <input type="checkbox" checked={!!uni.highlight} onChange={e => update(i, "highlight", e.target.checked)} style={{ width: 18, height: 18, accentColor: "#f0b414" }} />
+            تمييز الجامعة (إظهارها بشكل مميز)
+          </label>
+          <div style={{ marginTop: 12 }}>
+            <label style={S.label}>المميزات</label>
+            {(uni.features || []).map((f: string, fi: number) => (
+              <div key={fi} style={{ display: "flex", gap: 8, marginBottom: 6 }}>
+                <input type="text" value={f} onChange={e => { const feats = [...uni.features]; feats[fi] = e.target.value; update(i, "features", feats); }} style={S.input} />
+                <button onClick={() => update(i, "features", uni.features.filter((_: any, idx: number) => idx !== fi))} style={S.deleteBtn}>✕</button>
+              </div>
+            ))}
+            <button onClick={() => update(i, "features", [...(uni.features || []), ""])} style={S.addBtn}>+ إضافة ميزة</button>
+          </div>
+        </div>
+      ))}
+      <button onClick={() => onChange([...(data || []), { rank: (data || []).length + 1, name: "", nameAr: "", abbr: "", fee: "", type: "", desc: "", features: [], highlight: false }])} style={S.addBtn}>+ إضافة جامعة</button>
+    </div>
+  );
+}
+
+/* ─── Georgia Hero Editor ─── */
+function HeroEditor({ data, onChange }: { data: any; onChange: (d: any) => void }) {
+  const d = data || {};
+  const update = (field: string, value: any) => onChange({ ...d, [field]: value });
+  return (
+    <div>
+      <div style={{ padding: 12, background: "#eff6ff", borderRadius: 8, marginBottom: 16, fontSize: 13, color: "#1e40af" }}>
+        🖼️ قسم الهيرو الرئيسي في صفحة جورجيا
+      </div>
+      <Field label="الشارة (Badge)"><TextInput value={d.badge || ""} onChange={v => update("badge", v)} /></Field>
+      <Field label="السطر الأول من العنوان"><TextInput value={d.title1 || ""} onChange={v => update("title1", v)} /></Field>
+      <Field label="السطر الثاني (الكلمة المميزة)"><TextInput value={d.title2 || ""} onChange={v => update("title2", v)} /></Field>
+      <Field label="الوصف"><TextArea value={d.description || ""} onChange={v => update("description", v)} /></Field>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+        <Field label="نص الزر الأساسي"><TextInput value={d.ctaPrimary || ""} onChange={v => update("ctaPrimary", v)} /></Field>
+        <Field label="نص الزر الثانوي"><TextInput value={d.ctaSecondary || ""} onChange={v => update("ctaSecondary", v)} /></Field>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Georgia Contact Editor ─── */
+function ContactEditor({ data, onChange }: { data: any; onChange: (d: any) => void }) {
+  const d = data || {};
+  const update = (field: string, value: any) => onChange({ ...d, [field]: value });
+  return (
+    <div>
+      <div style={{ padding: 12, background: "#eff6ff", borderRadius: 8, marginBottom: 16, fontSize: 13, color: "#1e40af" }}>
+        📞 بيانات التواصل لصفحة جورجيا
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+        <Field label="رقم الواتساب"><TextInput value={d.whatsapp || ""} onChange={v => update("whatsapp", v)} /></Field>
+        <Field label="رابط الواتساب"><TextInput value={d.whatsappLink || ""} onChange={v => update("whatsappLink", v)} /></Field>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+        <Field label="البريد الإلكتروني"><TextInput value={d.email || ""} onChange={v => update("email", v)} /></Field>
+        <Field label="رقم الهاتف"><TextInput value={d.phone || ""} onChange={v => update("phone", v)} /></Field>
+      </div>
+      <Field label="رابط الانستجرام"><TextInput value={d.social?.instagram || ""} onChange={v => update("social", { ...d.social, instagram: v })} /></Field>
+    </div>
+  );
+}
+
+/* ─── Georgia Package Editor (basicPackage / additionalPackage) ─── */
+function GeorgiaPackageEditor({ data, onChange }: { data: any; onChange: (d: any) => void }) {
+  const d = data || {};
+  const update = (field: string, value: any) => onChange({ ...d, [field]: value });
+
+  const updateInstallment = (i: number, field: string, v: string) => {
+    const next = [...(d.installments || [])];
+    next[i] = { ...next[i], [field]: v };
+    update("installments", next);
+  };
+
+  return (
+    <div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+        <Field label="العنوان"><TextInput value={d.title || ""} onChange={v => update("title", v)} /></Field>
+        <Field label="شارة التميز"><TextInput value={d.badge || ""} onChange={v => update("badge", v)} placeholder="أفضل قيمة" /></Field>
+      </div>
+      <Field label="الوصف"><TextArea value={d.description || ""} onChange={v => update("description", v)} /></Field>
+
+      {d.totalPrice !== undefined && (
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+          <Field label="السعر الإجمالي"><TextInput value={d.totalPrice || ""} onChange={v => update("totalPrice", v)} /></Field>
+          <Field label="العملة"><TextInput value={d.currency || ""} onChange={v => update("currency", v)} placeholder="درهم" /></Field>
+        </div>
+      )}
+      {d.priceNote !== undefined && (
+        <Field label="ملاحظة السعر"><TextInput value={d.priceNote || ""} onChange={v => update("priceNote", v)} /></Field>
+      )}
+
+      {d.installments && (
+        <div style={{ marginTop: 12 }}>
+          <strong style={{ display: "block", marginBottom: 8, color: "#28143c" }}>الدفعات</strong>
+          {(d.installments || []).map((inst: any, i: number) => (
+            <div key={i} style={S.card}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+                <strong>الدفعة {i + 1}</strong>
+                <button onClick={() => update("installments", d.installments.filter((_: any, idx: number) => idx !== i))} style={S.deleteBtn}>حذف</button>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                <Field label="اسم الدفعة"><TextInput value={inst.label || ""} onChange={v => updateInstallment(i, "label", v)} /></Field>
+                <Field label="المبلغ"><TextInput value={inst.amount || ""} onChange={v => updateInstallment(i, "amount", v)} /></Field>
+              </div>
+              <Field label="ملاحظة"><TextInput value={inst.note || ""} onChange={v => updateInstallment(i, "note", v)} /></Field>
+            </div>
+          ))}
+          <button onClick={() => update("installments", [...(d.installments || []), { label: "", amount: "", note: "" }])} style={S.addBtn}>+ إضافة دفعة</button>
+        </div>
+      )}
+
+      {d.note !== undefined && (
+        <Field label="ملاحظة"><TextArea value={d.note || ""} onChange={v => update("note", v)} /></Field>
+      )}
+
+      <div style={{ marginTop: 12 }}>
+        <label style={S.label}>الخدمات</label>
+        {(d.services || []).map((s: string, si: number) => (
+          <div key={si} style={{ display: "flex", gap: 8, marginBottom: 6 }}>
+            <input type="text" value={s} onChange={e => { const sv = [...d.services]; sv[si] = e.target.value; update("services", sv); }} style={S.input} />
+            <button onClick={() => update("services", d.services.filter((_: any, idx: number) => idx !== si))} style={S.deleteBtn}>✕</button>
+          </div>
+        ))}
+        <button onClick={() => update("services", [...(d.services || []), ""])} style={S.addBtn}>+ إضافة خدمة</button>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Georgia Registration Editor ─── */
+function RegistrationEditor({ data, onChange }: { data: any; onChange: (d: any) => void }) {
+  const d = data || {};
+  const update = (field: string, value: any) => onChange({ ...d, [field]: value });
+  return (
+    <div>
+      <div style={{ padding: 12, background: "#eff6ff", borderRadius: 8, marginBottom: 16, fontSize: 13, color: "#1e40af" }}>
+        📋 قسم التسجيل والمستندات المطلوبة لصفحة جورجيا
+      </div>
+      <Field label="العنوان"><TextInput value={d.title || ""} onChange={v => update("title", v)} /></Field>
+      <Field label="الوصف"><TextArea value={d.description || ""} onChange={v => update("description", v)} /></Field>
+
+      <strong style={{ display: "block", marginBottom: 8, color: "#28143c", marginTop: 12 }}>المستندات المطلوبة</strong>
+      {(d.docs || []).map((doc: any, i: number) => (
+        <div key={i} style={S.card}>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+            <strong>المستند {i + 1}</strong>
+            <button onClick={() => update("docs", d.docs.filter((_: any, idx: number) => idx !== i))} style={S.deleteBtn}>حذف</button>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            <Field label="اسم المستند"><TextInput value={doc.title || ""} onChange={v => { const docs = [...d.docs]; docs[i] = { ...doc, title: v }; update("docs", docs); }} /></Field>
+            <Field label="الوصف"><TextInput value={doc.desc || ""} onChange={v => { const docs = [...d.docs]; docs[i] = { ...doc, desc: v }; update("docs", docs); }} /></Field>
+          </div>
+        </div>
+      ))}
+      <button onClick={() => update("docs", [...(d.docs || []), { title: "", desc: "" }])} style={S.addBtn}>+ إضافة مستند</button>
+    </div>
+  );
+}
+
+/* ─── Georgia FAQs Editor (flat array of {q,a}) ─── */
+function GeorgiaFaqsEditor({ data, onChange }: { data: any[]; onChange: (d: any[]) => void }) {
+  const remove = (i: number) => onChange((data || []).filter((_, idx) => idx !== i));
+  return (
+    <div>
+      <div style={{ padding: 12, background: "#eff6ff", borderRadius: 8, marginBottom: 16, fontSize: 13, color: "#1e40af" }}>
+        ❓ الأسئلة الشائعة لصفحة جورجيا (منفصلة عن أسئلة باقي الصفحات)
+      </div>
+      {(data || []).map((faq, i) => (
+        <div key={i} style={S.card}>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+            <strong>السؤال {i + 1}</strong>
+            <button onClick={() => remove(i)} style={S.deleteBtn}>حذف</button>
+          </div>
+          <Field label="السؤال"><TextInput value={faq.q || ""} onChange={v => { const n = [...(data || [])]; n[i] = { ...faq, q: v }; onChange(n); }} /></Field>
+          <Field label="الإجابة"><TextArea value={faq.a || ""} onChange={v => { const n = [...(data || [])]; n[i] = { ...faq, a: v }; onChange(n); }} /></Field>
+        </div>
+      ))}
+      <button onClick={() => onChange([...(data || []), { q: "", a: "" }])} style={S.addBtn}>+ إضافة سؤال</button>
+    </div>
+  );
+}
+
 /* ─── Main Admin Component ─── */
 export default function AdminPanel() {
   const [password, setPassword] = useState("");
@@ -494,46 +744,51 @@ export default function AdminPanel() {
     setSaving(false);
   };
 
+  const tabMap: Record<string, string> = {
+    brand: "brand", social: "social", stats: "stats", offices: "offices",
+    testimonials: "testimonials", packages: "packages", destinations: "destinations",
+    faqs: "faqs",
+    // Georgia-specific tabs
+    georgiaHero: "hero", georgiaContact: "site", georgiaStats: "georgia_stats",
+    georgiaUniversities: "universities", georgiaBasicPackage: "basicPackage",
+    georgiaAdditionalPackage: "additionalPackage", georgiaRegistration: "registration",
+    georgiaFaqs: "georgia_faqs",
+  };
+
   const handleSaveTab = () => {
-    const tabMap: Record<string, string> = {
-      brand: "brand", social: "social", stats: "stats", offices: "offices",
-      testimonials: "testimonials", packages: "packages", destinations: "destinations",
-      faqs: "faqs",
-    };
     const key = tabMap[activeTab];
     if (key && data[key] !== undefined) saveKey(key, data[key]);
   };
 
   const updateTabData = (value: any) => {
-    const tabMap: Record<string, string> = {
-      brand: "brand", social: "social", stats: "stats", offices: "offices",
-      testimonials: "testimonials", packages: "packages", destinations: "destinations",
-      faqs: "faqs",
-    };
     const key = tabMap[activeTab];
     if (key) setData(prev => ({ ...prev, [key]: value }));
   };
 
-  const hasUndo = JSON.stringify(data[activeTab]) !== JSON.stringify(originalData[activeTab]);
+  const hasUndo = JSON.stringify(data[tabMap[activeTab] || activeTab]) !== JSON.stringify(originalData[tabMap[activeTab] || activeTab]);
   const handleUndo = () => {
-    const tabToKey: Record<string, string> = {
-      brand: "brand", social: "social", stats: "stats", offices: "offices",
-      testimonials: "testimonials", packages: "packages", destinations: "destinations",
-      faqs: "faqs",
-    };
-    const key = tabToKey[activeTab];
+    const key = tabMap[activeTab];
     if (key) setData(prev => ({ ...prev, [key]: originalData[key] }));
   };
 
   const tabs = [
-    { id: "brand", label: "بيانات الشركة", icon: "🏢" },
-    { id: "social", label: "السوشيال", icon: "📱" },
-    { id: "stats", label: "الأرقام", icon: "📊" },
-    { id: "testimonials", label: "آراء الطلاب", icon: "💬" },
-    { id: "offices", label: "المكاتب", icon: "🏛️" },
-    { id: "packages", label: "الباقات", icon: "📦" },
-    { id: "destinations", label: "الوجهات", icon: "🌍" },
-    { id: "faqs", label: "الأسئلة", icon: "❓" },
+    { id: "brand", label: "بيانات الشركة", icon: "🏢", group: "عام" },
+    { id: "social", label: "السوشيال", icon: "📱", group: "عام" },
+    { id: "stats", label: "الأرقام", icon: "📊", group: "عام" },
+    { id: "testimonials", label: "آراء الطلاب", icon: "💬", group: "عام" },
+    { id: "offices", label: "المكاتب", icon: "🏛️", group: "عام" },
+    { id: "packages", label: "الباقات", icon: "📦", group: "عام" },
+    { id: "destinations", label: "الوجهات", icon: "🌍", group: "عام" },
+    { id: "faqs", label: "الأسئلة", icon: "❓", group: "عام" },
+    { id: "_georgia_divider", label: "─── جورجيا ───", icon: "🇬🇪", group: "divider" },
+    { id: "georgiaHero", label: "الهيرو", icon: "🖼️", group: "جورجيا" },
+    { id: "georgiaStats", label: "أرقام جورجيا", icon: "📊", group: "جورجيا" },
+    { id: "georgiaUniversities", label: "الجامعات", icon: "🎓", group: "جورجيا" },
+    { id: "georgiaBasicPackage", label: "الباقة الأساسية", icon: "📦", group: "جورجيا" },
+    { id: "georgiaAdditionalPackage", label: "خدمة المرافقة", icon: "✈️", group: "جورجيا" },
+    { id: "georgiaRegistration", label: "التسجيل", icon: "📋", group: "جورجيا" },
+    { id: "georgiaContact", label: "بيانات التواصل", icon: "📞", group: "جورجيا" },
+    { id: "georgiaFaqs", label: "أسئلة جورجيا", icon: "❓", group: "جورجيا" },
   ];
 
   /* ─── Login Screen ─── */
@@ -602,22 +857,36 @@ export default function AdminPanel() {
 
       {/* Tabs */}
       <div style={{ background: "white", borderBottom: "1px solid #e5e7eb", display: "flex", overflowX: "auto", padding: "0 12px" }}>
-        {tabs.map(t => (
-          <button key={t.id} onClick={() => setActiveTab(t.id)}
-            style={{
-              padding: isMobile ? "10px 14px" : "12px 18px", border: "none",
-              borderBottom: activeTab === t.id ? "3px solid #f0b414" : "3px solid transparent",
-              background: activeTab === t.id ? "#fffbeb" : "none",
-              color: activeTab === t.id ? "#28143c" : "#888",
-              fontWeight: activeTab === t.id ? 700 : 500,
-              cursor: "pointer", whiteSpace: "nowrap",
-              fontSize: isMobile ? 12 : 13,
-              fontFamily: "Cairo, sans-serif", transition: "all 0.2s",
-            }}
-          >
-            {t.icon} {t.label}
-          </button>
-        ))}
+        {tabs.map(t => {
+          if (t.group === "divider") {
+            return (
+              <div key={t.id} style={{
+                padding: "0 8px", display: "flex", alignItems: "center",
+                color: "#9ca3af", fontSize: 11, fontWeight: 700, whiteSpace: "nowrap",
+                borderLeft: "1px solid #e5e7eb", borderRight: "1px solid #e5e7eb",
+              }}>
+                {t.icon} {t.label}
+              </div>
+            );
+          }
+          const isGeorgia = t.group === "جورجيا";
+          return (
+            <button key={t.id} onClick={() => setActiveTab(t.id)}
+              style={{
+                padding: isMobile ? "10px 14px" : "12px 18px", border: "none",
+                borderBottom: activeTab === t.id ? "3px solid #f0b414" : "3px solid transparent",
+                background: activeTab === t.id ? (isGeorgia ? "#eff6ff" : "#fffbeb") : "none",
+                color: activeTab === t.id ? "#28143c" : (isGeorgia ? "#1e40af" : "#888"),
+                fontWeight: activeTab === t.id ? 700 : 500,
+                cursor: "pointer", whiteSpace: "nowrap",
+                fontSize: isMobile ? 12 : 13,
+                fontFamily: "Cairo, sans-serif", transition: "all 0.2s",
+              }}
+            >
+              {t.icon} {t.label}
+            </button>
+          );
+        })}
       </div>
 
       {/* Content */}
@@ -658,6 +927,15 @@ export default function AdminPanel() {
               {activeTab === "packages" && <PackagesEditor data={data.packages} onChange={updateTabData} />}
               {activeTab === "destinations" && <DestinationsEditor data={data.destinations} onChange={updateTabData} />}
               {activeTab === "faqs" && <FaqsEditor data={data.faqs} onChange={updateTabData} />}
+              {/* Georgia-specific tabs */}
+              {activeTab === "georgiaHero" && <HeroEditor data={data.hero || {}} onChange={updateTabData} />}
+              {activeTab === "georgiaStats" && <GeorgiaStatsEditor data={data.georgia_stats || []} onChange={updateTabData} />}
+              {activeTab === "georgiaUniversities" && <UniversitiesEditor data={data.universities || []} onChange={updateTabData} />}
+              {activeTab === "georgiaBasicPackage" && <GeorgiaPackageEditor data={data.basicPackage || {}} onChange={updateTabData} />}
+              {activeTab === "georgiaAdditionalPackage" && <GeorgiaPackageEditor data={data.additionalPackage || {}} onChange={updateTabData} />}
+              {activeTab === "georgiaRegistration" && <RegistrationEditor data={data.registration || {}} onChange={updateTabData} />}
+              {activeTab === "georgiaContact" && <ContactEditor data={data.site || {}} onChange={updateTabData} />}
+              {activeTab === "georgiaFaqs" && <GeorgiaFaqsEditor data={data.georgia_faqs || []} onChange={updateTabData} />}
             </div>
 
             {/* Bottom Save */}

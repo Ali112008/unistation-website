@@ -55,30 +55,102 @@ function SiteDataProvider({ children }: { children: React.ReactNode }) {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    async function fetchAll() {
+    async function fetchFromTurso() {
       try {
-        const [stats, universities, basicPackage, additionalPackage, registration, faqs] = await Promise.all([
-          client.fetch(`*[_type == "stat"] | order(order asc)`),
-          client.fetch(`*[_type == "university"] | order(rank asc)`),
-          client.fetch(`*[_type == "basicPackage"][0]`),
-          client.fetch(`*[_type == "additionalPackage"][0]`),
-          client.fetch(`*[_type == "registration"][0]`),
-          client.fetch(`*[_type == "faq"] | order(order asc)`),
-        ]);
+        // Fetch all Georgia-specific config from Turso (admin-managed)
+        const res = await fetch("/api/config", { cache: "no-store" });
+        if (!res.ok) throw new Error("Turso fetch failed");
+        const cfg = await res.json();
+
+        const georgiaStats = cfg.georgia_stats || [];
+        const universities = cfg.universities || [];
+        const basicPackage = cfg.basicPackage;
+        const additionalPackage = cfg.additionalPackage;
+        const registration = cfg.registration;
+        const georgiaFaqs = cfg.georgia_faqs || [];
+
         setData({
-          stats: (stats || []).map((s: any) => ({ target: s.target, prefix: s.prefix || "", suffix: s.suffix || "", label: s.label })),
-          universities: (universities || []).map((u: any) => ({ rank: u.rank, name: u.name, nameAr: u.nameAr || "", abbr: u.abbr, fee: u.fee, type: u.type, description: u.description, features: u.features || [], highlight: u.highlight || false })),
-          basicPackage: basicPackage ? { title: basicPackage.title, badge: basicPackage.badge || "", description: basicPackage.description, totalPrice: basicPackage.totalPrice, currency: basicPackage.currency, priceNote: basicPackage.priceNote || "", installments: (basicPackage.installments || []).map((i: any) => ({ label: i.label, amount: i.amount, note: i.note || "" })), services: basicPackage.services || [] } : siteConfig.basicPackage,
-          additionalPackage: additionalPackage ? { title: additionalPackage.title, description: additionalPackage.description, note: additionalPackage.note || "", services: additionalPackage.services || [] } : siteConfig.additionalPackage,
-          registration: registration ? { title: registration.title, description: registration.description, docs: (registration.docs || []).map((d: any) => ({ title: d.title, desc: d.desc })) } : siteConfig.registration,
-          faqs: (faqs || []).map((f: any) => ({ q: f.question, a: f.answer })),
+          stats: georgiaStats.map((s: any) => ({
+            target: Number(s.target) || 0,
+            prefix: s.prefix || "",
+            suffix: s.suffix || "",
+            label: s.label || "",
+          })),
+          universities: universities.map((u: any) => ({
+            rank: u.rank || 0,
+            name: u.name || "",
+            nameAr: u.nameAr || "",
+            abbr: u.abbr || "",
+            fee: u.fee || "",
+            type: u.type || "",
+            description: u.desc || u.description || "",
+            features: u.features || [],
+            highlight: !!u.highlight,
+          })),
+          basicPackage: basicPackage
+            ? {
+                title: basicPackage.title || "",
+                badge: basicPackage.badge || "",
+                description: basicPackage.description || "",
+                totalPrice: basicPackage.totalPrice || "",
+                currency: basicPackage.currency || "",
+                priceNote: basicPackage.priceNote || "",
+                installments: (basicPackage.installments || []).map((i: any) => ({
+                  label: i.label || "",
+                  amount: i.amount || "",
+                  note: i.note || "",
+                })),
+                services: basicPackage.services || [],
+              }
+            : siteConfig.basicPackage,
+          additionalPackage: additionalPackage
+            ? {
+                title: additionalPackage.title || "",
+                description: additionalPackage.description || "",
+                note: additionalPackage.note || "",
+                services: additionalPackage.services || [],
+              }
+            : siteConfig.additionalPackage,
+          registration: registration
+            ? {
+                title: registration.title || "",
+                description: registration.description || "",
+                docs: (registration.docs || []).map((d: any) => ({
+                  title: d.title || "",
+                  desc: d.desc || "",
+                })),
+              }
+            : siteConfig.registration,
+          faqs: georgiaFaqs.map((f: any) => ({ q: f.q || "", a: f.a || "" })),
         });
         setLoaded(true);
       } catch (err) {
-        console.warn("Sanity fetch failed, using fallback JSON:", err);
+        console.warn("Turso fetch failed, trying Sanity fallback:", err);
+        // Fallback: try Sanity CMS
+        try {
+          const [stats, universities, basicPackage, additionalPackage, registration, faqs] = await Promise.all([
+            client.fetch(`*[_type == "stat"] | order(order asc)`),
+            client.fetch(`*[_type == "university"] | order(rank asc)`),
+            client.fetch(`*[_type == "basicPackage"][0]`),
+            client.fetch(`*[_type == "additionalPackage"][0]`),
+            client.fetch(`*[_type == "registration"][0]`),
+            client.fetch(`*[_type == "faq"] | order(order asc)`),
+          ]);
+          setData({
+            stats: (stats || []).map((s: any) => ({ target: s.target, prefix: s.prefix || "", suffix: s.suffix || "", label: s.label })),
+            universities: (universities || []).map((u: any) => ({ rank: u.rank, name: u.name, nameAr: u.nameAr || "", abbr: u.abbr, fee: u.fee, type: u.type, description: u.description, features: u.features || [], highlight: u.highlight || false })),
+            basicPackage: basicPackage ? { title: basicPackage.title, badge: basicPackage.badge || "", description: basicPackage.description, totalPrice: basicPackage.totalPrice, currency: basicPackage.currency, priceNote: basicPackage.priceNote || "", installments: (basicPackage.installments || []).map((i: any) => ({ label: i.label, amount: i.amount, note: i.note || "" })), services: basicPackage.services || [] } : siteConfig.basicPackage,
+            additionalPackage: additionalPackage ? { title: additionalPackage.title, description: additionalPackage.description, note: additionalPackage.note || "", services: additionalPackage.services || [] } : siteConfig.additionalPackage,
+            registration: registration ? { title: registration.title, description: registration.description, docs: (registration.docs || []).map((d: any) => ({ title: d.title, desc: d.desc })) } : siteConfig.registration,
+            faqs: (faqs || []).map((f: any) => ({ q: f.question, a: f.answer })),
+          });
+          setLoaded(true);
+        } catch (err2) {
+          console.warn("Sanity also failed, using static JSON:", err2);
+        }
       }
     }
-    fetchAll();
+    fetchFromTurso();
   }, []);
 
   return <SiteDataContext.Provider value={data}>{children}</SiteDataContext.Provider>;

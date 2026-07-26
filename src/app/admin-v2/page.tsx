@@ -1,12 +1,7 @@
-import AdminPanel from "@/components/AdminPanel";
-
-export const metadata = {
-  title: "UniStation Admin",
-  robots: { index: false, follow: false },
-};
+import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
-export default function AdminPage() {
-  return <AdminPanel />;
+export default function AdminV2Page() {
+  redirect("/admin");
 }
