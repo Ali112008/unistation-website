@@ -15,7 +15,7 @@
 | Why Turso over Keystatic | ✅ 80% infrastructure already exists; ✅ No GitHub OAuth needed; ✅ Real-time edits; ✅ Customer already familiar with the Georgia admin |
 | Image editing | ❌ Not needed — admin only manages text, prices, descriptions, lists |
 | Auth | Reuse existing password-based auth (`unistation2024`, configurable) |
-| Cache strategy | ISR with `revalidate = 300` (5 min) — site visitors see cached pages, admin sees instant updates after cache expiry |
+| Cache strategy | **No ISR, fully dynamic** — `export const dynamic = "force-dynamic"` (no cache). Site traffic is low (≪1000/s), so DB query per request is fine. Admin sees instant updates. |
 | Cost | $0 — Turso free tier already in use |
 
 ---
@@ -154,27 +154,28 @@ Update these pages to read from Turso (via `site-content.ts`):
 
 | Page | What changes | Cache strategy |
 |---|---|---|
-| `src/app/page.tsx` (homepage) | Brand, stats, testimonials, FAQs from Turso | `export const revalidate = 300` |
-| `src/app/packages/page.tsx` | Packages list from Turso | `export const revalidate = 300` |
-| `src/app/packages/[slug]/page.tsx` | Single package from Turso | `export const revalidate = 300` |
-| `src/app/destinations/page.tsx` | Stats, FAQs from Turso (destinations list stays static since it's image URLs) | `export const revalidate = 300` |
-| `src/app/destinations/[slug]/page.tsx` | Spain/Turkey content from Turso | `export const revalidate = 300` |
-| `src/app/about/page.tsx` | Brand, stats, FAQs from Turso | `export const revalidate = 300` |
-| `src/app/contact/page.tsx` | Brand, offices, FAQs from Turso | `export const revalidate = 300` |
-| `src/app/team/page.tsx` | FAQs from Turso | `export const revalidate = 300` |
-| `src/app/resources/page.tsx` | FAQs from Turso | `export const revalidate = 300` |
-| `src/app/library/page.tsx` | FAQs from Turso | `export const revalidate = 300` |
-| `src/app/testimonials/page.tsx` | Testimonials from Turso | `export const revalidate = 300` |
-| `src/app/tests-exams/page.tsx` | FAQs from Turso | `export const revalidate = 300` |
-| `src/components/layout/Header.tsx` | Brand name/logo from Turso (optional) | Static (rebuilds on deploy) |
-| `src/components/layout/Footer.tsx` | Brand, social, offices from Turso | Static (rebuilds on deploy) |
+| `src/app/page.tsx` (homepage) | Brand, stats, testimonials, FAQs from Turso | `export const dynamic = "force-dynamic"` |
+| `src/app/packages/page.tsx` | Packages list from Turso | `export const dynamic = "force-dynamic"` |
+| `src/app/packages/[slug]/page.tsx` | Single package from Turso | `export const dynamic = "force-dynamic"` |
+| `src/app/destinations/page.tsx` | Stats, FAQs from Turso (destinations list stays static since it's image URLs) | `export const dynamic = "force-dynamic"` |
+| `src/app/destinations/[slug]/page.tsx` | Spain/Turkey content from Turso | `export const dynamic = "force-dynamic"` |
+| `src/app/about/page.tsx` | Brand, stats, FAQs from Turso | `export const dynamic = "force-dynamic"` |
+| `src/app/contact/page.tsx` | Brand, offices, FAQs from Turso | `export const dynamic = "force-dynamic"` |
+| `src/app/team/page.tsx` | FAQs from Turso | `export const dynamic = "force-dynamic"` |
+| `src/app/resources/page.tsx` | FAQs from Turso | `export const dynamic = "force-dynamic"` |
+| `src/app/library/page.tsx` | FAQs from Turso | `export const dynamic = "force-dynamic"` |
+| `src/app/testimonials/page.tsx` | Testimonials from Turso | `export const dynamic = "force-dynamic"` |
+| `src/app/tests-exams/page.tsx` | FAQs from Turso | `export const dynamic = "force-dynamic"` |
+| `src/components/layout/Header.tsx` | Brand name/logo from Turso (optional) | `export const dynamic = "force-dynamic"` |
+| `src/components/layout/Footer.tsx` | Brand, social, offices from Turso | `export const dynamic = "force-dynamic"` |
 
-**ISR Strategy:**
-- `revalidate = 300` means: pages regenerate at most every 5 minutes
-- First visitor after admin saves: still sees old cached version
-- Within 5 minutes: next visitor triggers regeneration
-- Subsequent visitors: see fresh content
-- Trade-off: 5 min delay vs. instant site speed for cached visitors
+**Cache Strategy: No ISR (Fully Dynamic)**
+
+- Each request fetches fresh data from Turso
+- Admin edits appear **instantly** (no cache delay)
+- TTFB measured at ~35ms on current Georgia page (same pattern)
+- Site traffic is low (≪1000 req/s), so DB load is negligible
+- Turso free tier: 1 billion row reads/day — we'll use <0.001% of that
 
 ---
 
@@ -266,7 +267,7 @@ Extend `src/app/admin/page.tsx` with new tabs.
 |---|---|---|
 | Turso outage breaks site | Low | Fallback pattern — TS files always available |
 | Admin enters bad data (e.g., deletes required field) | Medium | Validation on save + undo button (already exists) + TS fallback |
-| 5-min cache delay confuses customer | Medium | Document clearly: "changes appear within 5 minutes" |
+| 5-min cache delay confuses customer | None | Removed — fully dynamic now, edits appear instantly |
 | Packages content is complex (nested 3 levels) | High | Build progressive UI — simple fields first, advanced expandable |
 | Admin password leaked | Low | Customer can change password via env var `ADMIN_PASSWORD` |
 | Turso free tier limit hit (9GB) | Very Low | All text data is < 1MB total |
@@ -305,7 +306,7 @@ After completion, customer will have:
 |---|---|---|
 | DB | Turso (existing) | Already integrated, free, fast |
 | Auth | Password (existing) | Customer simplicity |
-| Cache | ISR `revalidate = 300` | Balance: fast site + reasonable update delay |
+| Cache | No ISR — `force-dynamic` | Site traffic low, admin needs instant feedback, simpler implementation |
 | Image handling | None in admin | Customer won't edit images |
 | Fallback | TS files | Safety net for DB outage |
 | Migration | One-way script | TS → Turso, then TS becomes read-only fallback |
@@ -330,9 +331,9 @@ After completion, customer will have:
 
 ## ✅ Pre-flight Checklist (Before Starting)
 
-- [ ] Confirm customer wants this approach (Turso-based, no image editing)
+- [ ] Confirm customer wants this approach (Turso-based, no image editing, fully dynamic)
 - [ ] Confirm admin password (keep `unistation2024` or change?)
-- [ ] Confirm ISR cache duration (5 min OK?)
+- [ ] Confirm site traffic is low (≪1000 req/s) — no ISR needed
 - [ ] Backup current TS data files (already in git, but verify)
 - [ ] Verify Turso DB connection still works
 - [ ] Confirm Vercel deployment pipeline works
@@ -343,9 +344,9 @@ After completion, customer will have:
 
 1. Customer logs into `/admin` with password
 2. Customer edits a package price → saves
-3. Within 5 minutes, the new price appears on the live site
+3. **Instantly** (next page load) the new price appears on the live site
 4. If Turso goes down, site continues to work (TS fallback)
-5. All existing pages still load with same speed (cached ISR)
+5. Site speed remains fast (~35ms TTFB measured on Georgia page)
 6. No data loss — TS files remain as backup
 
 ---
