@@ -37,6 +37,5 @@ scrape_*.json
 *-scrape.json
 full_extraction.json
 seed.ts
-sanity.config.ts
 unistation-header.json
 bun.lock
