@@ -35,6 +35,15 @@ function clearSession() {
   localStorage.removeItem(SESSION_KEY);
 }
 
+/* ─── Helper: detect non-Latin1 chars (HTTP headers can't carry them) ─── */
+function stringHasNonLatin1(str: string): boolean {
+  // Latin1 = code points 0-255. Anything above 255 (Arabic, CJK, emoji, etc.) breaks fetch headers.
+  for (let i = 0; i < str.length; i++) {
+    if (str.charCodeAt(i) > 255) return true;
+  }
+  return false;
+}
+
 /* ─── Common Styles ─── */
 const S = {
   label: { display: "block", fontSize: 13, fontWeight: 600, color: "#374151", marginBottom: 6 },
@@ -681,8 +690,15 @@ export default function AdminPanel() {
   useEffect(() => {
     const sess = loadSession();
     if (sess) {
-      setPassword(sess);
-      setLoggedIn(true);
+      // Validate stored password is ASCII (HTTP headers can't contain non-Latin1 chars)
+      if (stringHasNonLatin1(sess)) {
+        // Contains non-Latin1 chars (Arabic, etc.) — clear it
+        clearSession();
+        setLoginError("انتهت الجلسة. اكتب كلمة المرور من جديد بالإنجليزية فقط.");
+      } else {
+        setPassword(sess);
+        setLoggedIn(true);
+      }
     }
   }, []);
 
@@ -708,6 +724,13 @@ export default function AdminPanel() {
   /* ─── Login Handler ─── */
   const handleLogin = async () => {
     if (!password) return;
+    
+    // Validate ASCII-only (HTTP headers reject non-Latin1 chars)
+    if (stringHasNonLatin1(password)) {
+      setLoginError("كلمة المرور يجب أن تكون بالإنجليزية والأرقام فقط — تأكد أن الكيبورد بالإنجليزي");
+      return;
+    }
+    
     try {
       const res = await fetch("/api/config", {
         method: "PUT",
@@ -715,7 +738,11 @@ export default function AdminPanel() {
         body: JSON.stringify({ key: "_ping", value: true }),
       });
       if (res.status === 401) { setLoginError("كلمة المرور غير صحيحة"); return; }
-    } catch { /* allow local dev */ }
+      if (!res.ok) { setLoginError("تعذر الاتصال بالخادم"); return; }
+    } catch (err) {
+      setLoginError("تعذر الاتصال — تحقق من الإنترنت أو أن السيرفر شغال");
+      return;
+    }
     setLoginError("");
     saveSession(password);
     setLoggedIn(true);
@@ -730,6 +757,14 @@ export default function AdminPanel() {
 
   const saveKey = async (key: string, value: any) => {
     setSaving(true); setSavedKey(null); setError("");
+    
+    // Defensive: validate password is ASCII
+    if (password && stringHasNonLatin1(password)) {
+      setError("كلمة المرور غير صالحة — سجل خروج ودخول من جديد بالإنجليزية فقط");
+      setSaving(false);
+      return;
+    }
+    
     try {
       const bodyStr = JSON.stringify({ key, value });
       console.log(`[saveKey] Saving key="${key}" payload=${bodyStr.length} bytes`);
