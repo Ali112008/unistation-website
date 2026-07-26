@@ -4,8 +4,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/data/site-data";
-import { destinationsContent } from "@/data/destinations-content";
-import { pageFaqs } from "@/data/page-faqs";
+import { destinationsContent as tsDestinationsContent } from "@/data/destinations-content";
+import { pageFaqs as tsPageFaqs } from "@/data/page-faqs";
+import { getDestinations, getFaqs } from "@/lib/site-content";
 import { ScrollAnimator, CTASection } from "@/components/shared";
 import { FAQSection } from "@/components/FAQSection";
 import { LibrarySection } from "@/components/LibrarySection";
@@ -47,13 +48,18 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const dest = getDestination(slug);
-  const richContent = destinationsContent[slug];
+  // Read rich content from Turso (live-editable) with TS fallback
+  const allDest = await getDestinations();
+  const richContent = (allDest as any)[slug] || tsDestinationsContent[slug];
   if (!dest) return { title: "Destination Not Found" };
   return {
     title: `Study in ${dest.name} | UniStation`,
     description: richContent?.heroDescription || `Explore study opportunities in ${dest.name} with UniStation. Get expert guidance for university admissions, visa support, and more.`,
   };
 }
+
+// Force dynamic rendering — read fresh data from Turso on every request
+export const dynamic = "force-dynamic";
 
 export function generateStaticParams() {
   const slugs = ALL_DESTINATIONS.map((d) => ({
@@ -63,8 +69,15 @@ export function generateStaticParams() {
 }
 
 /* ───────── Rich Spain Page ───────── */
-function SpainPage({ dest }: { dest: (typeof ALL_DESTINATIONS)[number] }) {
-  const content = destinationsContent.spain;
+function SpainPage({
+  dest,
+  content,
+  faqs,
+}: {
+  dest: (typeof ALL_DESTINATIONS)[number];
+  content: typeof tsDestinationsContent.spain;
+  faqs: { q: string; a: string }[];
+}) {
 
   const twoPathsSection = content.additionalSections.find(
     (s) => s.type === "two-paths"
@@ -463,15 +476,22 @@ function SpainPage({ dest }: { dest: (typeof ALL_DESTINATIONS)[number] }) {
       {/* Library Section */}
       <LibrarySection topicName="Spain" tags={["spain", "europe"]} />
 
-      <FAQSection faqs={pageFaqs.spain} />
+      <FAQSection faqs={faqs} />
       <CTASection />
     </>
   );
 }
 
 /* ───────── Rich Turkey Page ───────── */
-function TurkeyPage({ dest }: { dest: (typeof ALL_DESTINATIONS)[number] }) {
-  const content = destinationsContent.turkey;
+function TurkeyPage({
+  dest,
+  content,
+  faqs,
+}: {
+  dest: (typeof ALL_DESTINATIONS)[number];
+  content: typeof tsDestinationsContent.turkey;
+  faqs: { q: string; a: string }[];
+}) {
 
   const keyAdvantages = content.additionalSections.find(
     (s) => s.type === "key-advantages"
@@ -897,14 +917,20 @@ function TurkeyPage({ dest }: { dest: (typeof ALL_DESTINATIONS)[number] }) {
       {/* Library Section */}
       <LibrarySection topicName="Turkey" tags={["turkey"]} />
 
-      <FAQSection faqs={pageFaqs.turkey} />
+      <FAQSection faqs={faqs} />
       <CTASection />
     </>
   );
 }
 
 /* ───────── Generic Destination Page (fallback) ───────── */
-function GenericDestinationPage({ dest }: { dest: (typeof ALL_DESTINATIONS)[number] }) {
+function GenericDestinationPage({
+  dest,
+  genericFaqs,
+}: {
+  dest: (typeof ALL_DESTINATIONS)[number];
+  genericFaqs: { q: string; a: string }[];
+}) {
   return (
     <>
       {/* Hero */}
@@ -1070,7 +1096,7 @@ function GenericDestinationPage({ dest }: { dest: (typeof ALL_DESTINATIONS)[numb
         </div>
       </section>
 
-      <FAQSection faqs={pageFaqs.destinations} />
+      <FAQSection faqs={genericFaqs} />
       <CTASection />
     </>
   );
@@ -1087,13 +1113,22 @@ export default async function DestinationPage({
 
   if (!dest) notFound();
 
+  // Read all data from Turso (live-editable) with TS fallback
+  const allDest = await getDestinations();
+  const allFaqs = await getFaqs();
+  const turkishContent = (allDest as any).turkey || tsDestinationsContent.turkey;
+  const spainContent = (allDest as any).spain || tsDestinationsContent.spain;
+  const spainFaqs = (allFaqs as any).spain || tsPageFaqs.spain;
+  const turkeyFaqs = (allFaqs as any).turkey || tsPageFaqs.turkey;
+  const destinationsFaqs = (allFaqs as any).destinations || tsPageFaqs.destinations;
+
   // Use rich content for destinations that have it, generic fallback otherwise
-  if (slug === "turkey" && destinationsContent.turkey) {
-    return <TurkeyPage dest={dest} />;
+  if (slug === "turkey" && turkishContent) {
+    return <TurkeyPage dest={dest} content={turkishContent} faqs={turkeyFaqs} />;
   }
-  if (destinationsContent[slug]) {
-    return <SpainPage dest={dest} />;
+  if ((allDest as any)[slug]) {
+    return <SpainPage dest={dest} content={spainContent} faqs={spainFaqs} />;
   }
 
-  return <GenericDestinationPage dest={dest} />;
+  return <GenericDestinationPage dest={dest} genericFaqs={destinationsFaqs} />;
 }

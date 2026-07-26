@@ -5,7 +5,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ScrollAnimator, SectionHeading, CTASection } from "@/components/shared";
 import { FAQSection } from "@/components/FAQSection";
 import { LibrarySection } from "@/components/LibrarySection";
-import { pageFaqs } from "@/data/page-faqs";
+import { pageFaqs as tsPageFaqs } from "@/data/page-faqs";
+import { getFaqs } from "@/lib/site-content";
 import { Video, BookOpen, FileText, Headphones } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -20,7 +21,12 @@ const resourceCategories = [
   { id: "podcast", title: "Podcast", description: "Coming soon — listen to conversations with students, educators, and industry professionals.", icon: Headphones, image: "https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=600&h=400&fit=crop", items: ["Coming Soon"] },
 ];
 
-export default function ResourcesPage() {
+export const dynamic = "force-dynamic";
+
+export default async function ResourcesPage() {
+  // Read FAQs from Turso (live-editable) with TS fallback
+  const allFaqs = await getFaqs();
+  const resourcesFaqs = (allFaqs as any).resources || tsPageFaqs.resources;
   return (
     <>
       <section className="relative pt-32 pb-20 bg-brand-navy overflow-hidden">
@@ -79,7 +85,7 @@ export default function ResourcesPage() {
         </div>
       </section>
 
-      <FAQSection faqs={pageFaqs.resources} />
+      <FAQSection faqs={resourcesFaqs} />
       <LibrarySection />
       <CTASection />
     </>

@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { siteConfig } from "@/data/site-data";
+import { pageFaqs as tsPageFaqs } from "@/data/page-faqs";
+import { getFaqs } from "@/lib/site-content";
 import { ScrollAnimator, CTASection } from "@/components/shared";
 import { FAQSection } from "@/components/FAQSection";
-import { pageFaqs } from "@/data/page-faqs";
 import { ArrowRight } from "lucide-react";
 import { LibrarySection } from "@/components/LibrarySection";
 
@@ -13,7 +14,14 @@ export const metadata: Metadata = {
   description: "Explore UniStation's comprehensive university admission packages designed to help you reach your dream university effortlessly.",
 };
 
-export default function PackagesPage() {
+// Force dynamic — read FAQs from Turso on every request
+export const dynamic = "force-dynamic";
+
+export default async function PackagesPage() {
+  // Read FAQs from Turso (live-editable) with TS fallback
+  const allFaqs = await getFaqs();
+  const packagesFaqs = (allFaqs as any).packages || tsPageFaqs.packages;
+
   return (
     <>
       {/* Hero */}
@@ -102,7 +110,7 @@ export default function PackagesPage() {
       {/* Library Section — general (no filter) */}
       <LibrarySection />
 
-      <FAQSection faqs={pageFaqs.packages} />
+      <FAQSection faqs={packagesFaqs} />
       <CTASection />
     </>
   );

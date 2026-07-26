@@ -5,7 +5,8 @@ import { ArrowLeft, FileText } from "lucide-react";
 import Link from "next/link";
 import { ScrollAnimator } from "@/components/shared";
 import { FAQSection } from "@/components/FAQSection";
-import { pageFaqs } from "@/data/page-faqs";
+import { pageFaqs as tsPageFaqs } from "@/data/page-faqs";
+import { getFaqs } from "@/lib/site-content";
 
 // Generate static params for all exams
 export function generateStaticParams() {
@@ -25,11 +26,18 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   };
 }
 
+// Force dynamic — read FAQs from Turso on every request
+export const dynamic = "force-dynamic";
+
 export default async function ExamDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const exam = siteConfig.examTypes.find((e) => e.slug === slug);
 
   if (!exam) notFound();
+
+  // Read FAQs from Turso (live-editable) with TS fallback
+  const allFaqs = await getFaqs();
+  const examFaqs = (allFaqs as any)[`tests-exams/${slug}`] || tsPageFaqs[`tests-exams/${slug}`] || [];
 
   return (
     <>
@@ -87,7 +95,7 @@ export default async function ExamDetailPage({ params }: { params: Promise<{ slu
         </div>
       </section>
 
-      <FAQSection faqs={pageFaqs[`tests-exams/${slug}`]} />
+      <FAQSection faqs={examFaqs} />
     </>
   );
 }

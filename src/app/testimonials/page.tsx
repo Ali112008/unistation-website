@@ -3,7 +3,8 @@ import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollAnimator, SectionHeading, CTASection } from "@/components/shared";
 import { FAQSection } from "@/components/FAQSection";
-import { pageFaqs } from "@/data/page-faqs";
+import { pageFaqs as tsPageFaqs } from "@/data/page-faqs";
+import { getFaqs, getTestimonials } from "@/lib/site-content";
 import { Star, Quote } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -11,15 +12,19 @@ export const metadata: Metadata = {
   description: "Read success stories from UniStation students who achieved their dream of studying abroad at top universities worldwide.",
 };
 
-export default function TestimonialsPage() {
-  const testimonials = [
-    { name: "Sara M.", country: "UAE", program: "Medicine, UK", text: "UniStation made my dream of studying medicine in the UK a reality. Their guidance through the UCAT and application process was invaluable. I couldn't have done it without their support.", avatar: "SM" },
-    { name: "Ahmed K.", country: "Syria", program: "Engineering, Germany", text: "I was overwhelmed by the German university system, but UniStation's team broke everything down for me. From language preparation to application, they were with me every step.", avatar: "AK" },
-    { name: "Lina R.", country: "Oman", program: "Business, Canada", text: "The team at UniStation truly cares about their students. They helped me find the perfect program in Canada and even assisted with my visa application. Highly recommended!", avatar: "LR" },
-    { name: "Omar J.", country: "Jordan", program: "Computer Science, USA", text: "Applying to US universities seemed impossible until I found UniStation. Their expertise in SAT preparation and university selection made all the difference.", avatar: "OJ" },
-    { name: "Fatima H.", country: "Egypt", program: "Pharmacy, Ireland", text: "UniStation's personalized approach set them apart. They understood my goals and helped me find a pharmacy program in Ireland that was the perfect fit.", avatar: "FH" },
-    { name: "Youssef T.", country: "Lebanon", program: "Architecture, Italy", text: "From portfolio review to university applications, UniStation provided comprehensive support. Their knowledge of European universities is impressive.", avatar: "YT" },
-  ];
+export const dynamic = "force-dynamic";
+
+export default async function TestimonialsPage() {
+  // Read testimonials + FAQs from Turso (live-editable) with TS fallback
+  const [tursoTestimonials, allFaqs] = await Promise.all([
+    getTestimonials(),
+    getFaqs(),
+  ]);
+  const testimonialsFaqs = (allFaqs as any).testimonials || tsPageFaqs.testimonials;
+  const testimonials = tursoTestimonials.map((t: any, i: number) => ({
+    ...t,
+    avatar: t.name.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2),
+  }));
 
   return (
     <>
@@ -66,7 +71,7 @@ export default function TestimonialsPage() {
         </div>
       </section>
 
-      <FAQSection faqs={pageFaqs.testimonials} />
+      <FAQSection faqs={testimonialsFaqs} />
       <CTASection />
     </>
   );

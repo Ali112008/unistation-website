@@ -14,7 +14,8 @@ import { siteConfig } from "@/data/site-data";
 import { ScrollAnimator, CTASection } from "@/components/shared";
 import { FAQSection } from "@/components/FAQSection";
 import { LibrarySection } from "@/components/LibrarySection";
-import { pageFaqs } from "@/data/page-faqs";
+import { pageFaqs as tsPageFaqs } from "@/data/page-faqs";
+import { getFaqs } from "@/lib/site-content";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -22,7 +23,12 @@ export const metadata: Metadata = {
   description: "Discover 25+ study destinations worldwide. Find the perfect country and university for your academic journey with UniStation.",
 };
 
-export default function DestinationsPage() {
+export const dynamic = "force-dynamic";
+
+export default async function DestinationsPage() {
+  // Read FAQs from Turso (live-editable) with TS fallback
+  const allFaqs = await getFaqs();
+  const destinationsFaqs = (allFaqs as any).destinations || tsPageFaqs.destinations;
   return (
     <>
       {/* Section 1: TOP DESTINATIONS Hero */}
@@ -218,7 +224,7 @@ export default function DestinationsPage() {
         </div>
       </section>
 
-      <FAQSection faqs={pageFaqs.destinations} />
+      <FAQSection faqs={destinationsFaqs} />
       <LibrarySection />
       <CTASection />
     </>

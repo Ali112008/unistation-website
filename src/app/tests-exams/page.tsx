@@ -6,7 +6,8 @@ import { siteConfig } from "@/data/site-data";
 import { ScrollAnimator, SectionHeading } from "@/components/shared";
 import { FAQSection } from "@/components/FAQSection";
 import { LibrarySection } from "@/components/LibrarySection";
-import { pageFaqs } from "@/data/page-faqs";
+import { pageFaqs as tsPageFaqs } from "@/data/page-faqs";
+import { getFaqs } from "@/lib/site-content";
 import {
   GraduationCap, FileText, BookOpen, Stethoscope, Award, Brain, FlaskConical,
 } from "lucide-react";
@@ -26,7 +27,12 @@ const examIcons: Record<string, React.ElementType> = {
   AP: FlaskConical,
 };
 
-export default function TestsExamsPage() {
+export const dynamic = "force-dynamic";
+
+export default async function TestsExamsPage() {
+  // Read FAQs from Turso (live-editable) with TS fallback
+  const allFaqs = await getFaqs();
+  const testsExamsFaqs = (allFaqs as any)["tests-exams"] || tsPageFaqs["tests-exams"];
   return (
     <>
       <section className="relative pt-32 pb-20 bg-brand-navy overflow-hidden">
@@ -91,7 +97,7 @@ export default function TestsExamsPage() {
         </div>
       </section>
 
-      <FAQSection faqs={pageFaqs["tests-exams"]} />
+      <FAQSection faqs={testsExamsFaqs} />
       <LibrarySection />
     </>
   );
