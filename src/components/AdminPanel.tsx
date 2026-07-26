@@ -731,16 +731,32 @@ export default function AdminPanel() {
   const saveKey = async (key: string, value: any) => {
     setSaving(true); setSavedKey(null); setError("");
     try {
+      const bodyStr = JSON.stringify({ key, value });
+      console.log(`[saveKey] Saving key="${key}" payload=${bodyStr.length} bytes`);
       const res = await fetch("/api/config", {
         method: "PUT",
         headers: { "Content-Type": "application/json", "x-admin-password": password },
-        body: JSON.stringify({ key, value }),
+        body: bodyStr,
       });
-      if (!res.ok) { setError("فشل الحفظ"); return; }
+      console.log(`[saveKey] Response: ${res.status} ${res.statusText}`);
+      if (!res.ok) {
+        // Try to read the error message from response
+        let errMsg = "فشل الحفظ";
+        try {
+          const errBody = await res.json();
+          if (errBody?.error) errMsg = `فشل الحفظ (${res.status}): ${errBody.error}`;
+        } catch { errMsg = `فشل الحفظ (HTTP ${res.status})`; }
+        setError(errMsg);
+        return;
+      }
       setSavedKey(key);
       setOriginalData(prev => ({ ...prev, [key]: value }));
       setTimeout(() => setSavedKey(null), 3000);
-    } catch { setError("خطأ في الاتصال"); }
+    } catch (err: any) {
+      console.error("[saveKey] Fetch failed:", err);
+      const msg = err?.message || String(err);
+      setError(`خطأ في الاتصال: ${msg}`);
+    }
     setSaving(false);
   };
 
