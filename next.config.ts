@@ -32,6 +32,20 @@ const nextConfig: NextConfig = {
       // Destinations
       { source: "/destinations/spain", destination: "/spain", permanent: true },
       { source: "/destinations/turkey", destination: "/turkey", permanent: true },
+      { source: "/destinations/romania", destination: "/romania", permanent: true },
+      { source: "/destinations/italy", destination: "/italy", permanent: true },
+      { source: "/destinations/germany", destination: "/germany", permanent: true },
+      { source: "/destinations/hungary", destination: "/hungary", permanent: true },
+      { source: "/destinations/poland", destination: "/poland", permanent: true },
+      { source: "/destinations/finland", destination: "/finland", permanent: true },
+      { source: "/destinations/czech-republic", destination: "/czech-republic", permanent: true },
+      { source: "/destinations/malta", destination: "/malta", permanent: true },
+      { source: "/destinations/cyprus", destination: "/cyprus", permanent: true },
+      { source: "/destinations/georgia", destination: "/georgia", permanent: true },
+      { source: "/destinations/russia", destination: "/russia", permanent: true },
+      { source: "/destinations/malaysia", destination: "/malaysia", permanent: true },
+      { source: "/destinations/china", destination: "/china", permanent: true },
+      { source: "/destinations/ireland", destination: "/ireland", permanent: true },
       // Packages
       { source: "/packages/uk", destination: "/uk", permanent: true },
       { source: "/packages/uk-medicine", destination: "/uk-medicine", permanent: true },
@@ -57,9 +71,23 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return {
       beforeFiles: [
-        // Destinations (only spain + turkey exist for now)
+        // Destinations
         { source: "/spain", destination: "/destinations/spain" },
         { source: "/turkey", destination: "/destinations/turkey" },
+        { source: "/romania", destination: "/destinations/romania" },
+        { source: "/italy", destination: "/destinations/italy" },
+        { source: "/germany", destination: "/destinations/germany" },
+        { source: "/hungary", destination: "/destinations/hungary" },
+        { source: "/poland", destination: "/destinations/poland" },
+        { source: "/finland", destination: "/destinations/finland" },
+        { source: "/czech-republic", destination: "/destinations/czech-republic" },
+        { source: "/malta", destination: "/destinations/malta" },
+        { source: "/cyprus", destination: "/destinations/cyprus" },
+        { source: "/georgia", destination: "/destinations/georgia" },
+        { source: "/russia", destination: "/destinations/russia" },
+        { source: "/malaysia", destination: "/destinations/malaysia" },
+        { source: "/china", destination: "/destinations/china" },
+        { source: "/ireland", destination: "/destinations/ireland" },
         // Packages
         { source: "/uk", destination: "/packages/uk" },
         { source: "/uk-medicine", destination: "/packages/uk-medicine" },
