@@ -135,9 +135,43 @@ function ReviewAvatar({ name, photo }: { name: string; photo?: string }) {
   );
 }
 
+// Parse a stat value string like "800+", "+50", "25", "10+" into number + suffix
+function parseStatValue(raw: string): { target: number; suffix: string } {
+  if (!raw) return { target: 0, suffix: "" };
+  const str = String(raw).trim();
+  // Extract leading +, then digits, then trailing +/M/% etc.
+  const match = str.match(/^([+]?)\s*(\d+(?:\.\d+)?)\s*([+%MKBk]*)$/);
+  if (match) {
+    return { target: parseFloat(match[2]), suffix: match[3] || "" };
+  }
+  // Fallback: try to extract just digits
+  const numMatch = str.match(/(\d+(?:\.\d+)?)/);
+  if (numMatch) {
+    return { target: parseFloat(numMatch[1]), suffix: str.replace(numMatch[1], "").trim() };
+  }
+  return { target: 0, suffix: str };
+}
+
 export default function HomePage() {
   const [cmsTeam, setCmsTeam] = useState<{ name: string; role: string; image: string; bio: string; slug: string }[]>([]);
   const [reviews, setReviews] = useState<{ name: string; text: string; rating: number; source: string; photo?: string; university?: string }[]>([]);
+  // Admin-managed stats from Turso (fallback to static siteConfig.stats)
+  const [stats, setStats] = useState<{ value: string; label: string }[]>(siteConfig.stats as { value: string; label: string }[]);
+
+  useEffect(() => {
+    // Fetch stats from Turso (admin-managed via /admin)
+    fetch("/api/config", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((cfg) => {
+        if (Array.isArray(cfg.stats) && cfg.stats.length > 0) {
+          setStats(cfg.stats.map((s: any) => ({
+            value: String(s.value ?? ""),
+            label: String(s.label ?? ""),
+          })));
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     fetch("/api/webflow?type=reviews")
@@ -244,7 +278,7 @@ export default function HomePage() {
       {/* Stats Marquee */}
       <section className="bg-brand-teal py-4 md:py-6 overflow-hidden">
         <div className="flex animate-marquee whitespace-nowrap">
-          {[...siteConfig.stats, ...siteConfig.stats, ...siteConfig.stats, ...siteConfig.stats].map((stat, i) => (
+          {[...stats, ...stats, ...stats, ...stats].map((stat, i) => (
             <div key={i} className="flex items-center gap-2 md:gap-3 mx-6 md:mx-12 shrink-0">
               <span className="text-xl md:text-3xl lg:text-4xl font-bold text-white">
                 {stat.value}
@@ -367,24 +401,25 @@ export default function HomePage() {
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {[
-              { icon: Globe2, value: 25, suffix: "+", label: "Destinations" },
-              { icon: Users, value: 800, suffix: "+", label: "Students Guided" },
-              { icon: MapPin, value: 30, suffix: "+", label: "Countries" },
-              { icon: Award, value: 10, suffix: "+", label: "Years Experience" },
-            ].map((stat, i) => (
-              <ScrollAnimator key={stat.label} delay={i * 100}>
-                <div className="text-center p-6">
-                  <div className="w-14 h-14 mx-auto mb-4 bg-brand-teal/10 rounded-xl flex items-center justify-center">
-                    <stat.icon className="w-7 h-7 text-brand-teal" />
+            {stats.slice(0, 4).map((stat, i) => {
+              const { target, suffix } = parseStatValue(stat.value);
+              return (
+                <ScrollAnimator key={stat.label + i} delay={i * 100}>
+                  <div className="text-center p-6">
+                    <div className="w-14 h-14 mx-auto mb-4 bg-brand-teal/10 rounded-xl flex items-center justify-center">
+                      {i === 0 && <Globe2 className="w-7 h-7 text-brand-teal" />}
+                      {i === 1 && <Users className="w-7 h-7 text-brand-teal" />}
+                      {i === 2 && <MapPin className="w-7 h-7 text-brand-teal" />}
+                      {i === 3 && <Award className="w-7 h-7 text-brand-teal" />}
+                    </div>
+                    <p className="text-3xl md:text-4xl font-bold text-brand-navy mb-1">
+                      <CountUp target={target} suffix={suffix} />
+                    </p>
+                    <p className="text-gray-500 text-sm font-medium">{stat.label}</p>
                   </div>
-                  <p className="text-3xl md:text-4xl font-bold text-brand-navy mb-1">
-                    <CountUp target={stat.value} suffix={stat.suffix} />
-                  </p>
-                  <p className="text-gray-500 text-sm font-medium">{stat.label}</p>
-                </div>
-              </ScrollAnimator>
-            ))}
+                </ScrollAnimator>
+              );
+            })}
           </div>
         </div>
       </section>

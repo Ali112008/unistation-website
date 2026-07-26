@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { siteConfig } from "@/data/site-data";
 import { ScrollAnimator, SectionHeading } from "@/components/shared";
 import {
@@ -20,7 +21,28 @@ interface FAQSectionProps {
 }
 
 export function FAQSection({ faqs, subtitle = "Support" }: FAQSectionProps) {
-  const items = faqs && faqs.length > 0 ? faqs : siteConfig.faqs;
+  const [tursoFaqs, setTursoFaqs] = useState<FAQItem[]>([]);
+
+  useEffect(() => {
+    if (faqs && faqs.length > 0) return; // prop provided, no need to fetch
+    fetch("/api/config", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((cfg) => {
+        if (Array.isArray(cfg.faqs) && cfg.faqs.length > 0) {
+          setTursoFaqs(cfg.faqs.map((f: any) => ({
+            q: String(f.q ?? ""),
+            a: String(f.a ?? ""),
+          })));
+        }
+      })
+      .catch(() => {});
+  }, [faqs]);
+
+  const items = faqs && faqs.length > 0
+    ? faqs
+    : tursoFaqs.length > 0
+      ? tursoFaqs
+      : siteConfig.faqs;
 
   return (
     <section className="py-24 bg-white">
