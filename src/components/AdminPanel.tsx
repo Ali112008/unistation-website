@@ -37,7 +37,6 @@ function clearSession() {
 
 /* ─── Helper: detect non-Latin1 chars (HTTP headers can't carry them) ─── */
 function stringHasNonLatin1(str: string): boolean {
-  // Latin1 = code points 0-255. Anything above 255 (Arabic, CJK, emoji, etc.) breaks fetch headers.
   for (let i = 0; i < str.length; i++) {
     if (str.charCodeAt(i) > 255) return true;
   }
@@ -69,14 +68,16 @@ const S = {
   saveBtn: (saving: boolean) => ({
     padding: "10px 22px", background: saving ? "#9ca3af" : "linear-gradient(135deg, #f0b414, #e5a710)",
     color: "#28143c", border: "none", borderRadius: 10, fontSize: 15, fontWeight: 800,
-    cursor: saving ? "not-allowed" : "pointer", fontFamily: "Cairo, sans-serif",
+    cursor: saving ? "not-allowed" : "pointer",
     boxShadow: saving ? "none" : "0 4px 15px rgba(240,180,20,0.4)",
   }),
   undoBtn: {
     padding: "10px 18px", background: "white", color: "#374151", border: "1.5px solid #e5e7eb",
-    borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "Cairo, sans-serif",
+    borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: "pointer",
   },
 };
+
+const FONT = "'Inter', system-ui, -apple-system, sans-serif";
 
 /* ─── Field Components ─── */
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
@@ -143,12 +144,12 @@ function BrandEditor({ data, onChange }: { data: any; onChange: (d: any) => void
   const d = data || {};
   return (
     <div>
-      <Field label="اسم الشركة (Brand Name)"><TextInput value={d.name} onChange={v => onChange({ ...d, name: v })} /></Field>
-      <Field label="الشعار النصي (Tagline)"><TextInput value={d.tagline} onChange={v => onChange({ ...d, tagline: v })} /></Field>
-      <Field label="رابط اللوجو (Logo URL)"><TextInput value={d.logoUrl} onChange={v => onChange({ ...d, logoUrl: v })} /></Field>
-      <Field label="البريد الإلكتروني"><TextInput value={d.email} onChange={v => onChange({ ...d, email: v })} /></Field>
-      <Field label="رقم واتساب (بصيغة دولية بدون +)"><TextInput value={d.whatsapp} onChange={v => onChange({ ...d, whatsapp: v })} placeholder="971522732589" /></Field>
-      <Field label="حقوق النشر"><TextInput value={d.copyright} onChange={v => onChange({ ...d, copyright: v })} /></Field>
+      <Field label="Brand Name"><TextInput value={d.name} onChange={v => onChange({ ...d, name: v })} /></Field>
+      <Field label="Tagline"><TextInput value={d.tagline} onChange={v => onChange({ ...d, tagline: v })} /></Field>
+      <Field label="Logo URL"><TextInput value={d.logoUrl} onChange={v => onChange({ ...d, logoUrl: v })} /></Field>
+      <Field label="Email"><TextInput value={d.email} onChange={v => onChange({ ...d, email: v })} /></Field>
+      <Field label="WhatsApp Number (without +)"><TextInput value={d.whatsapp} onChange={v => onChange({ ...d, whatsapp: v })} placeholder="971522732589" /></Field>
+      <Field label="Copyright Text"><TextInput value={d.copyright} onChange={v => onChange({ ...d, copyright: v })} /></Field>
     </div>
   );
 }
@@ -158,11 +159,11 @@ function SocialEditor({ data, onChange }: { data: any; onChange: (d: any) => voi
   const d = data || {};
   return (
     <div>
-      <Field label="إنستجرام"><TextInput value={d.instagram} onChange={v => onChange({ ...d, instagram: v })} /></Field>
-      <Field label="تيك توك"><TextInput value={d.tiktok} onChange={v => onChange({ ...d, tiktok: v })} /></Field>
-      <Field label="فيسبوك"><TextInput value={d.facebook} onChange={v => onChange({ ...d, facebook: v })} /></Field>
-      <Field label="تويتر / X"><TextInput value={d.twitter} onChange={v => onChange({ ...d, twitter: v })} /></Field>
-      <Field label="يوتيوب"><TextInput value={d.youtube} onChange={v => onChange({ ...d, youtube: v })} /></Field>
+      <Field label="Instagram"><TextInput value={d.instagram} onChange={v => onChange({ ...d, instagram: v })} /></Field>
+      <Field label="TikTok"><TextInput value={d.tiktok} onChange={v => onChange({ ...d, tiktok: v })} /></Field>
+      <Field label="Facebook"><TextInput value={d.facebook} onChange={v => onChange({ ...d, facebook: v })} /></Field>
+      <Field label="Twitter / X"><TextInput value={d.twitter} onChange={v => onChange({ ...d, twitter: v })} /></Field>
+      <Field label="YouTube"><TextInput value={d.youtube} onChange={v => onChange({ ...d, youtube: v })} /></Field>
     </div>
   );
 }
@@ -174,14 +175,14 @@ function StatsEditor({ data, onChange }: { data: any[]; onChange: (d: any[]) => 
       {(data || []).map((stat, i) => (
         <div key={i} style={S.card}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-            <strong>رقم #{i + 1}</strong>
-            <button onClick={() => onChange(data.filter((_, idx) => idx !== i))} style={S.deleteBtn}>حذف</button>
+            <strong>Stat #{i + 1}</strong>
+            <button onClick={() => onChange(data.filter((_, idx) => idx !== i))} style={S.deleteBtn}>Delete</button>
           </div>
-          <Field label="القيمة"><TextInput value={stat.value} onChange={v => { const n = [...data]; n[i] = { ...stat, value: v }; onChange(n); }} /></Field>
-          <Field label="الوصف"><TextInput value={stat.label} onChange={v => { const n = [...data]; n[i] = { ...stat, label: v }; onChange(n); }} /></Field>
+          <Field label="Value (e.g. 800+)"><TextInput value={stat.value} onChange={v => { const n = [...data]; n[i] = { ...stat, value: v }; onChange(n); }} /></Field>
+          <Field label="Label (e.g. Students Guided)"><TextInput value={stat.label} onChange={v => { const n = [...data]; n[i] = { ...stat, label: v }; onChange(n); }} /></Field>
         </div>
       ))}
-      <button onClick={() => onChange([...(data || []), { label: "", value: "" }])} style={S.addBtn}>+ إضافة رقم</button>
+      <button onClick={() => onChange([...(data || []), { label: "", value: "" }])} style={S.addBtn}>+ Add Stat</button>
     </div>
   );
 }
@@ -193,16 +194,16 @@ function TestimonialsEditor({ data, onChange }: { data: any[]; onChange: (d: any
       {(data || []).map((t, i) => (
         <div key={i} style={S.card}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-            <strong>رأي #{i + 1}</strong>
-            <button onClick={() => onChange(data.filter((_, idx) => idx !== i))} style={S.deleteBtn}>حذف</button>
+            <strong>Review #{i + 1}</strong>
+            <button onClick={() => onChange(data.filter((_, idx) => idx !== i))} style={S.deleteBtn}>Delete</button>
           </div>
-          <Field label="الاسم"><TextInput value={t.name} onChange={v => { const n = [...data]; n[i] = { ...t, name: v }; onChange(n); }} /></Field>
-          <Field label="الدولة"><TextInput value={t.country} onChange={v => { const n = [...data]; n[i] = { ...t, country: v }; onChange(n); }} /></Field>
-          <Field label="التخصص"><TextInput value={t.program} onChange={v => { const n = [...data]; n[i] = { ...t, program: v }; onChange(n); }} /></Field>
-          <Field label="نص الرأي"><TextArea value={t.text} onChange={v => { const n = [...data]; n[i] = { ...t, text: v }; onChange(n); }} /></Field>
+          <Field label="Student Name"><TextInput value={t.name} onChange={v => { const n = [...data]; n[i] = { ...t, name: v }; onChange(n); }} /></Field>
+          <Field label="Country"><TextInput value={t.country} onChange={v => { const n = [...data]; n[i] = { ...t, country: v }; onChange(n); }} /></Field>
+          <Field label="Program"><TextInput value={t.program} onChange={v => { const n = [...data]; n[i] = { ...t, program: v }; onChange(n); }} /></Field>
+          <Field label="Review Text"><TextArea value={t.text} onChange={v => { const n = [...data]; n[i] = { ...t, text: v }; onChange(n); }} /></Field>
         </div>
       ))}
-      <button onClick={() => onChange([...(data || []), { name: "", country: "", program: "", text: "" }])} style={S.addBtn}>+ إضافة رأي</button>
+      <button onClick={() => onChange([...(data || []), { name: "", country: "", program: "", text: "" }])} style={S.addBtn}>+ Add Review</button>
     </div>
   );
 }
@@ -214,15 +215,15 @@ function OfficesEditor({ data, onChange }: { data: any[]; onChange: (d: any[]) =
       {(data || []).map((o, i) => (
         <div key={i} style={S.card}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-            <strong>مكتب #{i + 1}</strong>
-            <button onClick={() => onChange(data.filter((_, idx) => idx !== i))} style={S.deleteBtn}>حذف</button>
+            <strong>Office #{i + 1}</strong>
+            <button onClick={() => onChange(data.filter((_, idx) => idx !== i))} style={S.deleteBtn}>Delete</button>
           </div>
-          <Field label="المدينة"><TextInput value={o.city} onChange={v => { const n = [...data]; n[i] = { ...o, city: v }; onChange(n); }} /></Field>
-          <Field label="الدولة"><TextInput value={o.country} onChange={v => { const n = [...data]; n[i] = { ...o, country: v }; onChange(n); }} /></Field>
-          <Field label="العنوان"><TextArea value={o.address} onChange={v => { const n = [...data]; n[i] = { ...o, address: v }; onChange(n); }} /></Field>
+          <Field label="City"><TextInput value={o.city} onChange={v => { const n = [...data]; n[i] = { ...o, city: v }; onChange(n); }} /></Field>
+          <Field label="Country"><TextInput value={o.country} onChange={v => { const n = [...data]; n[i] = { ...o, country: v }; onChange(n); }} /></Field>
+          <Field label="Address"><TextArea value={o.address} onChange={v => { const n = [...data]; n[i] = { ...o, address: v }; onChange(n); }} /></Field>
         </div>
       ))}
-      <button onClick={() => onChange([...(data || []), { city: "", country: "", address: "" }])} style={S.addBtn}>+ إضافة مكتب</button>
+      <button onClick={() => onChange([...(data || []), { city: "", country: "", address: "" }])} style={S.addBtn}>+ Add Office</button>
     </div>
   );
 }
@@ -233,12 +234,11 @@ function PackagesEditor({ data, onChange }: { data: any; onChange: (d: any) => v
   const slugs = Object.keys(packages);
   const [selectedSlug, setSelectedSlug] = useState<string>(slugs[0] || "");
 
-  // Auto-select first if none selected
   useEffect(() => {
     if (!selectedSlug && slugs.length > 0) setSelectedSlug(slugs[0]);
   }, [slugs, selectedSlug]);
 
-  if (slugs.length === 0) return <div>لا توجد باقات</div>;
+  if (slugs.length === 0) return <div>No packages found</div>;
 
   const pkg = packages[selectedSlug];
 
@@ -248,8 +248,7 @@ function PackagesEditor({ data, onChange }: { data: any; onChange: (d: any) => v
 
   return (
     <div>
-      {/* Package selector */}
-      <Field label="اختر الباقة">
+      <Field label="Select Package">
         <select
           value={selectedSlug}
           onChange={e => setSelectedSlug(e.target.value)}
@@ -260,42 +259,42 @@ function PackagesEditor({ data, onChange }: { data: any; onChange: (d: any) => v
       </Field>
 
       <div style={S.card}>
-        <div style={{ fontSize: 12, color: "#9ca3af", marginBottom: 8 }}>الـ slug: <code>{selectedSlug}</code></div>
+        <div style={{ fontSize: 12, color: "#9ca3af", marginBottom: 8 }}>Package ID: <code>{selectedSlug}</code></div>
 
-        <Field label="Intro / المقدمة"><TextArea value={pkg.intro} onChange={v => updatePkg({ ...pkg, intro: v })} /></Field>
+        <Field label="Introduction"><TextArea value={pkg.intro} onChange={v => updatePkg({ ...pkg, intro: v })} /></Field>
 
         {/* Tiers */}
         <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #e5e7eb" }}>
-          <strong style={{ display: "block", marginBottom: 10 }}>Tiers / المستويات ({(pkg.tiers || []).length})</strong>
+          <strong style={{ display: "block", marginBottom: 10 }}>Package Tiers ({(pkg.tiers || []).length})</strong>
           {(pkg.tiers || []).map((tier: any, ti: number) => (
             <div key={ti} style={{ ...S.card, background: "white" }}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
                 <strong>Tier #{ti + 1}</strong>
-                <button onClick={() => updatePkg({ ...pkg, tiers: pkg.tiers.filter((_: any, idx: number) => idx !== ti) })} style={S.deleteBtn}>حذف</button>
+                <button onClick={() => updatePkg({ ...pkg, tiers: pkg.tiers.filter((_: any, idx: number) => idx !== ti) })} style={S.deleteBtn}>Delete</button>
               </div>
-              <Field label="الاسم"><TextInput value={tier.name} onChange={v => { const n = [...pkg.tiers]; n[ti] = { ...tier, name: v }; updatePkg({ ...pkg, tiers: n }); }} /></Field>
-              <Field label="العنوان الفرعي"><TextInput value={tier.subtitle} onChange={v => { const n = [...pkg.tiers]; n[ti] = { ...tier, subtitle: v }; updatePkg({ ...pkg, tiers: n }); }} /></Field>
-              {tier.price && <Field label="السعر"><TextInput value={tier.price} onChange={v => { const n = [...pkg.tiers]; n[ti] = { ...tier, price: v }; updatePkg({ ...pkg, tiers: n }); }} /></Field>}
-              <Field label="الفئة المستهدفة (idealFor)"><TextArea value={tier.idealFor} onChange={v => { const n = [...pkg.tiers]; n[ti] = { ...tier, idealFor: v }; updatePkg({ ...pkg, tiers: n }); }} /></Field>
+              <Field label="Tier Name"><TextInput value={tier.name} onChange={v => { const n = [...pkg.tiers]; n[ti] = { ...tier, name: v }; updatePkg({ ...pkg, tiers: n }); }} /></Field>
+              <Field label="Subtitle"><TextInput value={tier.subtitle} onChange={v => { const n = [...pkg.tiers]; n[ti] = { ...tier, subtitle: v }; updatePkg({ ...pkg, tiers: n }); }} /></Field>
+              {tier.price && <Field label="Price"><TextInput value={tier.price} onChange={v => { const n = [...pkg.tiers]; n[ti] = { ...tier, price: v }; updatePkg({ ...pkg, tiers: n }); }} /></Field>}
+              <Field label="Best For"><TextArea value={tier.idealFor} onChange={v => { const n = [...pkg.tiers]; n[ti] = { ...tier, idealFor: v }; updatePkg({ ...pkg, tiers: n }); }} /></Field>
 
               {/* Features */}
               <div style={{ marginTop: 10 }}>
-                <strong style={{ display: "block", marginBottom: 6, fontSize: 13 }}>المميزات ({(tier.features || []).length})</strong>
+                <strong style={{ display: "block", marginBottom: 6, fontSize: 13 }}>Features ({(tier.features || []).length})</strong>
                 {(tier.features || []).map((f: any, fi: number) => (
                   <div key={fi} style={{ ...S.card, background: "#f9fafb", marginBottom: 8 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
-                      <small>ميزة #{fi + 1}</small>
+                      <small>Feature #{fi + 1}</small>
                       <button onClick={() => { const n = [...pkg.tiers]; n[ti] = { ...tier, features: tier.features.filter((_: any, idx: number) => idx !== fi) }; updatePkg({ ...pkg, tiers: n }); }} style={S.deleteBtn}>✕</button>
                     </div>
-                    <Field label="العنوان"><TextInput value={f.title} onChange={v => { const feats = [...tier.features]; feats[fi] = { ...f, title: v }; const n = [...pkg.tiers]; n[ti] = { ...tier, features: feats }; updatePkg({ ...pkg, tiers: n }); }} /></Field>
-                    <Field label="الوصف"><TextArea value={f.description} onChange={v => { const feats = [...tier.features]; feats[fi] = { ...f, description: v }; const n = [...pkg.tiers]; n[ti] = { ...tier, features: feats }; updatePkg({ ...pkg, tiers: n }); }} /></Field>
+                    <Field label="Title"><TextInput value={f.title} onChange={v => { const feats = [...tier.features]; feats[fi] = { ...f, title: v }; const n = [...pkg.tiers]; n[ti] = { ...tier, features: feats }; updatePkg({ ...pkg, tiers: n }); }} /></Field>
+                    <Field label="Description"><TextArea value={f.description} onChange={v => { const feats = [...tier.features]; feats[fi] = { ...f, description: v }; const n = [...pkg.tiers]; n[ti] = { ...tier, features: feats }; updatePkg({ ...pkg, tiers: n }); }} /></Field>
                   </div>
                 ))}
-                <button onClick={() => { const feats = [...(tier.features || []), { title: "", description: "" }]; const n = [...pkg.tiers]; n[ti] = { ...tier, features: feats }; updatePkg({ ...pkg, tiers: n }); }} style={S.addBtn}>+ إضافة ميزة</button>
+                <button onClick={() => { const feats = [...(tier.features || []), { title: "", description: "" }]; const n = [...pkg.tiers]; n[ti] = { ...tier, features: feats }; updatePkg({ ...pkg, tiers: n }); }} style={S.addBtn}>+ Add Feature</button>
               </div>
             </div>
           ))}
-          <button onClick={() => updatePkg({ ...pkg, tiers: [...(pkg.tiers || []), { name: "", subtitle: "", features: [], idealFor: "" }] })} style={S.addBtn}>+ إضافة Tier</button>
+          <button onClick={() => updatePkg({ ...pkg, tiers: [...(pkg.tiers || []), { name: "", subtitle: "", features: [], idealFor: "" }] })} style={S.addBtn}>+ Add Tier</button>
         </div>
       </div>
     </div>
@@ -312,14 +311,14 @@ function DestinationsEditor({ data, onChange }: { data: any; onChange: (d: any) 
     if (!selectedSlug && slugs.length > 0) setSelectedSlug(slugs[0]);
   }, [slugs, selectedSlug]);
 
-  if (slugs.length === 0) return <div>لا توجد وجهات</div>;
+  if (slugs.length === 0) return <div>No destinations found</div>;
 
   const dest = dests[selectedSlug];
   const updateDest = (newDest: any) => onChange({ ...dests, [selectedSlug]: newDest });
 
   return (
     <div>
-      <Field label="اختر الوجهة">
+      <Field label="Select Destination">
         <select
           value={selectedSlug}
           onChange={e => setSelectedSlug(e.target.value)}
@@ -330,7 +329,7 @@ function DestinationsEditor({ data, onChange }: { data: any; onChange: (d: any) 
       </Field>
 
       <div style={S.card}>
-        <div style={{ fontSize: 12, color: "#9ca3af", marginBottom: 8 }}>الـ slug: <code>{selectedSlug}</code></div>
+        <div style={{ fontSize: 12, color: "#9ca3af", marginBottom: 8 }}>Destination ID: <code>{selectedSlug}</code></div>
 
         <Field label="Hero Subtitle"><TextInput value={dest.heroSubtitle} onChange={v => updateDest({ ...dest, heroSubtitle: v })} /></Field>
         <Field label="Hero Description"><TextArea value={dest.heroDescription} onChange={v => updateDest({ ...dest, heroDescription: v })} /></Field>
@@ -349,7 +348,7 @@ function DestinationsEditor({ data, onChange }: { data: any; onChange: (d: any) 
               <button onClick={() => updateDest({ ...dest, overviewParagraphs: dest.overviewParagraphs.filter((_: string, idx: number) => idx !== pi) })} style={S.deleteBtn}>✕</button>
             </div>
           ))}
-          <button onClick={() => updateDest({ ...dest, overviewParagraphs: [...(dest.overviewParagraphs || []), ""] })} style={S.addBtn}>+ إضافة فقرة</button>
+          <button onClick={() => updateDest({ ...dest, overviewParagraphs: [...(dest.overviewParagraphs || []), ""] })} style={S.addBtn}>+ Add Paragraph</button>
         </div>
 
         {/* Stats */}
@@ -362,11 +361,11 @@ function DestinationsEditor({ data, onChange }: { data: any; onChange: (d: any) 
               <button onClick={() => updateDest({ ...dest, stats: dest.stats.filter((_: any, idx: number) => idx !== si) })} style={S.deleteBtn}>✕</button>
             </div>
           ))}
-          <button onClick={() => updateDest({ ...dest, stats: [...(dest.stats || []), { label: "", value: "" }] })} style={S.addBtn}>+ إضافة stat</button>
+          <button onClick={() => updateDest({ ...dest, stats: [...(dest.stats || []), { label: "", value: "" }] })} style={S.addBtn}>+ Add Stat</button>
         </div>
 
         <div style={{ marginTop: 16, padding: 12, background: "#fef3c7", borderRadius: 8, fontSize: 12, color: "#92400e" }}>
-          ⚠️ ملاحظة: الـ additionalSections (مثل two-paths, key-advantages, إلخ) معقدة جداً ويُنصح بتعديلها من الكود مباشرة. الـ fields اللي فوق بتغطي أهم المحتوى اللي العميل محتاج يعدله.
+          Note: Advanced sections (two-paths, key-advantages, etc.) are best edited in code. The fields above cover the most important content.
         </div>
       </div>
     </div>
@@ -383,13 +382,13 @@ function FaqsEditor({ data, onChange }: { data: any; onChange: (d: any) => void 
     if (!selectedGroup && groups.length > 0) setSelectedGroup(groups[0]);
   }, [groups, selectedGroup]);
 
-  if (groups.length === 0) return <div>لا توجد مجموعات أسئلة</div>;
+  if (groups.length === 0) return <div>No FAQ groups found</div>;
 
   const items: any[] = faqs[selectedGroup] || [];
 
   return (
     <div>
-      <Field label="اختر المجموعة">
+      <Field label="Select FAQ Group">
         <select
           value={selectedGroup}
           onChange={e => setSelectedGroup(e.target.value)}
@@ -403,14 +402,14 @@ function FaqsEditor({ data, onChange }: { data: any; onChange: (d: any) => void 
         {items.map((item, i) => (
           <div key={i} style={{ ...S.card, background: "white", marginBottom: 10 }}>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
-              <small>سؤال #{i + 1}</small>
-              <button onClick={() => { const n = [...items]; n.splice(i, 1); onChange({ ...faqs, [selectedGroup]: n }); }} style={S.deleteBtn}>حذف</button>
+              <small>Question #{i + 1}</small>
+              <button onClick={() => { const n = [...items]; n.splice(i, 1); onChange({ ...faqs, [selectedGroup]: n }); }} style={S.deleteBtn}>Delete</button>
             </div>
-            <Field label="السؤال"><TextInput value={item.q} onChange={v => { const n = [...items]; n[i] = { ...item, q: v }; onChange({ ...faqs, [selectedGroup]: n }); }} /></Field>
-            <Field label="الإجابة"><TextArea value={item.a} onChange={v => { const n = [...items]; n[i] = { ...item, a: v }; onChange({ ...faqs, [selectedGroup]: n }); }} /></Field>
+            <Field label="Question"><TextInput value={item.q} onChange={v => { const n = [...items]; n[i] = { ...item, q: v }; onChange({ ...faqs, [selectedGroup]: n }); }} /></Field>
+            <Field label="Answer"><TextArea value={item.a} onChange={v => { const n = [...items]; n[i] = { ...item, a: v }; onChange({ ...faqs, [selectedGroup]: n }); }} /></Field>
           </div>
         ))}
-        <button onClick={() => onChange({ ...faqs, [selectedGroup]: [...items, { q: "", a: "" }] })} style={S.addBtn}>+ إضافة سؤال</button>
+        <button onClick={() => onChange({ ...faqs, [selectedGroup]: [...items, { q: "", a: "" }] })} style={S.addBtn}>+ Add Question</button>
       </div>
     </div>
   );
@@ -420,7 +419,7 @@ function FaqsEditor({ data, onChange }: { data: any; onChange: (d: any) => void 
    Georgia-specific Editors
    ═══════════════════════════════════════════════════ */
 
-/* ─── Georgia Stats Editor (target/prefix/suffix/label) ─── */
+/* ─── Georgia Stats Editor ─── */
 function GeorgiaStatsEditor({ data, onChange }: { data: any[]; onChange: (d: any[]) => void }) {
   const remove = (i: number) => onChange((data || []).filter((_, idx) => idx !== i));
   const update = (i: number, field: string, value: any) => {
@@ -431,23 +430,23 @@ function GeorgiaStatsEditor({ data, onChange }: { data: any[]; onChange: (d: any
   return (
     <div>
       <div style={{ padding: 12, background: "#eff6ff", borderRadius: 8, marginBottom: 16, fontSize: 13, color: "#1e40af" }}>
-        🎓 إحصائيات صفحة جورجيا — تظهر في قسم الأرقام بالصفحة الرئيسية
+        Georgia page stats — shown in the numbers section
       </div>
       {(data || []).map((stat, i) => (
         <div key={i} style={S.card}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-            <strong>الرقم #{i + 1}</strong>
-            <button onClick={() => remove(i)} style={S.deleteBtn}>حذف</button>
+            <strong>Stat #{i + 1}</strong>
+            <button onClick={() => remove(i)} style={S.deleteBtn}>Delete</button>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-            <Field label="القيمة (رقم)"><input type="number" step="0.1" value={stat.target || 0} onChange={e => update(i, "target", parseFloat(e.target.value) || 0)} style={S.input} /></Field>
-            <Field label="العنوان"><TextInput value={stat.label || ""} onChange={v => update(i, "label", v)} placeholder="جامعات معتمدة" /></Field>
-            <Field label="قبل الرقم"><TextInput value={stat.prefix || ""} onChange={v => update(i, "prefix", v)} placeholder="مثل +" /></Field>
-            <Field label="بعد الرقم"><TextInput value={stat.suffix || ""} onChange={v => update(i, "suffix", v)} placeholder="مثل %" /></Field>
+            <Field label="Number"><input type="number" step="0.1" value={stat.target || 0} onChange={e => update(i, "target", parseFloat(e.target.value) || 0)} style={S.input} /></Field>
+            <Field label="Label"><TextInput value={stat.label || ""} onChange={v => update(i, "label", v)} placeholder="e.g. Accredited Universities" /></Field>
+            <Field label="Before number (prefix)"><TextInput value={stat.prefix || ""} onChange={v => update(i, "prefix", v)} placeholder="e.g. +" /></Field>
+            <Field label="After number (suffix)"><TextInput value={stat.suffix || ""} onChange={v => update(i, "suffix", v)} placeholder="e.g. %" /></Field>
           </div>
         </div>
       ))}
-      <button onClick={() => onChange([...(data || []), { target: 0, prefix: "", suffix: "", label: "" }])} style={S.addBtn}>+ إضافة رقم</button>
+      <button onClick={() => onChange([...(data || []), { target: 0, prefix: "", suffix: "", label: "" }])} style={S.addBtn}>+ Add Stat</button>
     </div>
   );
 }
@@ -463,42 +462,42 @@ function UniversitiesEditor({ data, onChange }: { data: any[]; onChange: (d: any
   return (
     <div>
       <div style={{ padding: 12, background: "#eff6ff", borderRadius: 8, marginBottom: 16, fontSize: 13, color: "#1e40af" }}>
-        🎓 الجامعات الجورجية — تظهر في قسم الجامعات بالصفحة الرئيسية
+        Georgia Universities — shown in the universities section
       </div>
       {(data || []).map((uni, i) => (
-        <div key={i} style={{ ...S.card, borderRight: uni.highlight ? "4px solid #f0b414" : "1px solid #e5e7eb" }}>
+        <div key={i} style={{ ...S.card, borderLeft: uni.highlight ? "4px solid #f0b414" : "1px solid #e5e7eb" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-            <strong>#{uni.rank || i + 1} — {uni.nameAr || uni.name}</strong>
-            <button onClick={() => removeUni(i)} style={S.deleteBtn}>حذف</button>
+            <strong>#{uni.rank || i + 1} — {uni.name}</strong>
+            <button onClick={() => removeUni(i)} style={S.deleteBtn}>Delete</button>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
-            <Field label="الاسم بالإنجليزي"><TextInput value={uni.name || ""} onChange={v => update(i, "name", v)} /></Field>
-            <Field label="الاسم بالعربي"><TextInput value={uni.nameAr || ""} onChange={v => update(i, "nameAr", v)} /></Field>
-            <Field label="الاختصار"><TextInput value={uni.abbr || ""} onChange={v => update(i, "abbr", v)} /></Field>
+            <Field label="Name (English)"><TextInput value={uni.name || ""} onChange={v => update(i, "name", v)} /></Field>
+            <Field label="Name (Arabic)"><TextInput value={uni.nameAr || ""} onChange={v => update(i, "nameAr", v)} /></Field>
+            <Field label="Abbreviation"><TextInput value={uni.abbr || ""} onChange={v => update(i, "abbr", v)} /></Field>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginTop: 8 }}>
-            <Field label="الرسوم"><TextInput value={uni.fee || ""} onChange={v => update(i, "fee", v)} placeholder="$8,000" /></Field>
-            <Field label="النوع"><TextInput value={uni.type || ""} onChange={v => update(i, "type", v)} placeholder="حكومية / خاصة" /></Field>
-            <Field label="الترتيب"><input type="number" value={uni.rank || i + 1} onChange={e => update(i, "rank", parseInt(e.target.value) || 1)} style={S.input} /></Field>
+            <Field label="Tuition Fee"><TextInput value={uni.fee || ""} onChange={v => update(i, "fee", v)} placeholder="$8,000" /></Field>
+            <Field label="Type (Public/Private)"><TextInput value={uni.type || ""} onChange={v => update(i, "type", v)} /></Field>
+            <Field label="Rank"><input type="number" value={uni.rank || i + 1} onChange={e => update(i, "rank", parseInt(e.target.value) || 1)} style={S.input} /></Field>
           </div>
-          <Field label="الوصف"><TextArea value={uni.desc || uni.description || ""} onChange={v => update(i, "desc", v)} /></Field>
+          <Field label="Description"><TextArea value={uni.desc || uni.description || ""} onChange={v => update(i, "desc", v)} /></Field>
           <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 14, marginTop: 8 }}>
             <input type="checkbox" checked={!!uni.highlight} onChange={e => update(i, "highlight", e.target.checked)} style={{ width: 18, height: 18, accentColor: "#f0b414" }} />
-            تمييز الجامعة (إظهارها بشكل مميز)
+            Featured (highlight this university)
           </label>
           <div style={{ marginTop: 12 }}>
-            <label style={S.label}>المميزات</label>
+            <label style={S.label}>Features</label>
             {(uni.features || []).map((f: string, fi: number) => (
               <div key={fi} style={{ display: "flex", gap: 8, marginBottom: 6 }}>
                 <input type="text" value={f} onChange={e => { const feats = [...uni.features]; feats[fi] = e.target.value; update(i, "features", feats); }} style={S.input} />
                 <button onClick={() => update(i, "features", uni.features.filter((_: any, idx: number) => idx !== fi))} style={S.deleteBtn}>✕</button>
               </div>
             ))}
-            <button onClick={() => update(i, "features", [...(uni.features || []), ""])} style={S.addBtn}>+ إضافة ميزة</button>
+            <button onClick={() => update(i, "features", [...(uni.features || []), ""])} style={S.addBtn}>+ Add Feature</button>
           </div>
         </div>
       ))}
-      <button onClick={() => onChange([...(data || []), { rank: (data || []).length + 1, name: "", nameAr: "", abbr: "", fee: "", type: "", desc: "", features: [], highlight: false }])} style={S.addBtn}>+ إضافة جامعة</button>
+      <button onClick={() => onChange([...(data || []), { rank: (data || []).length + 1, name: "", nameAr: "", abbr: "", fee: "", type: "", desc: "", features: [], highlight: false }])} style={S.addBtn}>+ Add University</button>
     </div>
   );
 }
@@ -510,15 +509,15 @@ function HeroEditor({ data, onChange }: { data: any; onChange: (d: any) => void 
   return (
     <div>
       <div style={{ padding: 12, background: "#eff6ff", borderRadius: 8, marginBottom: 16, fontSize: 13, color: "#1e40af" }}>
-        🖼️ قسم الهيرو الرئيسي في صفحة جورجيا
+        Georgia page hero — the main banner section
       </div>
-      <Field label="الشارة (Badge)"><TextInput value={d.badge || ""} onChange={v => update("badge", v)} /></Field>
-      <Field label="السطر الأول من العنوان"><TextInput value={d.title1 || ""} onChange={v => update("title1", v)} /></Field>
-      <Field label="السطر الثاني (الكلمة المميزة)"><TextInput value={d.title2 || ""} onChange={v => update("title2", v)} /></Field>
-      <Field label="الوصف"><TextArea value={d.description || ""} onChange={v => update("description", v)} /></Field>
+      <Field label="Badge"><TextInput value={d.badge || ""} onChange={v => update("badge", v)} /></Field>
+      <Field label="Title Line 1"><TextInput value={d.title1 || ""} onChange={v => update("title1", v)} /></Field>
+      <Field label="Title Line 2 (highlight)"><TextInput value={d.title2 || ""} onChange={v => update("title2", v)} /></Field>
+      <Field label="Description"><TextArea value={d.description || ""} onChange={v => update("description", v)} /></Field>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-        <Field label="نص الزر الأساسي"><TextInput value={d.ctaPrimary || ""} onChange={v => update("ctaPrimary", v)} /></Field>
-        <Field label="نص الزر الثانوي"><TextInput value={d.ctaSecondary || ""} onChange={v => update("ctaSecondary", v)} /></Field>
+        <Field label="Primary Button Text"><TextInput value={d.ctaPrimary || ""} onChange={v => update("ctaPrimary", v)} /></Field>
+        <Field label="Secondary Button Text"><TextInput value={d.ctaSecondary || ""} onChange={v => update("ctaSecondary", v)} /></Field>
       </div>
     </div>
   );
@@ -531,22 +530,22 @@ function ContactEditor({ data, onChange }: { data: any; onChange: (d: any) => vo
   return (
     <div>
       <div style={{ padding: 12, background: "#eff6ff", borderRadius: 8, marginBottom: 16, fontSize: 13, color: "#1e40af" }}>
-        📞 بيانات التواصل لصفحة جورجيا
+        Georgia page contact information
       </div>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-        <Field label="رقم الواتساب"><TextInput value={d.whatsapp || ""} onChange={v => update("whatsapp", v)} /></Field>
-        <Field label="رابط الواتساب"><TextInput value={d.whatsappLink || ""} onChange={v => update("whatsappLink", v)} /></Field>
+        <Field label="WhatsApp Number"><TextInput value={d.whatsapp || ""} onChange={v => update("whatsapp", v)} /></Field>
+        <Field label="WhatsApp Link"><TextInput value={d.whatsappLink || ""} onChange={v => update("whatsappLink", v)} /></Field>
       </div>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-        <Field label="البريد الإلكتروني"><TextInput value={d.email || ""} onChange={v => update("email", v)} /></Field>
-        <Field label="رقم الهاتف"><TextInput value={d.phone || ""} onChange={v => update("phone", v)} /></Field>
+        <Field label="Email"><TextInput value={d.email || ""} onChange={v => update("email", v)} /></Field>
+        <Field label="Phone Number"><TextInput value={d.phone || ""} onChange={v => update("phone", v)} /></Field>
       </div>
-      <Field label="رابط الانستجرام"><TextInput value={d.social?.instagram || ""} onChange={v => update("social", { ...d.social, instagram: v })} /></Field>
+      <Field label="Instagram Link"><TextInput value={d.social?.instagram || ""} onChange={v => update("social", { ...d.social, instagram: v })} /></Field>
     </div>
   );
 }
 
-/* ─── Georgia Package Editor (basicPackage / additionalPackage) ─── */
+/* ─── Georgia Package Editor ─── */
 function GeorgiaPackageEditor({ data, onChange }: { data: any; onChange: (d: any) => void }) {
   const d = data || {};
   const update = (field: string, value: any) => onChange({ ...d, [field]: value });
@@ -560,54 +559,54 @@ function GeorgiaPackageEditor({ data, onChange }: { data: any; onChange: (d: any
   return (
     <div>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-        <Field label="العنوان"><TextInput value={d.title || ""} onChange={v => update("title", v)} /></Field>
-        <Field label="شارة التميز"><TextInput value={d.badge || ""} onChange={v => update("badge", v)} placeholder="أفضل قيمة" /></Field>
+        <Field label="Title"><TextInput value={d.title || ""} onChange={v => update("title", v)} /></Field>
+        <Field label="Badge"><TextInput value={d.badge || ""} onChange={v => update("badge", v)} placeholder="Best Value" /></Field>
       </div>
-      <Field label="الوصف"><TextArea value={d.description || ""} onChange={v => update("description", v)} /></Field>
+      <Field label="Description"><TextArea value={d.description || ""} onChange={v => update("description", v)} /></Field>
 
       {d.totalPrice !== undefined && (
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-          <Field label="السعر الإجمالي"><TextInput value={d.totalPrice || ""} onChange={v => update("totalPrice", v)} /></Field>
-          <Field label="العملة"><TextInput value={d.currency || ""} onChange={v => update("currency", v)} placeholder="درهم" /></Field>
+          <Field label="Total Price"><TextInput value={d.totalPrice || ""} onChange={v => update("totalPrice", v)} /></Field>
+          <Field label="Currency"><TextInput value={d.currency || ""} onChange={v => update("currency", v)} placeholder="AED" /></Field>
         </div>
       )}
       {d.priceNote !== undefined && (
-        <Field label="ملاحظة السعر"><TextInput value={d.priceNote || ""} onChange={v => update("priceNote", v)} /></Field>
+        <Field label="Price Note"><TextInput value={d.priceNote || ""} onChange={v => update("priceNote", v)} /></Field>
       )}
 
       {d.installments && (
         <div style={{ marginTop: 12 }}>
-          <strong style={{ display: "block", marginBottom: 8, color: "#28143c" }}>الدفعات</strong>
+          <strong style={{ display: "block", marginBottom: 8, color: "#28143c" }}>Payment Installments</strong>
           {(d.installments || []).map((inst: any, i: number) => (
             <div key={i} style={S.card}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-                <strong>الدفعة {i + 1}</strong>
-                <button onClick={() => update("installments", d.installments.filter((_: any, idx: number) => idx !== i))} style={S.deleteBtn}>حذف</button>
+                <strong>Installment #{i + 1}</strong>
+                <button onClick={() => update("installments", d.installments.filter((_: any, idx: number) => idx !== i))} style={S.deleteBtn}>Delete</button>
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                <Field label="اسم الدفعة"><TextInput value={inst.label || ""} onChange={v => updateInstallment(i, "label", v)} /></Field>
-                <Field label="المبلغ"><TextInput value={inst.amount || ""} onChange={v => updateInstallment(i, "amount", v)} /></Field>
+                <Field label="Label"><TextInput value={inst.label || ""} onChange={v => updateInstallment(i, "label", v)} /></Field>
+                <Field label="Amount"><TextInput value={inst.amount || ""} onChange={v => updateInstallment(i, "amount", v)} /></Field>
               </div>
-              <Field label="ملاحظة"><TextInput value={inst.note || ""} onChange={v => updateInstallment(i, "note", v)} /></Field>
+              <Field label="Note"><TextInput value={inst.note || ""} onChange={v => updateInstallment(i, "note", v)} /></Field>
             </div>
           ))}
-          <button onClick={() => update("installments", [...(d.installments || []), { label: "", amount: "", note: "" }])} style={S.addBtn}>+ إضافة دفعة</button>
+          <button onClick={() => update("installments", [...(d.installments || []), { label: "", amount: "", note: "" }])} style={S.addBtn}>+ Add Installment</button>
         </div>
       )}
 
       {d.note !== undefined && (
-        <Field label="ملاحظة"><TextArea value={d.note || ""} onChange={v => update("note", v)} /></Field>
+        <Field label="Note"><TextArea value={d.note || ""} onChange={v => update("note", v)} /></Field>
       )}
 
       <div style={{ marginTop: 12 }}>
-        <label style={S.label}>الخدمات</label>
+        <label style={S.label}>Services Included</label>
         {(d.services || []).map((s: string, si: number) => (
           <div key={si} style={{ display: "flex", gap: 8, marginBottom: 6 }}>
             <input type="text" value={s} onChange={e => { const sv = [...d.services]; sv[si] = e.target.value; update("services", sv); }} style={S.input} />
             <button onClick={() => update("services", d.services.filter((_: any, idx: number) => idx !== si))} style={S.deleteBtn}>✕</button>
           </div>
         ))}
-        <button onClick={() => update("services", [...(d.services || []), ""])} style={S.addBtn}>+ إضافة خدمة</button>
+        <button onClick={() => update("services", [...(d.services || []), ""])} style={S.addBtn}>+ Add Service</button>
       </div>
     </div>
   );
@@ -620,48 +619,48 @@ function RegistrationEditor({ data, onChange }: { data: any; onChange: (d: any) 
   return (
     <div>
       <div style={{ padding: 12, background: "#eff6ff", borderRadius: 8, marginBottom: 16, fontSize: 13, color: "#1e40af" }}>
-        📋 قسم التسجيل والمستندات المطلوبة لصفحة جورجيا
+        Registration section — required documents list
       </div>
-      <Field label="العنوان"><TextInput value={d.title || ""} onChange={v => update("title", v)} /></Field>
-      <Field label="الوصف"><TextArea value={d.description || ""} onChange={v => update("description", v)} /></Field>
+      <Field label="Title"><TextInput value={d.title || ""} onChange={v => update("title", v)} /></Field>
+      <Field label="Description"><TextArea value={d.description || ""} onChange={v => update("description", v)} /></Field>
 
-      <strong style={{ display: "block", marginBottom: 8, color: "#28143c", marginTop: 12 }}>المستندات المطلوبة</strong>
+      <strong style={{ display: "block", marginBottom: 8, color: "#28143c", marginTop: 12 }}>Required Documents</strong>
       {(d.docs || []).map((doc: any, i: number) => (
         <div key={i} style={S.card}>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-            <strong>المستند {i + 1}</strong>
-            <button onClick={() => update("docs", d.docs.filter((_: any, idx: number) => idx !== i))} style={S.deleteBtn}>حذف</button>
+            <strong>Document #{i + 1}</strong>
+            <button onClick={() => update("docs", d.docs.filter((_: any, idx: number) => idx !== i))} style={S.deleteBtn}>Delete</button>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-            <Field label="اسم المستند"><TextInput value={doc.title || ""} onChange={v => { const docs = [...d.docs]; docs[i] = { ...doc, title: v }; update("docs", docs); }} /></Field>
-            <Field label="الوصف"><TextInput value={doc.desc || ""} onChange={v => { const docs = [...d.docs]; docs[i] = { ...doc, desc: v }; update("docs", docs); }} /></Field>
+            <Field label="Document Name"><TextInput value={doc.title || ""} onChange={v => { const docs = [...d.docs]; docs[i] = { ...doc, title: v }; update("docs", docs); }} /></Field>
+            <Field label="Description"><TextInput value={doc.desc || ""} onChange={v => { const docs = [...d.docs]; docs[i] = { ...doc, desc: v }; update("docs", docs); }} /></Field>
           </div>
         </div>
       ))}
-      <button onClick={() => update("docs", [...(d.docs || []), { title: "", desc: "" }])} style={S.addBtn}>+ إضافة مستند</button>
+      <button onClick={() => update("docs", [...(d.docs || []), { title: "", desc: "" }])} style={S.addBtn}>+ Add Document</button>
     </div>
   );
 }
 
-/* ─── Georgia FAQs Editor (flat array of {q,a}) ─── */
+/* ─── Georgia FAQs Editor ─── */
 function GeorgiaFaqsEditor({ data, onChange }: { data: any[]; onChange: (d: any[]) => void }) {
   const remove = (i: number) => onChange((data || []).filter((_, idx) => idx !== i));
   return (
     <div>
       <div style={{ padding: 12, background: "#eff6ff", borderRadius: 8, marginBottom: 16, fontSize: 13, color: "#1e40af" }}>
-        ❓ الأسئلة الشائعة لصفحة جورجيا (منفصلة عن أسئلة باقي الصفحات)
+        Georgia page FAQs (separate from site-wide FAQs)
       </div>
       {(data || []).map((faq, i) => (
         <div key={i} style={S.card}>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-            <strong>السؤال {i + 1}</strong>
-            <button onClick={() => remove(i)} style={S.deleteBtn}>حذف</button>
+            <strong>Question #{i + 1}</strong>
+            <button onClick={() => remove(i)} style={S.deleteBtn}>Delete</button>
           </div>
-          <Field label="السؤال"><TextInput value={faq.q || ""} onChange={v => { const n = [...(data || [])]; n[i] = { ...faq, q: v }; onChange(n); }} /></Field>
-          <Field label="الإجابة"><TextArea value={faq.a || ""} onChange={v => { const n = [...(data || [])]; n[i] = { ...faq, a: v }; onChange(n); }} /></Field>
+          <Field label="Question"><TextInput value={faq.q || ""} onChange={v => { const n = [...(data || [])]; n[i] = { ...faq, q: v }; onChange(n); }} /></Field>
+          <Field label="Answer"><TextArea value={faq.a || ""} onChange={v => { const n = [...(data || [])]; n[i] = { ...faq, a: v }; onChange(n); }} /></Field>
         </div>
       ))}
-      <button onClick={() => onChange([...(data || []), { q: "", a: "" }])} style={S.addBtn}>+ إضافة سؤال</button>
+      <button onClick={() => onChange([...(data || []), { q: "", a: "" }])} style={S.addBtn}>+ Add Question</button>
     </div>
   );
 }
@@ -690,11 +689,9 @@ export default function AdminPanel() {
   useEffect(() => {
     const sess = loadSession();
     if (sess) {
-      // Validate stored password is ASCII (HTTP headers can't contain non-Latin1 chars)
       if (stringHasNonLatin1(sess)) {
-        // Contains non-Latin1 chars (Arabic, etc.) — clear it
         clearSession();
-        setLoginError("انتهت الجلسة. اكتب كلمة المرور من جديد بالإنجليزية فقط.");
+        setLoginError("Session expired. Please enter your password again (English only).");
       } else {
         setPassword(sess);
         setLoggedIn(true);
@@ -712,7 +709,7 @@ export default function AdminPanel() {
       setData(json);
       setOriginalData(json);
     } catch {
-      setError("فشل تحميل البيانات");
+      setError("Failed to load data");
     }
     setLoading(false);
   }, [loggedIn]);
@@ -724,23 +721,22 @@ export default function AdminPanel() {
   /* ─── Login Handler ─── */
   const handleLogin = async () => {
     if (!password) return;
-    
-    // Validate ASCII-only (HTTP headers reject non-Latin1 chars)
+
     if (stringHasNonLatin1(password)) {
-      setLoginError("كلمة المرور يجب أن تكون بالإنجليزية والأرقام فقط — تأكد أن الكيبورد بالإنجليزي");
+      setLoginError("Password must be English letters and numbers only. Make sure your keyboard is in English mode.");
       return;
     }
-    
+
     try {
       const res = await fetch("/api/config", {
         method: "PUT",
         headers: { "Content-Type": "application/json", "x-admin-password": password },
         body: JSON.stringify({ key: "_ping", value: true }),
       });
-      if (res.status === 401) { setLoginError("كلمة المرور غير صحيحة"); return; }
-      if (!res.ok) { setLoginError("تعذر الاتصال بالخادم"); return; }
-    } catch (err) {
-      setLoginError("تعذر الاتصال — تحقق من الإنترنت أو أن السيرفر شغال");
+      if (res.status === 401) { setLoginError("Incorrect password"); return; }
+      if (!res.ok) { setLoginError("Could not connect to server"); return; }
+    } catch {
+      setLoginError("Connection failed — check your internet");
       return;
     }
     setLoginError("");
@@ -757,14 +753,13 @@ export default function AdminPanel() {
 
   const saveKey = async (key: string, value: any) => {
     setSaving(true); setSavedKey(null); setError("");
-    
-    // Defensive: validate password is ASCII
+
     if (password && stringHasNonLatin1(password)) {
-      setError("كلمة المرور غير صالحة — سجل خروج ودخول من جديد بالإنجليزية فقط");
+      setError("Invalid password — please log out and log back in (English only)");
       setSaving(false);
       return;
     }
-    
+
     try {
       const bodyStr = JSON.stringify({ key, value });
       console.log(`[saveKey] Saving key="${key}" payload=${bodyStr.length} bytes`);
@@ -775,12 +770,11 @@ export default function AdminPanel() {
       });
       console.log(`[saveKey] Response: ${res.status} ${res.statusText}`);
       if (!res.ok) {
-        // Try to read the error message from response
-        let errMsg = "فشل الحفظ";
+        let errMsg = "Save failed";
         try {
           const errBody = await res.json();
-          if (errBody?.error) errMsg = `فشل الحفظ (${res.status}): ${errBody.error}`;
-        } catch { errMsg = `فشل الحفظ (HTTP ${res.status})`; }
+          if (errBody?.error) errMsg = `Save failed (${res.status}): ${errBody.error}`;
+        } catch { errMsg = `Save failed (HTTP ${res.status})`; }
         setError(errMsg);
         return;
       }
@@ -790,7 +784,7 @@ export default function AdminPanel() {
     } catch (err: any) {
       console.error("[saveKey] Fetch failed:", err);
       const msg = err?.message || String(err);
-      setError(`خطأ في الاتصال: ${msg}`);
+      setError(`Connection error: ${msg}`);
     }
     setSaving(false);
   };
@@ -799,7 +793,6 @@ export default function AdminPanel() {
     brand: "brand", social: "social", stats: "stats", offices: "offices",
     testimonials: "testimonials", packages: "packages", destinations: "destinations",
     faqs: "faqs",
-    // Georgia-specific tabs
     georgiaHero: "hero", georgiaContact: "site", georgiaStats: "georgia_stats",
     georgiaUniversities: "universities", georgiaBasicPackage: "basicPackage",
     georgiaAdditionalPackage: "additionalPackage", georgiaRegistration: "registration",
@@ -823,49 +816,54 @@ export default function AdminPanel() {
   };
 
   const tabs = [
-    { id: "brand", label: "بيانات الشركة", icon: "🏢", group: "عام" },
-    { id: "social", label: "السوشيال", icon: "📱", group: "عام" },
-    { id: "stats", label: "الأرقام", icon: "📊", group: "عام" },
-    { id: "testimonials", label: "آراء الطلاب", icon: "💬", group: "عام" },
-    { id: "offices", label: "المكاتب", icon: "🏛️", group: "عام" },
-    { id: "packages", label: "الباقات", icon: "📦", group: "عام" },
-    { id: "destinations", label: "الوجهات", icon: "🌍", group: "عام" },
-    { id: "faqs", label: "الأسئلة", icon: "❓", group: "عام" },
-    { id: "_georgia_divider", label: "─── جورجيا ───", icon: "🇬🇪", group: "divider" },
-    { id: "georgiaHero", label: "الهيرو", icon: "🖼️", group: "جورجيا" },
-    { id: "georgiaStats", label: "أرقام جورجيا", icon: "📊", group: "جورجيا" },
-    { id: "georgiaUniversities", label: "الجامعات", icon: "🎓", group: "جورجيا" },
-    { id: "georgiaBasicPackage", label: "الباقة الأساسية", icon: "📦", group: "جورجيا" },
-    { id: "georgiaAdditionalPackage", label: "خدمة المرافقة", icon: "✈️", group: "جورجيا" },
-    { id: "georgiaRegistration", label: "التسجيل", icon: "📋", group: "جورجيا" },
-    { id: "georgiaContact", label: "بيانات التواصل", icon: "📞", group: "جورجيا" },
-    { id: "georgiaFaqs", label: "أسئلة جورجيا", icon: "❓", group: "جورجيا" },
+    // General
+    { id: "brand", label: "Brand", icon: "", group: "general" },
+    { id: "social", label: "Social Media", icon: "", group: "general" },
+    { id: "stats", label: "Stats", icon: "", group: "general" },
+    { id: "testimonials", label: "Reviews", icon: "", group: "general" },
+    { id: "offices", label: "Offices", icon: "", group: "general" },
+    { id: "packages", label: "Packages", icon: "", group: "general" },
+    { id: "destinations", label: "Destinations", icon: "", group: "general" },
+    { id: "faqs", label: "FAQs", icon: "", group: "general" },
+    // Georgia divider
+    { id: "_georgia_divider", label: "Georgia", icon: "", group: "divider" },
+    // Georgia
+    { id: "georgiaHero", label: "Hero", icon: "", group: "georgia" },
+    { id: "georgiaStats", label: "Stats", icon: "", group: "georgia" },
+    { id: "georgiaUniversities", label: "Universities", icon: "", group: "georgia" },
+    { id: "georgiaBasicPackage", label: "Package", icon: "", group: "georgia" },
+    { id: "georgiaAdditionalPackage", label: "Add-on", icon: "", group: "georgia" },
+    { id: "georgiaRegistration", label: "Registration", icon: "", group: "georgia" },
+    { id: "georgiaContact", label: "Contact", icon: "", group: "georgia" },
+    { id: "georgiaFaqs", label: "FAQs", icon: "", group: "georgia" },
   ];
 
   /* ─── Login Screen ─── */
   if (!loggedIn) {
     return (
-      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#28143c", fontFamily: "Cairo, sans-serif", direction: "rtl", padding: 20 }}>
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#28143c", fontFamily: FONT, padding: 20 }}>
         <div style={{ background: "white", borderRadius: 20, padding: "40px 32px", width: "100%", maxWidth: 400, textAlign: "center", boxShadow: "0 25px 50px rgba(0,0,0,0.3)" }}>
-          <div style={{ width: 70, height: 70, background: "linear-gradient(135deg, #28143c, #3d1f5e)", borderRadius: 18, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px", fontSize: 32 }}>⚙️</div>
+          <div style={{ width: 70, height: 70, background: "linear-gradient(135deg, #28143c, #3d1f5e)", borderRadius: 18, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px", fontSize: 32, lineHeight: 1 }}>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+          </div>
           <h1 style={{ color: "#28143c", fontSize: 24, fontWeight: 800, marginBottom: 6 }}>UniStation Admin</h1>
-          <p style={{ color: "#888", fontSize: 14, marginBottom: 28 }}>أدخل كلمة المرور للوصول إلى لوحة التحكم</p>
+          <p style={{ color: "#888", fontSize: 14, marginBottom: 28 }}>Enter your password to continue</p>
           <input
             type="password"
             value={password}
             onChange={e => setPassword(e.target.value)}
             onKeyDown={e => e.key === "Enter" && handleLogin()}
-            placeholder="كلمة المرور"
+            placeholder="Password"
             onFocus={e => e.currentTarget.style.borderColor = "#f0b414"}
             onBlur={e => e.currentTarget.style.borderColor = "#e5e7eb"}
-            style={{ width: "100%", padding: "14px 18px", border: "2px solid #e5e7eb", borderRadius: 12, fontSize: 16, outline: "none", boxSizing: "border-box", marginBottom: 16, fontFamily: "Cairo, sans-serif" }}
+            style={{ width: "100%", padding: "14px 18px", border: "2px solid #e5e7eb", borderRadius: 12, fontSize: 16, outline: "none", boxSizing: "border-box", marginBottom: 16, fontFamily: FONT }}
           />
           {loginError && <p style={{ color: "#e11d48", fontSize: 13, marginBottom: 14 }}>{loginError}</p>}
           <button
             onClick={handleLogin}
-            style={{ width: "100%", padding: 14, background: "linear-gradient(135deg, #f0b414, #e5a710)", color: "#28143c", border: "none", borderRadius: 12, fontSize: 17, fontWeight: 800, cursor: "pointer", fontFamily: "Cairo, sans-serif", boxShadow: "0 4px 15px rgba(240,180,20,0.4)" }}
+            style={{ width: "100%", padding: 14, background: "linear-gradient(135deg, #f0b414, #e5a710)", color: "#28143c", border: "none", borderRadius: 12, fontSize: 17, fontWeight: 800, cursor: "pointer", fontFamily: FONT, boxShadow: "0 4px 15px rgba(240,180,20,0.4)" }}
           >
-            دخول
+            Sign In
           </button>
         </div>
       </div>
@@ -874,7 +872,7 @@ export default function AdminPanel() {
 
   /* ─── Admin Dashboard ─── */
   return (
-    <div style={{ minHeight: "100vh", background: "#f8f9fa", fontFamily: "Cairo, sans-serif", direction: "rtl" }}>
+    <div style={{ minHeight: "100vh", background: "#f8f9fa", fontFamily: FONT }}>
       {/* Header */}
       <div style={{
         background: "linear-gradient(135deg, #28143c, #3d1f5e)",
@@ -884,24 +882,25 @@ export default function AdminPanel() {
         boxShadow: "0 4px 15px rgba(40,20,60,0.3)",
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
-          <div style={{ width: 34, height: 34, background: "rgba(255,255,255,0.15)", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17, flexShrink: 0 }}>⚙️</div>
+          <div style={{ width: 34, height: 34, background: "rgba(255,255,255,0.15)", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+          </div>
           <h1 style={{ color: "white", fontSize: isMobile ? 15 : 18, fontWeight: 700, margin: 0 }}>
             UniStation Admin
           </h1>
         </div>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           <button onClick={fetchData} disabled={loading}
-            style={{ padding: "7px 14px", background: "rgba(255,255,255,0.15)", color: "white", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 8, fontWeight: 600, cursor: "pointer", fontSize: 12, fontFamily: "Cairo, sans-serif" }}>
-            {loading ? "⏳" : "🔄"}
-            {!isMobile && " تحديث"}
+            style={{ padding: "7px 14px", background: "rgba(255,255,255,0.15)", color: "white", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 8, fontWeight: 600, cursor: "pointer", fontSize: 12, fontFamily: FONT }}>
+            {loading ? "..." : "Refresh"}
           </button>
           <button onClick={handleLogout}
-            style={{ padding: "7px 14px", background: "rgba(255,255,255,0.1)", color: "#fca5a5", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 8, fontWeight: 600, cursor: "pointer", fontSize: 12, fontFamily: "Cairo, sans-serif" }}>
-            🚪 {!isMobile && "خروج"}
+            style={{ padding: "7px 14px", background: "rgba(255,255,255,0.1)", color: "#fca5a5", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 8, fontWeight: 600, cursor: "pointer", fontSize: 12, fontFamily: FONT }}>
+            Sign Out
           </button>
           <a href="/"
-            style={{ padding: "7px 14px", background: "#f0b414", color: "#28143c", border: "none", borderRadius: 8, fontWeight: 700, cursor: "pointer", fontSize: 12, textDecoration: "none", fontFamily: "Cairo, sans-serif" }}>
-            👁️ {!isMobile && "عرض الموقع"}
+            style={{ padding: "7px 14px", background: "#f0b414", color: "#28143c", border: "none", borderRadius: 8, fontWeight: 700, cursor: "pointer", fontSize: 12, textDecoration: "none", fontFamily: FONT }}>
+            View Site
           </a>
         </div>
       </div>
@@ -912,26 +911,28 @@ export default function AdminPanel() {
           if (t.group === "divider") {
             return (
               <div key={t.id} style={{
-                padding: "0 8px", display: "flex", alignItems: "center",
-                color: "#9ca3af", fontSize: 11, fontWeight: 700, whiteSpace: "nowrap",
+                padding: "0 12px", display: "flex", alignItems: "center",
+                color: "#1e40af", fontSize: 11, fontWeight: 700, whiteSpace: "nowrap",
                 borderLeft: "1px solid #e5e7eb", borderRight: "1px solid #e5e7eb",
+                background: "#eff6ff",
               }}>
                 {t.icon} {t.label}
               </div>
             );
           }
-          const isGeorgia = t.group === "جورجيا";
+          const isGeorgia = t.group === "georgia";
+          const isActive = activeTab === t.id;
           return (
             <button key={t.id} onClick={() => setActiveTab(t.id)}
               style={{
                 padding: isMobile ? "10px 14px" : "12px 18px", border: "none",
-                borderBottom: activeTab === t.id ? "3px solid #f0b414" : "3px solid transparent",
-                background: activeTab === t.id ? (isGeorgia ? "#eff6ff" : "#fffbeb") : "none",
-                color: activeTab === t.id ? "#28143c" : (isGeorgia ? "#1e40af" : "#888"),
-                fontWeight: activeTab === t.id ? 700 : 500,
+                borderBottom: isActive ? "3px solid #f0b414" : "3px solid transparent",
+                background: isActive ? (isGeorgia ? "#eff6ff" : "#fffbeb") : "none",
+                color: isActive ? "#28143c" : (isGeorgia ? "#1e40af" : "#888"),
+                fontWeight: isActive ? 700 : 500,
                 cursor: "pointer", whiteSpace: "nowrap",
                 fontSize: isMobile ? 12 : 13,
-                fontFamily: "Cairo, sans-serif", transition: "all 0.2s",
+                fontFamily: FONT, transition: "all 0.2s",
               }}
             >
               {t.icon} {t.label}
@@ -944,27 +945,27 @@ export default function AdminPanel() {
       <div style={{ maxWidth: 950, margin: isMobile ? "16px auto" : "24px auto", padding: "0 12px" }}>
         {error && (
           <div style={{ background: "#fef2f2", border: "1px solid #fecaca", color: "#991b1b", padding: 14, borderRadius: 12, marginBottom: 16, fontSize: 14 }}>
-            ❌ {error}
-            <button onClick={() => setError("")} style={{ float: "left", border: "none", background: "none", cursor: "pointer", fontSize: 18, color: "#991b1b" }}>✕</button>
+            {error}
+            <button onClick={() => setError("")} style={{ float: "right", border: "none", background: "none", cursor: "pointer", fontSize: 18, color: "#991b1b" }}>✕</button>
           </div>
         )}
         {savedKey && (
           <div style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", color: "#166534", padding: 14, borderRadius: 12, marginBottom: 16, fontSize: 14 }}>
-            ✅ تم حفظ "{savedKey}" بنجاح! التغييرات ظاهرة على الموقع فوراً.
+            Saved successfully! Changes are live on the site.
           </div>
         )}
 
         {loading ? (
-          <div style={{ textAlign: "center", padding: 80, color: "#888", fontSize: 16 }}>⏳ جاري تحميل البيانات...</div>
+          <div style={{ textAlign: "center", padding: 80, color: "#888", fontSize: 16 }}>Loading data...</div>
         ) : (
           <div>
             {/* Action buttons */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexWrap: "wrap", gap: 8 }}>
               {hasUndo ? (
-                <button onClick={handleUndo} style={S.undoBtn}>↩️ تراجع عن التعديلات</button>
+                <button onClick={handleUndo} style={S.undoBtn}>Undo Changes</button>
               ) : <div />}
               <button onClick={handleSaveTab} disabled={saving} style={S.saveBtn(saving)}>
-                {saving ? "⏳ جاري الحفظ..." : "💾 حفظ التعديلات"}
+                {saving ? "Saving..." : "Save Changes"}
               </button>
             </div>
 
@@ -978,7 +979,7 @@ export default function AdminPanel() {
               {activeTab === "packages" && <PackagesEditor data={data.packages} onChange={updateTabData} />}
               {activeTab === "destinations" && <DestinationsEditor data={data.destinations} onChange={updateTabData} />}
               {activeTab === "faqs" && <FaqsEditor data={data.faqs} onChange={updateTabData} />}
-              {/* Georgia-specific tabs */}
+              {/* Georgia */}
               {activeTab === "georgiaHero" && <HeroEditor data={data.hero || {}} onChange={updateTabData} />}
               {activeTab === "georgiaStats" && <GeorgiaStatsEditor data={data.georgia_stats || []} onChange={updateTabData} />}
               {activeTab === "georgiaUniversities" && <UniversitiesEditor data={data.universities || []} onChange={updateTabData} />}
@@ -992,10 +993,10 @@ export default function AdminPanel() {
             {/* Bottom Save */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 16, flexWrap: "wrap", gap: 8 }}>
               {hasUndo ? (
-                <button onClick={handleUndo} style={S.undoBtn}>↩️ تراجع عن التعديلات</button>
+                <button onClick={handleUndo} style={S.undoBtn}>Undo Changes</button>
               ) : <div />}
               <button onClick={handleSaveTab} disabled={saving} style={S.saveBtn(saving)}>
-                {saving ? "⏳ جاري الحفظ..." : "💾 حفظ التعديلات"}
+                {saving ? "Saving..." : "Save Changes"}
               </button>
             </div>
           </div>
