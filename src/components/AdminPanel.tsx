@@ -820,7 +820,7 @@ export default function AdminPanel() {
     { id: "brand", label: "Brand", icon: "", group: "general" },
     { id: "social", label: "Social Media", icon: "", group: "general" },
     { id: "stats", label: "Stats", icon: "", group: "general" },
-    { id: "testimonials", label: "Reviews", icon: "", group: "general" },
+    // Reviews are managed from CMS (Webflow), not here
     { id: "offices", label: "Offices", icon: "", group: "general" },
     { id: "packages", label: "Packages", icon: "", group: "general" },
     { id: "destinations", label: "Destinations", icon: "", group: "general" },
