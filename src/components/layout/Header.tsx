@@ -68,9 +68,9 @@ export function Header() {
     >
       {/* ── DESKTOP HEADER ── */}
       <div className="hidden lg:block">
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-3 items-center h-20">
+        <div className="max-w-7xl mx-auto px-6 relative flex items-center justify-between h-20">
           {/* LEFT NAV */}
-          <nav className="flex items-center gap-1 col-start-1">
+          <nav className="flex items-center gap-1 flex-1">
             {leftNav.map((item) =>
               item.children ? (
                 <div
@@ -118,24 +118,22 @@ export function Header() {
             )}
           </nav>
 
-          {/* CENTER LOGO — always true center via grid column 2 */}
-          <div className="flex justify-center col-start-2">
-            <Link href="/" className="flex-shrink-0">
-              <div className={`rounded-xl p-1.5 transition-all duration-300 ${scrolled ? "bg-transparent" : "bg-white/90 backdrop-blur-sm shadow-sm"}`}>
-                <Image
-                  src="/logo-01.png"
-                  alt={siteConfig.brand.name}
-                  width={56}
-                  height={56}
-                  className={`h-14 w-auto transition-all duration-300 ${scrolled ? "brightness-100" : "brightness-0"}`}
-                  priority
-                />
-              </div>
-            </Link>
-          </div>
+          {/* CENTER LOGO — absolute center, always at 50% */}
+          <Link href="/" className="absolute left-1/2 -translate-x-1/2 flex-shrink-0 z-10">
+            <div className={`rounded-xl p-1.5 transition-all duration-300 ${scrolled ? "bg-transparent" : "bg-white/90 backdrop-blur-sm shadow-sm"}`}>
+              <Image
+                src="/logo-01.png"
+                alt={siteConfig.brand.name}
+                width={56}
+                height={56}
+                className={`h-14 w-auto transition-all duration-300 ${scrolled ? "brightness-100" : "brightness-0"}`}
+                priority
+              />
+            </div>
+          </Link>
 
           {/* RIGHT NAV */}
-          <div className="flex items-center gap-1 justify-end col-start-3">
+          <div className="flex items-center gap-1 flex-1 justify-end">
             {rightNav.map((item) =>
               item.children ? (
                 <div
