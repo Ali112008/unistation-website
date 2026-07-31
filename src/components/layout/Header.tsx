@@ -68,11 +68,9 @@ export function Header() {
     >
       {/* DESKTOP HEADER */}
       <div className="hidden lg:block">
-        <div className="max-w-7xl mx-auto px-6 relative flex items-center justify-center h-20">
-          {/* NAVS grouped together — no justify-between, no gaps */}
-          <div className="flex items-center">
-            {/* LEFT NAV */}
-            <nav className="flex items-center gap-1">
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-[1fr_auto_1fr] items-center h-20">
+          {/* LEFT NAV — pushed to inner edge (near logo) */}
+          <nav className="flex items-center gap-1 justify-self-end">
             {leftNav.map((item) =>
               item.children ? (
                 <div
@@ -120,11 +118,22 @@ export function Header() {
             )}
           </nav>
 
-          {/* Spacer for logo width */}
-          <div className="w-[72px]" />
+          {/* LOGO — centered in middle auto column */}
+          <Link href="/" className="justify-self-center mx-3 flex-shrink-0">
+            <div className={`rounded-xl p-1.5 transition-all duration-300 ${scrolled ? "bg-transparent" : "bg-white/90 backdrop-blur-sm shadow-sm"}`}>
+              <Image
+                src="/logo-01.png"
+                alt={siteConfig.brand.name}
+                width={56}
+                height={56}
+                className={`h-14 w-auto transition-all duration-300 ${scrolled ? "brightness-100" : "brightness-0"}`}
+                priority
+              />
+            </div>
+          </Link>
 
-          {/* RIGHT NAV */}
-          <nav className="flex items-center gap-1">
+          {/* RIGHT NAV — pushed to inner edge (near logo) */}
+          <nav className="flex items-center gap-1 justify-self-start">
             {rightNav.map((item) =>
               item.children ? (
                 <div
@@ -171,23 +180,6 @@ export function Header() {
               )
             )}
           </nav>
-          </div>{/* end navs wrapper */}
-
-          {/* LOGO — absolute centered, independent of navs */}
-          <div className="absolute inset-x-0 flex justify-center pointer-events-none">
-            <Link href="/" className="pointer-events-auto flex-shrink-0">
-              <div className={`rounded-xl p-1.5 transition-all duration-300 ${scrolled ? "bg-transparent" : "bg-white/90 backdrop-blur-sm shadow-sm"}`}>
-                <Image
-                  src="/logo-01.png"
-                  alt={siteConfig.brand.name}
-                  width={56}
-                  height={56}
-                  className={`h-14 w-auto transition-all duration-300 ${scrolled ? "brightness-100" : "brightness-0"}`}
-                  priority
-                />
-              </div>
-            </Link>
-          </div>
         </div>
       </div>
 
