@@ -70,7 +70,7 @@ export function Header() {
       <div className="hidden lg:block">
         <div className="max-w-7xl mx-auto px-6 relative flex items-center justify-between h-20">
           {/* LEFT NAV */}
-          <nav className="flex items-center gap-1 flex-1">
+          <nav className="flex items-center gap-1">
             {leftNav.map((item) =>
               item.children ? (
                 <div
@@ -133,7 +133,7 @@ export function Header() {
           </Link>
 
           {/* RIGHT NAV */}
-          <div className="flex items-center gap-1 flex-1 justify-end">
+          <div className="flex items-center gap-1">
             {rightNav.map((item) =>
               item.children ? (
                 <div
