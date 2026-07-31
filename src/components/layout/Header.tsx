@@ -68,7 +68,7 @@ export function Header() {
     >
       {/* ── DESKTOP HEADER ── */}
       <div className="hidden lg:block">
-        <div className="max-w-7xl mx-auto px-6 relative flex items-center justify-between h-20">
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-[1fr_auto_1fr] items-center h-20">
           {/* LEFT NAV */}
           <nav className="flex items-center gap-1">
             {leftNav.map((item) =>
@@ -118,8 +118,8 @@ export function Header() {
             )}
           </nav>
 
-          {/* CENTER LOGO — absolute center, always at 50% */}
-          <Link href="/" className="absolute left-1/2 -translate-x-1/2 flex-shrink-0 z-10">
+          {/* CENTER LOGO */}
+          <Link href="/" className="flex-shrink-0 mx-4 justify-self-center">
             <div className={`rounded-xl p-1.5 transition-all duration-300 ${scrolled ? "bg-transparent" : "bg-white/90 backdrop-blur-sm shadow-sm"}`}>
               <Image
                 src="/logo-01.png"
@@ -133,7 +133,7 @@ export function Header() {
           </Link>
 
           {/* RIGHT NAV */}
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 justify-end">
             {rightNav.map((item) =>
               item.children ? (
                 <div
