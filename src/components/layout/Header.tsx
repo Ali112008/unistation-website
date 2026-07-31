@@ -118,19 +118,21 @@ export function Header() {
             )}
           </nav>
 
-          {/* LOGO — absolute centered */}
-          <Link href="/" className="absolute left-1/2 -translate-x-1/2 flex-shrink-0">
-            <div className={`rounded-xl p-1.5 transition-all duration-300 ${scrolled ? "bg-transparent" : "bg-white/90 backdrop-blur-sm shadow-sm"}`}>
-              <Image
-                src="/logo-01.png"
-                alt={siteConfig.brand.name}
-                width={56}
-                height={56}
-                className={`h-14 w-auto transition-all duration-300 ${scrolled ? "brightness-100" : "brightness-0"}`}
-                priority
-              />
-            </div>
-          </Link>
+          {/* LOGO — absolute centered using full-width overlay */
+          <div className="absolute inset-x-0 flex justify-center pointer-events-none">
+            <Link href="/" className="pointer-events-auto flex-shrink-0">
+              <div className={`rounded-xl p-1.5 transition-all duration-300 ${scrolled ? "bg-transparent" : "bg-white/90 backdrop-blur-sm shadow-sm"}`}>
+                <Image
+                  src="/logo-01.png"
+                  alt={siteConfig.brand.name}
+                  width={56}
+                  height={56}
+                  className={`h-14 w-auto transition-all duration-300 ${scrolled ? "brightness-100" : "brightness-0"}`}
+                  priority
+                />
+              </div>
+            </Link>
+          </div>
 
           {/* RIGHT NAV */}
           <nav className="flex items-center gap-1">
