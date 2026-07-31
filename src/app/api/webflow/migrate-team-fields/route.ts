@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-const WEBFLOW_API_TOKEN = process.env.WEBFLOW_API_TOKEN!;
+const WEBFLOW_API_TOKEN = "91068beafa44f0f4442c67a2c75b94f472be033015abdd7a82fa6bdec225d1b2";
 const TEAM_COLLECTION = "68fd63e9503df62b019b5c9e";
 
 const FIELDS_TO_ADD = [

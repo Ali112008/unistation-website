@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-const WEBFLOW_API_TOKEN = process.env.WEBFLOW_API_TOKEN!;
+const WEBFLOW_API_TOKEN = "91068beafa44f0f4442c67a2c75b94f472be033015abdd7a82fa6bdec225d1b2";
 const SUBSCRIBERS_COLLECTION = "6a5324390913a4368a5117a1";
 
 // In-memory fallback cache (in case Webflow is temporarily down)

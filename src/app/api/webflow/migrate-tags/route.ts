@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-const WEBFLOW_API_TOKEN = process.env.WEBFLOW_API_TOKEN!;
+const WEBFLOW_API_TOKEN = "91068beafa44f0f4442c67a2c75b94f472be033015abdd7a82fa6bdec225d1b2";
 const BLOG_COLLECTION = "6a51d3b689432b9105b65065";
 const VIDEO_COLLECTION = "6a51d3c85a1355ad6711662d";
 
