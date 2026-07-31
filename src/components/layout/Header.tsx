@@ -119,7 +119,7 @@ export function Header() {
           </nav>
 
           {/* LOGO — regular flex item between navs */}
-          <Link href="/" className="mx-3 flex-shrink-0">
+          <Link href="/" className="mx-1 flex-shrink-0">
             <div className={`rounded-xl p-1.5 transition-all duration-300 ${scrolled ? "bg-transparent" : "bg-white/90 backdrop-blur-sm shadow-sm"}`}>
               <Image
                 src="/logo-01.png"
