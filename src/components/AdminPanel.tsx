@@ -739,6 +739,351 @@ function ImageUploadField({ label, value, onUpload, onUrlChange, fileInputRef, u
   );
 }
 
+/* ─── Navigation Editor ─── */
+function NavigationEditor({ data, onChange }: { data: any[]; onChange: (d: any[]) => void }) {
+  const remove = (i: number) => onChange((data || []).filter((_, idx) => idx !== i));
+  const update = (i: number, field: string, value: any) => {
+    const next = [...(data || [])];
+    next[i] = { ...next[i], [field]: value };
+    onChange(next);
+  };
+  const updateChild = (i: number, ci: number, field: string, value: string) => {
+    const next = [...(data || [])];
+    const children = [...(next[i].children || [])];
+    children[ci] = { ...children[ci], [field]: value };
+    next[i] = { ...next[i], children };
+    onChange(next);
+  };
+  const removeChild = (i: number, ci: number) => {
+    const next = [...(data || [])];
+    next[i] = { ...next[i], children: (next[i].children || []).filter((_: any, idx: number) => idx !== ci) };
+    onChange(next);
+  };
+  const addChild = (i: number) => {
+    const next = [...(data || [])];
+    next[i] = { ...next[i], children: [...(next[i].children || []), { label: "", href: "" }] };
+    onChange(next);
+  };
+  return (
+    <div>
+      {(data || []).map((item, i) => (
+        <div key={i} style={S.card}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+            <strong>Nav Item #{i + 1}</strong>
+            <button onClick={() => remove(i)} style={S.deleteBtn}>Delete</button>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+            <Field label="Label"><TextInput value={item.label || ""} onChange={v => update(i, "label", v)} /></Field>
+            <Field label="Href"><TextInput value={item.href || ""} onChange={v => update(i, "href", v)} placeholder="/path" /></Field>
+            <Field label="Side">
+              <select value={item.side || "left"} onChange={e => update(i, "side", e.target.value)} style={{ ...S.input, padding: "10px 12px", cursor: "pointer" }}>
+                <option value="left">Left</option>
+                <option value="right">Right</option>
+              </select>
+            </Field>
+          </div>
+          {(item.children || []).length > 0 && (
+            <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1px solid #e5e7eb" }}>
+              <strong style={{ display: "block", marginBottom: 8, fontSize: 13 }}>Children ({(item.children || []).length})</strong>
+              {(item.children || []).map((child: any, ci: number) => (
+                <div key={ci} style={{ display: "flex", gap: 8, marginBottom: 6 }}>
+                  <input type="text" placeholder="Label" value={child.label || ""} onChange={e => updateChild(i, ci, "label", e.target.value)} style={S.input} />
+                  <input type="text" placeholder="Href" value={child.href || ""} onChange={e => updateChild(i, ci, "href", e.target.value)} style={S.input} />
+                  <button onClick={() => removeChild(i, ci)} style={S.deleteBtn}>✕</button>
+                </div>
+              ))}
+              <button onClick={() => addChild(i)} style={{ ...S.addBtn, fontSize: 12, padding: "6px 12px" }}>+ Add Child</button>
+            </div>
+          )}
+          {(item.children || []).length === 0 && (
+            <button onClick={() => addChild(i)} style={{ ...S.addBtn, fontSize: 12, padding: "6px 12px" }}>+ Add Child</button>
+          )}
+        </div>
+      ))}
+      <button onClick={() => onChange([...(data || []), { label: "", href: "", side: "left", children: [] }])} style={S.addBtn}>+ Add Nav Item</button>
+    </div>
+  );
+}
+
+/* ─── About Editor ─── */
+function AboutEditor({ data, onChange }: { data: any; onChange: (d: any) => void }) {
+  const d = data || { paragraphs: [] };
+  const paragraphs = d.paragraphs || [];
+  return (
+    <div>
+      <strong style={{ display: "block", marginBottom: 10, color: "#28143c" }}>About Us Paragraphs ({paragraphs.length})</strong>
+      {paragraphs.map((p: string, i: number) => (
+        <div key={i} style={S.card}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+            <strong>Paragraph #{i + 1}</strong>
+            <button onClick={() => onChange({ ...d, paragraphs: paragraphs.filter((_: string, idx: number) => idx !== i) })} style={S.deleteBtn}>Delete</button>
+          </div>
+          <TextArea value={p} onChange={v => { const n = [...paragraphs]; n[i] = v; onChange({ ...d, paragraphs: n }); }} placeholder="Enter paragraph text..." />
+        </div>
+      ))}
+      <button onClick={() => onChange({ ...d, paragraphs: [...paragraphs, ""] })} style={S.addBtn}>+ Add Paragraph</button>
+    </div>
+  );
+}
+
+/* ─── Timeline Editor ─── */
+function TimelineEditor({ data, onChange }: { data: any[]; onChange: (d: any[]) => void }) {
+  const remove = (i: number) => onChange((data || []).filter((_, idx) => idx !== i));
+  const update = (i: number, field: string, value: string) => {
+    const next = [...(data || [])];
+    next[i] = { ...next[i], [field]: value };
+    onChange(next);
+  };
+  return (
+    <div>
+      {(data || []).map((item, i) => (
+        <div key={i} style={S.card}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+            <strong>Event #{i + 1}</strong>
+            <button onClick={() => remove(i)} style={S.deleteBtn}>Delete</button>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            <Field label="Year"><TextInput value={item.year || ""} onChange={v => update(i, "year", v)} placeholder="2020" /></Field>
+            <Field label="Title"><TextInput value={item.title || ""} onChange={v => update(i, "title", v)} /></Field>
+          </div>
+          <Field label="Description"><TextArea value={item.description || ""} onChange={v => update(i, "description", v)} /></Field>
+        </div>
+      ))}
+      <button onClick={() => onChange([...(data || []), { year: "", title: "", description: "" }])} style={S.addBtn}>+ Add Event</button>
+    </div>
+  );
+}
+
+/* ─── Comparison Table Editor ─── */
+function ComparisonTableEditor({ data, onChange }: { data: any; onChange: (d: any) => void }) {
+  const d = data || { headers: [], rows: [] };
+  const headers = d.headers || [];
+  const rows = d.rows || [];
+  const updateHeader = (i: number, v: string) => {
+    const h = [...headers]; h[i] = v; onChange({ ...d, headers: h });
+  };
+  const removeHeader = (i: number) => {
+    const h = headers.filter((_: string, idx: number) => idx !== i);
+    const r = rows.map((row: string[]) => row.filter((_: string, idx: number) => idx !== i));
+    onChange({ ...d, headers: h, rows: r });
+  };
+  const addHeader = () => {
+    const h = [...headers, ""]; const r = rows.map((row: string[]) => [...row, ""]);
+    onChange({ ...d, headers: h, rows: r });
+  };
+  const updateCell = (ri: number, ci: number, v: string) => {
+    const r = [...rows]; r[ri] = [...r[ri]]; r[ri][ci] = v; onChange({ ...d, rows: r });
+  };
+  const removeRow = (i: number) => onChange({ ...d, rows: rows.filter((_: string[], idx: number) => idx !== i) });
+  const addRow = () => onChange({ ...d, rows: [...rows, headers.map(() => "")] });
+  return (
+    <div>
+      <strong style={{ display: "block", marginBottom: 10, color: "#28143c" }}>Comparison Table ({headers.length} columns, {rows.length} rows)</strong>
+      {headers.length > 0 && (
+        <div style={{ overflowX: "auto", marginBottom: 12 }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+            <thead>
+              <tr>
+                {headers.map((h: string, hi: number) => (
+                  <th key={hi} style={{ padding: 6, borderBottom: "2px solid #e5e7eb", textAlign: "left", minWidth: 120 }}>
+                    <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
+                      <input type="text" value={h} onChange={e => updateHeader(hi, e.target.value)} placeholder="Header" style={{ ...S.input, fontSize: 12, padding: "4px 8px" }} />
+                      <button onClick={() => removeHeader(hi)} style={{ ...S.deleteBtn, padding: "2px 6px", fontSize: 11, flexShrink: 0 }}>✕</button>
+                    </div>
+                  </th>
+                ))}
+                <th style={{ width: 40 }}></th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row: string[], ri: number) => (
+                <tr key={ri}>
+                  {headers.map((_: string, ci: number) => (
+                    <td key={ci} style={{ padding: 4 }}>
+                      <input type="text" value={row[ci] || ""} onChange={e => updateCell(ri, ci, e.target.value)} style={{ ...S.input, fontSize: 12, padding: "6px 8px" }} />
+                    </td>
+                  ))}
+                  <td style={{ padding: 4 }}>
+                    <button onClick={() => removeRow(ri)} style={{ ...S.deleteBtn, padding: "2px 6px", fontSize: 11 }}>✕</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+      <div style={{ display: "flex", gap: 8 }}>
+        <button onClick={addHeader} style={S.addBtn}>+ Add Column</button>
+        <button onClick={addRow} style={S.addBtn}>+ Add Row</button>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Language Courses Editor ─── */
+function LanguageCoursesEditor({ data, onChange }: { data: any[]; onChange: (d: any[]) => void }) {
+  const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
+  const courses = data || [];
+  const update = (i: number, field: string, value: any) => {
+    const next = [...courses];
+    next[i] = { ...next[i], [field]: value };
+    onChange(next);
+  };
+  const remove = (i: number) => {
+    onChange(courses.filter((_: any, idx: number) => idx !== i));
+    if (expandedIdx === i) setExpandedIdx(null);
+  };
+  const addFaq = (i: number) => {
+    const faqs = [...(courses[i].faqs || []), { q: "", a: "" }];
+    update(i, "faqs", faqs);
+  };
+  const updateFaq = (i: number, fi: number, field: string, v: string) => {
+    const faqs = [...(courses[i].faqs || [])];
+    faqs[fi] = { ...faqs[fi], [field]: v };
+    update(i, "faqs", faqs);
+  };
+  const removeFaq = (i: number, fi: number) => {
+    const faqs = (courses[i].faqs || []).filter((_: any, idx: number) => idx !== fi);
+    update(i, "faqs", faqs);
+  };
+  const updateFee = (i: number, fi: number, field: string, v: string) => {
+    const fees = [...(courses[i].fees || [])];
+    fees[fi] = { ...fees[fi], [field]: v };
+    update(i, "fees", fees);
+  };
+  const removeFee = (i: number, fi: number) => {
+    const fees = (courses[i].fees || []).filter((_: any, idx: number) => idx !== fi);
+    update(i, "fees", fees);
+  };
+  const addFee = (i: number) => {
+    const fees = [...(courses[i].fees || []), { level: "", category: "", duration: "", price: "" }];
+    update(i, "fees", fees);
+  };
+
+  return (
+    <div>
+      {courses.map((c: any, i: number) => {
+        const isExpanded = expandedIdx === i;
+        return (
+          <div key={i} style={S.card}>
+            <div
+              style={{ display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" }}
+              onClick={() => setExpandedIdx(isExpanded ? null : i)}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <span style={{ fontSize: 16, color: "#9ca3af", transition: "transform 0.2s", display: "inline-block", transform: isExpanded ? "rotate(90deg)" : "rotate(0deg)" }}>▶</span>
+                <strong>{c.name || "(Untitled)"}</strong>
+                <span style={{ fontSize: 12, color: "#9ca3af", background: "#f3f4f6", padding: "2px 8px", borderRadius: 4 }}>{c.slug || "no-slug"}</span>
+              </div>
+              <button onClick={e => { e.stopPropagation(); remove(i); }} style={S.deleteBtn}>Delete</button>
+            </div>
+            {isExpanded && (
+              <div style={{ marginTop: 14, borderTop: "1px solid #e5e7eb", paddingTop: 14 }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                  <Field label="Name"><TextInput value={c.name || ""} onChange={v => update(i, "name", v)} /></Field>
+                  <Field label="Slug"><TextInput value={c.slug || ""} onChange={v => update(i, "slug", v)} /></Field>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+                  <Field label="Flag (emoji)"><TextInput value={c.flag || ""} onChange={v => update(i, "flag", v)} placeholder="🇬🇧" /></Field>
+                  <Field label="Price Range"><TextInput value={c.priceRange || ""} onChange={v => update(i, "priceRange", v)} placeholder="$200-$500" /></Field>
+                  <Field label="Format"><TextInput value={c.format || ""} onChange={v => update(i, "format", v)} placeholder="Online / In-person" /></Field>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                  <Field label="Levels (comma-separated)"><TextInput value={c.levels || ""} onChange={v => update(i, "levels", v)} placeholder="A1, A2, B1, B2" /></Field>
+                  <Field label="Exams (comma-separated)"><TextInput value={c.exams || ""} onChange={v => update(i, "exams", v)} placeholder="IELTS, TOEFL" /></Field>
+                </div>
+                <Field label="Image URL"><TextInput value={c.image || ""} onChange={v => update(i, "image", v)} placeholder="https://..." /></Field>
+                <Field label="Short Description"><TextInput value={c.shortDescription || ""} onChange={v => update(i, "shortDescription", v)} /></Field>
+                <Field label="Full Description"><TextArea value={c.description || ""} onChange={v => update(i, "description", v)} /></Field>
+
+                {/* What You Learn */}
+                <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1px solid #e5e7eb" }}>
+                  <strong style={{ display: "block", marginBottom: 8, fontSize: 13 }}>What You Learn ({(c.whatYouLearn || []).length})</strong>
+                  <StringListEditor
+                    items={c.whatYouLearn || []}
+                    onChange={v => update(i, "whatYouLearn", v)}
+                    label=""
+                    addLabel="Add Learning Point"
+                  />
+                </div>
+
+                {/* FAQs */}
+                <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1px solid #e5e7eb" }}>
+                  <strong style={{ display: "block", marginBottom: 8, fontSize: 13 }}>FAQs ({(c.faqs || []).length})</strong>
+                  {(c.faqs || []).map((faq: any, fi: number) => (
+                    <div key={fi} style={{ ...S.card, background: "white", marginBottom: 8 }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                        <small>FAQ #{fi + 1}</small>
+                        <button onClick={() => removeFaq(i, fi)} style={S.deleteBtn}>✕</button>
+                      </div>
+                      <Field label="Question"><TextInput value={faq.q || ""} onChange={v => updateFaq(i, fi, "q", v)} /></Field>
+                      <Field label="Answer"><TextArea value={faq.a || ""} onChange={v => updateFaq(i, fi, "a", v)} /></Field>
+                    </div>
+                  ))}
+                  <button onClick={() => addFaq(i)} style={{ ...S.addBtn, fontSize: 12, padding: "6px 12px" }}>+ Add FAQ</button>
+                </div>
+
+                {/* Fees */}
+                <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1px solid #e5e7eb" }}>
+                  <strong style={{ display: "block", marginBottom: 8, fontSize: 13 }}>Fees ({(c.fees || []).length})</strong>
+                  {(c.fees || []).map((fee: any, fi: number) => (
+                    <div key={fi} style={{ ...S.card, background: "white", marginBottom: 8 }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                        <small>Fee #{fi + 1}</small>
+                        <button onClick={() => removeFee(i, fi)} style={S.deleteBtn}>✕</button>
+                      </div>
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                        <Field label="Level"><TextInput value={fee.level || ""} onChange={v => updateFee(i, fi, "level", v)} /></Field>
+                        <Field label="Category"><TextInput value={fee.category || ""} onChange={v => updateFee(i, fi, "category", v)} /></Field>
+                      </div>
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                        <Field label="Duration"><TextInput value={fee.duration || ""} onChange={v => updateFee(i, fi, "duration", v)} /></Field>
+                        <Field label="Price"><TextInput value={fee.price || ""} onChange={v => updateFee(i, fi, "price", v)} /></Field>
+                      </div>
+                    </div>
+                  ))}
+                  <button onClick={() => addFee(i)} style={{ ...S.addBtn, fontSize: 12, padding: "6px 12px" }}>+ Add Fee</button>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      })}
+      <button onClick={() => onChange([...courses, { slug: "", name: "", flag: "", image: "", shortDescription: "", description: "", priceRange: "", levels: "", format: "" }])} style={S.addBtn}>+ Add Course</button>
+    </div>
+  );
+}
+
+/* ─── Exam Types Editor ─── */
+function ExamTypesEditor({ data, onChange }: { data: any[]; onChange: (d: any[]) => void }) {
+  const remove = (i: number) => onChange((data || []).filter((_, idx) => idx !== i));
+  const update = (i: number, field: string, value: string) => {
+    const next = [...(data || [])];
+    next[i] = { ...next[i], [field]: value };
+    onChange(next);
+  };
+  return (
+    <div>
+      {(data || []).map((item, i) => (
+        <div key={i} style={S.card}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+            <strong>Exam Type #{i + 1}</strong>
+            <button onClick={() => remove(i)} style={S.deleteBtn}>Delete</button>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            <Field label="Name"><TextInput value={item.name || ""} onChange={v => update(i, "name", v)} placeholder="IELTS" /></Field>
+            <Field label="Slug"><TextInput value={item.slug || ""} onChange={v => update(i, "slug", v)} placeholder="ielts" /></Field>
+          </div>
+          <Field label="Full Name"><TextInput value={item.fullName || ""} onChange={v => update(i, "fullName", v)} placeholder="International English Language Testing System" /></Field>
+          <Field label="Description"><TextArea value={item.description || ""} onChange={v => update(i, "description", v)} /></Field>
+          <Field label="Who Is It For"><TextArea value={item.whoFor || ""} onChange={v => update(i, "whoFor", v)} /></Field>
+        </div>
+      ))}
+      <button onClick={() => onChange([...(data || []), { name: "", slug: "", fullName: "", description: "", whoFor: "" }])} style={S.addBtn}>+ Add Exam Type</button>
+    </div>
+  );
+}
+
 /* ═══════════════════════════════════════════════════
    CMS Editors (Blog, Videos, Team, Reviews)
    ═══════════════════════════════════════════════════ */
@@ -1232,6 +1577,9 @@ export default function AdminPanel() {
     brand: "brand", social: "social", stats: "stats", offices: "offices",
     testimonials: "testimonials", packages: "packages", destinations: "destinations",
     faqs: "faqs",
+    navigation: "navigation", about: "about", timeline: "timeline",
+    comparisonTable: "comparisonTable", languageCourses: "languageCourses",
+    examTypes: "examTypes",
     georgiaHero: "hero", georgiaContact: "site", georgiaStats: "georgia_stats",
     georgiaUniversities: "universities", georgiaBasicPackage: "basicPackage",
     georgiaAdditionalPackage: "additionalPackage", georgiaRegistration: "registration",
@@ -1264,6 +1612,12 @@ export default function AdminPanel() {
     { id: "packages", label: "Packages", icon: "", group: "general" },
     { id: "destinations", label: "Destinations", icon: "", group: "general" },
     { id: "faqs", label: "FAQs", icon: "", group: "general" },
+    { id: "navigation", label: "Navigation", icon: "", group: "general" },
+    { id: "about", label: "About Us", icon: "", group: "general" },
+    { id: "timeline", label: "Timeline", icon: "", group: "general" },
+    { id: "comparisonTable", label: "Comparison", icon: "", group: "general" },
+    { id: "languageCourses", label: "Lang. Courses", icon: "", group: "general" },
+    { id: "examTypes", label: "Exam Types", icon: "", group: "general" },
     // Georgia divider
     { id: "_georgia_divider", label: "Georgia", icon: "", group: "divider" },
     // Georgia
@@ -1428,6 +1782,12 @@ export default function AdminPanel() {
               {activeTab === "packages" && <PackagesEditor data={data.packages} onChange={updateTabData} />}
               {activeTab === "destinations" && <DestinationsEditor data={data.destinations} onChange={updateTabData} />}
               {activeTab === "faqs" && <FaqsEditor data={data.faqs} onChange={updateTabData} />}
+              {activeTab === "navigation" && <NavigationEditor data={data.navigation || []} onChange={updateTabData} />}
+              {activeTab === "about" && <AboutEditor data={data.about || { paragraphs: [] }} onChange={updateTabData} />}
+              {activeTab === "timeline" && <TimelineEditor data={data.timeline || []} onChange={updateTabData} />}
+              {activeTab === "comparisonTable" && <ComparisonTableEditor data={data.comparisonTable || { headers: [], rows: [] }} onChange={updateTabData} />}
+              {activeTab === "languageCourses" && <LanguageCoursesEditor data={data.languageCourses || []} onChange={updateTabData} />}
+              {activeTab === "examTypes" && <ExamTypesEditor data={data.examTypes || []} onChange={updateTabData} />}
               {/* Georgia */}
               {activeTab === "georgiaHero" && <HeroEditor data={data.hero || {}} onChange={updateTabData} />}
               {activeTab === "georgiaStats" && <GeorgiaStatsEditor data={data.georgia_stats || []} onChange={updateTabData} />}

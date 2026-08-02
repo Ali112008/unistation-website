@@ -22,6 +22,15 @@ export type Testimonial = typeof tsSiteConfig.testimonials[number];
 export type PageFaqs = typeof tsFaqs;
 export type Packages = typeof tsPackages;
 export type Destinations = typeof tsDestinations;
+export type Navigation = typeof tsSiteConfig.navigation;
+export type LanguageCourse = typeof tsSiteConfig.languageCourses;
+export type ExamType = typeof tsSiteConfig.examTypes;
+export type About = typeof tsSiteConfig.about;
+export type Timeline = typeof tsSiteConfig.timeline;
+export type ComparisonTable = typeof tsSiteConfig.comparisonTable;
+export type TopDestination = typeof tsSiteConfig.topDestinations;
+export type BudgetDestination = typeof tsSiteConfig.budgetDestinations;
+export type PackageCard = typeof tsSiteConfig.packages;
 
 // ─── Fetchers (Turso-first with TS fallback) ───────────────
 
@@ -105,6 +114,96 @@ export async function getDestinations(): Promise<Destinations> {
   return tsDestinations;
 }
 
+export async function getNavigation(): Promise<Navigation> {
+  try {
+    const v = await getConfig<Navigation>("navigation");
+    if (Array.isArray(v) && v.length > 0) return v;
+  } catch (e) {
+    console.warn("[site-content] Turso getNavigation failed, using TS fallback:", e);
+  }
+  return tsSiteConfig.navigation;
+}
+
+export async function getLanguageCourses(): Promise<LanguageCourse> {
+  try {
+    const v = await getConfig<LanguageCourse>("languageCourses");
+    if (Array.isArray(v) && v.length > 0) return v;
+  } catch (e) {
+    console.warn("[site-content] Turso getLanguageCourses failed, using TS fallback:", e);
+  }
+  return tsSiteConfig.languageCourses;
+}
+
+export async function getExamTypes(): Promise<ExamType> {
+  try {
+    const v = await getConfig<ExamType>("examTypes");
+    if (Array.isArray(v) && v.length > 0) return v;
+  } catch (e) {
+    console.warn("[site-content] Turso getExamTypes failed, using TS fallback:", e);
+  }
+  return tsSiteConfig.examTypes;
+}
+
+export async function getAbout(): Promise<About> {
+  try {
+    const v = await getConfig<About>("about");
+    if (v && typeof v === "object") return v;
+  } catch (e) {
+    console.warn("[site-content] Turso getAbout failed, using TS fallback:", e);
+  }
+  return tsSiteConfig.about;
+}
+
+export async function getTimeline(): Promise<Timeline> {
+  try {
+    const v = await getConfig<Timeline>("timeline");
+    if (Array.isArray(v) && v.length > 0) return v;
+  } catch (e) {
+    console.warn("[site-content] Turso getTimeline failed, using TS fallback:", e);
+  }
+  return tsSiteConfig.timeline;
+}
+
+export async function getComparisonTable(): Promise<ComparisonTable> {
+  try {
+    const v = await getConfig<ComparisonTable>("comparisonTable");
+    if (v && typeof v === "object") return v;
+  } catch (e) {
+    console.warn("[site-content] Turso getComparisonTable failed, using TS fallback:", e);
+  }
+  return tsSiteConfig.comparisonTable;
+}
+
+export async function getTopDestinations(): Promise<TopDestination> {
+  try {
+    const v = await getConfig<TopDestination>("topDestinations");
+    if (Array.isArray(v) && v.length > 0) return v;
+  } catch (e) {
+    console.warn("[site-content] Turso getTopDestinations failed, using TS fallback:", e);
+  }
+  return tsSiteConfig.topDestinations;
+}
+
+export async function getBudgetDestinations(): Promise<BudgetDestination> {
+  try {
+    const v = await getConfig<BudgetDestination>("budgetDestinations");
+    if (Array.isArray(v) && v.length > 0) return v;
+  } catch (e) {
+    console.warn("[site-content] Turso getBudgetDestinations failed, using TS fallback:", e);
+  }
+  return tsSiteConfig.budgetDestinations;
+}
+
+export async function getPackageCards(): Promise<PackageCard> {
+  try {
+    const v = await getConfig<PackageCard>("packages");
+    if (Array.isArray(v) && v.length > 0) return v;
+  } catch (e) {
+    console.warn("[site-content] Turso getPackageCards failed, using TS fallback:", e);
+  }
+  return tsSiteConfig.packages;
+}
+
 /**
  * Get a specific package by slug.
  */
@@ -129,43 +228,53 @@ export async function getDestinationBySlug(slug: string) {
   return (destinations as any)[slug] || null;
 }
 
-// ─── Static helpers (for stuff that doesn't go to Turso) ───
+// ─── Converted async helpers ──────────────────────────────
 
 /**
  * Returns the destinations list (with image URLs) for the destinations index page.
- * Stays in TS file because customers don't manage images via admin.
+ * Now fetches from Turso first, falls back to TS file.
  */
-export function getDestinationsList() {
-  return {
-    topDestinations: tsSiteConfig.topDestinations,
-    budgetDestinations: tsSiteConfig.budgetDestinations,
-  };
-}
-
-/**
- * Returns team members (managed via Webflow CMS, not Turso).
- */
-export function getTeamConfig() {
-  return tsSiteConfig.team;
+export async function getDestinationsList() {
+  const [topDestinations, budgetDestinations] = await Promise.all([
+    getTopDestinations(),
+    getBudgetDestinations(),
+  ]);
+  return { topDestinations, budgetDestinations };
 }
 
 /**
  * Returns language courses config.
+ * Now fetches from Turso first, falls back to TS file.
  */
-export function getLanguageCoursesConfig() {
-  return tsSiteConfig.languageCourses;
+export async function getLanguageCoursesConfig() {
+  return getLanguageCourses();
 }
 
 /**
  * Returns tests/exams config.
+ * Now fetches from Turso first, falls back to TS file.
  */
-export function getTestsConfig() {
-  return tsSiteConfig.tests;
+export async function getTestsConfig() {
+  return getExamTypes();
 }
 
+// ─── Layout data convenience ──────────────────────────────
+
 /**
- * Returns package cards (for packages index page) — managed via Webflow CMS.
+ * Fetches all data needed by the root layout (Header, Footer, FloatingWhatsApp).
+ * Runs all fetches in parallel for optimal performance.
  */
-export function getPackageCards() {
-  return tsSiteConfig.packages;
+export async function getSiteLayoutData() {
+  const [brand, social, navigation, offices, topDestinations, packages] =
+    await Promise.all([
+      getBrand(),
+      getSocial(),
+      getNavigation(),
+      getOffices(),
+      getTopDestinations(),
+      getPackageCards(),
+    ]);
+  return { brand, social, navigation, offices, topDestinations, packages };
 }
+
+export type SiteLayoutData = Awaited<ReturnType<typeof getSiteLayoutData>>;

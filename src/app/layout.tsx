@@ -5,6 +5,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { FloatingWhatsApp } from "@/components/layout/FloatingWhatsApp";
 import { ScrollProgress } from "@/components/layout/ScrollProgress";
+import { getSiteLayoutData } from "@/lib/site-content";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -89,11 +90,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const siteData = await getSiteLayoutData();
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${montserrat.variable} antialiased bg-background text-foreground`}>
@@ -128,10 +131,10 @@ export default function RootLayout({
           }}
         />
         <ScrollProgress />
-        <Header />
+        <Header data={siteData} />
         <main>{children}</main>
-        <Footer />
-        <FloatingWhatsApp />
+        <Footer data={siteData} />
+        <FloatingWhatsApp whatsappUrl={siteData.brand.whatsappUrl} />
       </body>
     </html>
   );

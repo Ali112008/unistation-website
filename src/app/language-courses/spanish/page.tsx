@@ -3,14 +3,15 @@ import Link from "next/link";
 import {
   Accordion, AccordionContent, AccordionItem, AccordionTrigger,
 } from "@/components/ui/accordion";
-import { siteConfig } from "@/data/site-data";
+import { getLanguageCourses } from "@/lib/site-content";
 import { ScrollAnimator, CTASection } from "@/components/shared";
 import { LibrarySection } from "@/components/LibrarySection";
 import { FAQSection } from "@/components/FAQSection";
 import { pageFaqs } from "@/data/page-faqs";
 
-export default function SpanishCoursePage() {
-  const course = siteConfig.languageCourses.find((c) => c.slug === "spanish")!;
+export default async function SpanishCoursePage() {
+  const languageCourses = await getLanguageCourses();
+  const course = languageCourses.find((c) => c.slug === "spanish")!;
   return (
     <>
       <section className="relative pt-32 pb-20 bg-brand-navy overflow-hidden">

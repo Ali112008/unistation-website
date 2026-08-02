@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { siteConfig } from "@/data/site-data";
+import { getLanguageCourses } from "@/lib/site-content";
 import { ScrollAnimator, CTASection } from "@/components/shared";
 import { FAQSection } from "@/components/FAQSection";
 import { pageFaqs } from "@/data/page-faqs";
@@ -12,7 +12,8 @@ export const metadata: Metadata = {
   description: "Master new languages with UniStation. IELTS, TOEFL, German, Turkish, and Spanish courses for university admission preparation.",
 };
 
-export default function LanguageCoursesPage() {
+export default async function LanguageCoursesPage() {
+  const languageCourses = await getLanguageCourses();
   return (
     <>
       {/* Hero */}
@@ -45,7 +46,7 @@ export default function LanguageCoursesPage() {
       <section className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-8">
-            {siteConfig.languageCourses.map((course, i) => (
+            {languageCourses.map((course, i) => (
               <ScrollAnimator key={course.slug} delay={i * 100}>
                 <Link href={course.slug === "english" ? "/ielts" : `/${course.slug}`} className="block h-80 md:h-96 group rounded-2xl overflow-hidden relative">
                   {/* Background Image */}

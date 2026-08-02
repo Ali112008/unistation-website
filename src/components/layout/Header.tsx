@@ -4,19 +4,23 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { siteConfig } from "@/data/site-data";
+import type { SiteLayoutData } from "@/lib/site-content";
+import { siteConfig as fallbackConfig } from "@/data/site-data";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ChevronDown, Menu } from "lucide-react";
 
-export function Header() {
+export function Header({ data }: { data?: SiteLayoutData }) {
+  const brand = data?.brand || fallbackConfig.brand;
+  const navigation = data?.navigation || fallbackConfig.navigation;
+
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const pathname = usePathname();
 
-  const leftNav = siteConfig.navigation.filter((item) => item.side === "left");
-  const rightNav = siteConfig.navigation.filter((item) => item.side === "right");
+  const leftNav = navigation.filter((item) => item.side === "left");
+  const rightNav = navigation.filter((item) => item.side === "right");
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -123,7 +127,7 @@ export function Header() {
             <div className={`rounded-xl p-1.5 transition-all duration-300 ${scrolled ? "bg-transparent" : "bg-white/90 backdrop-blur-sm shadow-sm"}`}>
               <Image
                 src="/logo-01.png"
-                alt={siteConfig.brand.name}
+                alt={brand.name}
                 width={56}
                 height={56}
                 className={`h-14 w-auto transition-all duration-300 ${scrolled ? "brightness-100" : "brightness-0"}`}
@@ -194,7 +198,7 @@ export function Header() {
             <div className={`rounded-xl p-1 transition-all duration-300 ${scrolled ? "bg-transparent" : "bg-white/90 backdrop-blur-sm shadow-sm"}`}>
               <Image
                 src="/logo-01.png"
-                alt={siteConfig.brand.name}
+                alt={brand.name}
                 width={48}
                 height={48}
                 className={`h-11 w-auto transition-all duration-300 ${scrolled ? "brightness-100" : "brightness-0"}`}
@@ -220,7 +224,7 @@ export function Header() {
                   <Link href="/" className="flex items-center gap-2" onClick={() => setMobileOpen(false)}>
                     <Image
                       src="/logo-01.png"
-                      alt={siteConfig.brand.name}
+                      alt={brand.name}
                       width={36}
                       height={36}
                       className="h-8 w-auto brightness-0"
@@ -228,7 +232,7 @@ export function Header() {
                   </Link>
                 </div>
                 <nav className="flex-1 overflow-y-auto py-4">
-                  {siteConfig.navigation.map((item) => (
+                  {navigation.map((item) => (
                     <div key={item.label}>
                       {item.children ? (
                         <MobileDropdown
@@ -255,7 +259,7 @@ export function Header() {
                 <div className="p-4 border-t space-y-2">
                   {/* WhatsApp button temporarily hidden - using floating button only */}
                   {/* <Button asChild className="w-full bg-brand-teal hover:bg-brand-teal-dark text-white rounded-lg">
-                    <a href={siteConfig.brand.whatsappUrl} target="_blank" rel="noopener noreferrer">
+                    <a href={brand.whatsappUrl} target="_blank" rel="noopener noreferrer">
                       WhatsApp Us
                     </a>
                   </Button> */}

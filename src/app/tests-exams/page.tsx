@@ -2,12 +2,11 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
-import { siteConfig } from "@/data/site-data";
 import { ScrollAnimator, SectionHeading } from "@/components/shared";
 import { FAQSection } from "@/components/FAQSection";
 import { LibrarySection } from "@/components/LibrarySection";
 import { pageFaqs as tsPageFaqs } from "@/data/page-faqs";
-import { getFaqs } from "@/lib/site-content";
+import { getFaqs, getExamTypes } from "@/lib/site-content";
 import {
   GraduationCap, FileText, BookOpen, Stethoscope, Award, Brain, FlaskConical,
 } from "lucide-react";
@@ -30,8 +29,8 @@ const examIcons: Record<string, React.ElementType> = {
 export const dynamic = "force-dynamic";
 
 export default async function TestsExamsPage() {
-  // Read FAQs from Turso (live-editable) with TS fallback
-  const allFaqs = await getFaqs();
+  // Read FAQs and exam types from Turso (live-editable) with TS fallback
+  const [allFaqs, examTypes] = await Promise.all([getFaqs(), getExamTypes()]);
   const testsExamsFaqs = (allFaqs as any)["tests-exams"] || tsPageFaqs["tests-exams"];
   return (
     <>
@@ -57,7 +56,7 @@ export default async function TestsExamsPage() {
           </ScrollAnimator>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
-            {siteConfig.examTypes.map((exam, i) => {
+            {examTypes.map((exam, i) => {
               const Icon = examIcons[exam.name] || FileText;
               return (
                 <ScrollAnimator key={exam.name} delay={i * 100}>

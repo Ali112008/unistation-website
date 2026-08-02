@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
-import { siteConfig } from "@/data/site-data";
 import { notFound } from "next/navigation";
 import { ArrowLeft, FileText } from "lucide-react";
 import Link from "next/link";
 import { ScrollAnimator } from "@/components/shared";
 import { FAQSection } from "@/components/FAQSection";
 import { pageFaqs as tsPageFaqs } from "@/data/page-faqs";
-import { getFaqs } from "@/lib/site-content";
+import { getFaqs, getExamTypes } from "@/lib/site-content";
 
 // Generate static params for all exams
-export function generateStaticParams() {
-  return siteConfig.examTypes.map((exam) => ({
+export async function generateStaticParams() {
+  const examTypes = await getExamTypes();
+  return examTypes.map((exam) => ({
     slug: exam.slug,
   }));
 }
@@ -18,7 +18,8 @@ export function generateStaticParams() {
 // Dynamic metadata
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const exam = siteConfig.examTypes.find((e) => e.slug === slug);
+  const examTypes = await getExamTypes();
+  const exam = examTypes.find((e) => e.slug === slug);
   if (!exam) return { title: "Exam Not Found" };
   return {
     title: `${exam.name} Preparation`,
@@ -31,7 +32,8 @@ export const dynamic = "force-dynamic";
 
 export default async function ExamDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const exam = siteConfig.examTypes.find((e) => e.slug === slug);
+  const examTypes = await getExamTypes();
+  const exam = examTypes.find((e) => e.slug === slug);
 
   if (!exam) notFound();
 
