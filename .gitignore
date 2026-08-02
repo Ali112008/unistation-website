@@ -32,6 +32,9 @@ skills/
 scripts/
 .zscripts/
 
+# Upload folder (root level only, NOT src/app/api/upload/)
+/upload/
+
 # Scraping artifacts
 scrape_*.json
 *-scrape.json
