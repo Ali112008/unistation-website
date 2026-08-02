@@ -8,5 +8,10 @@ export const metadata = {
 export const dynamic = "force-dynamic";
 
 export default function AdminPage() {
-  return <AdminPanel />;
+  return (
+    <>
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+      <AdminPanel />
+    </>
+  );
 }

@@ -666,6 +666,72 @@ function GeorgiaFaqsEditor({ data, onChange }: { data: any[]; onChange: (d: any[
   );
 }
 
+/* ─── Image Upload Field (drag & drop + click) ─── */
+function ImageUploadField({ label, value, onUpload, onUrlChange, fileInputRef, uploadTarget, setUploadTarget, uploading }: {
+  label: string;
+  value: string;
+  onUpload: (file: File) => void;
+  onUrlChange: (url: string) => void;
+  fileInputRef: React.RefObject<HTMLInputElement | null>;
+  uploadTarget: string;
+  setUploadTarget: (t: string) => void;
+  uploading: boolean;
+}) {
+  const [dragOver, setDragOver] = useState(false);
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith("image/")) onUpload(file);
+  };
+
+  return (
+    <Field label={label}>
+      <div
+        onDragOver={e => { e.preventDefault(); setDragOver(true); }}
+        onDragLeave={() => setDragOver(false)}
+        onDrop={handleDrop}
+        onClick={() => { setUploadTarget(uploadTarget); fileInputRef.current?.click(); }}
+        style={{
+          border: `2px dashed ${dragOver ? "#f0b414" : value ? "#d1d5db" : "#e5e7eb"}`,
+          borderRadius: 10, padding: value ? 0 : "24px 16px",
+          textAlign: "center", cursor: "pointer",
+          background: dragOver ? "#fffbeb" : uploading ? "#f9fafb" : "#fafafa",
+          transition: "all 0.2s", position: "relative",
+        }}
+      >
+        {uploading && (
+          <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(255,255,255,0.85)", borderRadius: 10, zIndex: 2 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#f0b414", fontWeight: 600, fontSize: 14 }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ animation: "spin 1s linear infinite" }}><path d="M21 12a9 9 0 11-6.219-8.56"/></svg>
+              Uploading...
+            </div>
+          </div>
+        )}
+        {value ? (
+          <div style={{ position: "relative" }}>
+            <img src={value} alt={label} style={{ width: "100%", maxHeight: 200, objectFit: "cover", borderRadius: 8, display: "block" }} />
+            <div style={{ position: "absolute", bottom: 8, right: 8, display: "flex", gap: 6 }}>
+              <span style={{ background: "rgba(0,0,0,0.7)", color: "white", padding: "4px 10px", borderRadius: 6, fontSize: 11, fontWeight: 600 }}>Click to replace</span>
+            </div>
+          </div>
+        ) : (
+          <div>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ margin: "0 auto 8px" }}><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <div style={{ color: "#6b7280", fontSize: 13, fontWeight: 600 }}>Click or drag image here</div>
+            <div style={{ color: "#9ca3af", fontSize: 11, marginTop: 4 }}>JPG, PNG, WebP</div>
+          </div>
+        )}
+      </div>
+      <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
+        <span style={{ fontSize: 11, color: "#9ca3af", flex: 1 }}>or paste URL:</span>
+        <input type="text" value={value} onChange={e => onUrlChange(e.target.value)} placeholder="https://..." style={{ ...S.input, fontSize: 12, padding: "6px 10px" }} />
+      </div>
+    </Field>
+  );
+}
+
 /* ═══════════════════════════════════════════════════
    CMS Editors (Blog, Videos, Team, Reviews)
    ═══════════════════════════════════════════════════ */
@@ -686,16 +752,18 @@ interface CmsEditorProps {
   emptyTitle: string;
   itemTitleField: string;
   itemDateField: string;
+  imageField?: string; // field name that holds the Cloudinary image URL for this CMS type
   children?: React.ReactNode;
-  renderFields?: (ctx: { item: CmsItem; updateField: (f: string, v: any) => void; handleImageUpload: (file: File, field: string) => Promise<void>; fileInputRef: React.RefObject<HTMLInputElement | null>; setUploadTarget: (t: "" | "coverImage" | "image" | "thumbnail" | "photo") => void }) => React.ReactNode;
+  renderFields?: (ctx: { item: CmsItem; updateField: (f: string, v: any) => void; handleImageUpload: (file: File, field: string) => Promise<void>; fileInputRef: React.RefObject<HTMLInputElement | null>; setUploadTarget: (t: string) => void; uploading: boolean }) => React.ReactNode;
 }
 
 /* ─── Generic CMS List + Edit wrapper ─── */
-function CmsEditorShell({ items, loading, editingItem, password, onRefresh, onEdit, apiBase, responseKey, emptyTitle, itemTitleField, itemDateField, renderFields }: CmsEditorProps) {
+function CmsEditorShell({ items, loading, editingItem, password, onRefresh, onEdit, apiBase, responseKey, emptyTitle, itemTitleField, itemDateField, imageField, renderFields }: CmsEditorProps) {
   const [saving, setSaving] = useState(false);
   const [localError, setLocalError] = useState("");
+  const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [uploadTarget, setUploadTarget] = useState<"" | "coverImage" | "image" | "thumbnail" | "photo">("");
+  const [uploadTarget, setUploadTarget] = useState<"">("");
   const localItem = useRef<CmsItem | null>(null);
 
   // Keep localItem in sync with editingItem (but only on mount / external changes)
@@ -733,9 +801,18 @@ function CmsEditorShell({ items, loading, editingItem, password, onRefresh, onEd
     setSaving(false);
   };
 
-  const handleDelete = async (id: string, name: string) => {
+  const handleDelete = async (id: string, name: string, imageUrl?: string) => {
     if (!window.confirm(`Delete "${name}"? This cannot be undone.`)) return;
     try {
+      // Delete image from Cloudinary first
+      if (imageUrl && imageUrl.includes("cloudinary.com")) {
+        try {
+          await fetch(`/api/upload?url=${encodeURIComponent(imageUrl)}`, {
+            method: "DELETE",
+            headers: { "x-admin-password": password },
+          });
+        } catch { /* ignore cloudinary delete failure, still delete the item */ }
+      }
       const res = await fetch(`${apiBase}?id=${encodeURIComponent(id)}`, {
         method: "DELETE",
         headers: { "x-admin-password": password },
@@ -748,6 +825,8 @@ function CmsEditorShell({ items, loading, editingItem, password, onRefresh, onEd
   };
 
   const handleImageUpload = async (file: File, field: string) => {
+    setUploading(true);
+    setLocalError("");
     const formData = new FormData();
     formData.append("file", file);
     formData.append("folder", field === "coverImage" ? "blogs" : field === "image" ? "team" : field === "thumbnail" ? "videos" : "reviews");
@@ -757,13 +836,14 @@ function CmsEditorShell({ items, loading, editingItem, password, onRefresh, onEd
         headers: { "x-admin-password": password },
         body: formData,
       });
-      if (!res.ok) { setLocalError("Upload failed"); return; }
+      if (!res.ok) { setLocalError("Upload failed"); setUploading(false); return; }
       const data = await res.json();
       if (data.url) updateField(field, data.url);
       else setLocalError("No URL returned from upload");
     } catch {
       setLocalError("Upload connection error");
     }
+    setUploading(false);
   };
 
   // If editing an item, render the form
@@ -821,7 +901,7 @@ function CmsEditorShell({ items, loading, editingItem, password, onRefresh, onEd
             </div>
             <div style={{ display: "flex", gap: 6, flexShrink: 0, marginLeft: 12 }}>
               <button onClick={() => onEdit({ ...item })} style={{ padding: "5px 12px", background: "#eff6ff", color: "#1e40af", border: "none", borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: "pointer" }}>Edit</button>
-              <button onClick={() => handleDelete(item.id, item[itemTitleField] || "this item")} style={S.deleteBtn}>Delete</button>
+              <button onClick={() => handleDelete(item.id, item[itemTitleField] || "this item", imageField ? item[imageField] : undefined)} style={S.deleteBtn}>Delete</button>
             </div>
           </div>
         </div>
@@ -838,7 +918,8 @@ function CmsBlogEditor({ items, loading, editingItem, password, onRefresh, onEdi
       onRefresh={onRefresh} onEdit={onEdit}
       apiBase="/api/cms/blog" responseKey="blogs"
       emptyTitle="Blog Posts" itemTitleField="title" itemDateField="createdOn"
-      renderFields={({ item, updateField, handleImageUpload, fileInputRef, setUploadTarget }) => (
+      imageField="coverImage"
+      renderFields={({ item, updateField, handleImageUpload, fileInputRef, setUploadTarget, uploading }) => (
         <div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
             <Field label="Title"><TextInput value={item.title || ""} onChange={v => updateField("title", v)} /></Field>
@@ -852,13 +933,13 @@ function CmsBlogEditor({ items, loading, editingItem, password, onRefresh, onEdi
             <input type="checkbox" checked={!!item.featured} onChange={e => updateField("featured", e.target.checked)} style={{ width: 18, height: 18, accentColor: "#f0b414" }} />
             Featured post
           </label>
-          <Field label="Cover Image URL">
-            <div style={{ display: "flex", gap: 8 }}>
-              <input type="text" value={item.coverImage || ""} onChange={e => updateField("coverImage", e.target.value)} placeholder="https://..." style={S.input} />
-              <button onClick={() => { setUploadTarget("coverImage"); fileInputRef.current?.click(); }} style={{ padding: "10px 14px", background: "#f0b414", color: "#28143c", border: "none", borderRadius: 8, fontWeight: 700, cursor: "pointer", fontSize: 12, whiteSpace: "nowrap" }}>Upload</button>
-            </div>
-            {item.coverImage && <img src={item.coverImage} alt="Cover" style={{ marginTop: 8, maxHeight: 120, borderRadius: 8, border: "1px solid #e5e7eb" }} />}
-          </Field>
+          <ImageUploadField
+            label="Cover Image" value={item.coverImage || ""}
+            onUpload={f => { setUploadTarget("coverImage"); handleImageUpload(f, "coverImage"); }}
+            onUrlChange={v => updateField("coverImage", v)}
+            fileInputRef={fileInputRef} uploadTarget={"coverImage"} setUploadTarget={setUploadTarget}
+            uploading={uploading}
+          />
         </div>
       )}
     />
@@ -873,7 +954,8 @@ function CmsVideosEditor({ items, loading, editingItem, password, onRefresh, onE
       onRefresh={onRefresh} onEdit={onEdit}
       apiBase="/api/cms/videos" responseKey="videos"
       emptyTitle="Videos" itemTitleField="title" itemDateField="createdOn"
-      renderFields={({ item, updateField, handleImageUpload, fileInputRef, setUploadTarget }) => (
+      imageField="thumbnail"
+      renderFields={({ item, updateField, handleImageUpload, fileInputRef, setUploadTarget, uploading }) => (
         <div>
           <Field label="Title"><TextInput value={item.title || ""} onChange={v => updateField("title", v)} /></Field>
           <Field label="Description"><TextArea value={item.description || ""} onChange={v => updateField("description", v)} /></Field>
@@ -882,13 +964,13 @@ function CmsVideosEditor({ items, loading, editingItem, password, onRefresh, onE
             <Field label="Category"><TextInput value={item.category || ""} onChange={v => updateField("category", v)} /></Field>
             <Field label="Tags (comma-separated)"><TextInput value={item.tags || ""} onChange={v => updateField("tags", v)} /></Field>
           </div>
-          <Field label="Thumbnail URL">
-            <div style={{ display: "flex", gap: 8 }}>
-              <input type="text" value={item.thumbnail || ""} onChange={e => updateField("thumbnail", e.target.value)} placeholder="https://..." style={S.input} />
-              <button onClick={() => { setUploadTarget("thumbnail"); fileInputRef.current?.click(); }} style={{ padding: "10px 14px", background: "#f0b414", color: "#28143c", border: "none", borderRadius: 8, fontWeight: 700, cursor: "pointer", fontSize: 12, whiteSpace: "nowrap" }}>Upload</button>
-            </div>
-            {item.thumbnail && <img src={item.thumbnail} alt="Thumbnail" style={{ marginTop: 8, maxHeight: 120, borderRadius: 8, border: "1px solid #e5e7eb" }} />}
-          </Field>
+          <ImageUploadField
+            label="Thumbnail" value={item.thumbnail || ""}
+            onUpload={f => { setUploadTarget("thumbnail"); handleImageUpload(f, "thumbnail"); }}
+            onUrlChange={v => updateField("thumbnail", v)}
+            fileInputRef={fileInputRef} uploadTarget={"thumbnail"} setUploadTarget={setUploadTarget}
+            uploading={uploading}
+          />
         </div>
       )}
     />
@@ -903,7 +985,8 @@ function CmsTeamEditor({ items, loading, editingItem, password, onRefresh, onEdi
       onRefresh={onRefresh} onEdit={onEdit}
       apiBase="/api/cms/team" responseKey="team"
       emptyTitle="Team Members" itemTitleField="name" itemDateField=""
-      renderFields={({ item, updateField, handleImageUpload, fileInputRef, setUploadTarget }) => (
+      imageField="image"
+      renderFields={({ item, updateField, handleImageUpload, fileInputRef, setUploadTarget, uploading }) => (
         <div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
             <Field label="Name"><TextInput value={item.name || ""} onChange={v => updateField("name", v)} /></Field>
@@ -911,13 +994,13 @@ function CmsTeamEditor({ items, loading, editingItem, password, onRefresh, onEdi
           </div>
           <Field label="Slug"><TextInput value={item.slug || ""} onChange={v => updateField("slug", v)} placeholder="auto-generated-from-name" /></Field>
           <Field label="Bio (HTML)"><textarea value={item.bio || ""} onChange={e => updateField("bio", e.target.value)} placeholder="Paste HTML bio here..." style={{ ...S.textarea, minHeight: 150, fontFamily: "monospace" }} /></Field>
-          <Field label="Photo URL">
-            <div style={{ display: "flex", gap: 8 }}>
-              <input type="text" value={item.image || ""} onChange={e => updateField("image", e.target.value)} placeholder="https://..." style={S.input} />
-              <button onClick={() => { setUploadTarget("image"); fileInputRef.current?.click(); }} style={{ padding: "10px 14px", background: "#f0b414", color: "#28143c", border: "none", borderRadius: 8, fontWeight: 700, cursor: "pointer", fontSize: 12, whiteSpace: "nowrap" }}>Upload</button>
-            </div>
-            {item.image && <img src={item.image} alt="Photo" style={{ marginTop: 8, maxHeight: 120, borderRadius: 8, border: "1px solid #e5e7eb" }} />}
-          </Field>
+          <ImageUploadField
+            label="Photo" value={item.image || ""}
+            onUpload={f => { setUploadTarget("image"); handleImageUpload(f, "image"); }}
+            onUrlChange={v => updateField("image", v)}
+            fileInputRef={fileInputRef} uploadTarget={"image"} setUploadTarget={setUploadTarget}
+            uploading={uploading}
+          />
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
             <Field label="Email"><TextInput value={item.email || ""} onChange={v => updateField("email", v)} /></Field>
             <Field label="Phone"><TextInput value={item.phone || ""} onChange={v => updateField("phone", v)} /></Field>
@@ -943,7 +1026,8 @@ function CmsReviewsEditor({ items, loading, editingItem, password, onRefresh, on
       onRefresh={onRefresh} onEdit={onEdit}
       apiBase="/api/cms/reviews" responseKey="reviews"
       emptyTitle="Reviews" itemTitleField="name" itemDateField="createdOn"
-      renderFields={({ item, updateField, handleImageUpload, fileInputRef, setUploadTarget }) => (
+      imageField="photo"
+      renderFields={({ item, updateField, handleImageUpload, fileInputRef, setUploadTarget, uploading }) => (
         <div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
             <Field label="Name"><TextInput value={item.name || ""} onChange={v => updateField("name", v)} /></Field>
@@ -954,13 +1038,13 @@ function CmsReviewsEditor({ items, loading, editingItem, password, onRefresh, on
             <Field label="Source"><TextInput value={item.source || ""} onChange={v => updateField("source", v)} placeholder="Google" /></Field>
             <Field label="University"><TextInput value={item.university || ""} onChange={v => updateField("university", v)} /></Field>
           </div>
-          <Field label="Photo URL">
-            <div style={{ display: "flex", gap: 8 }}>
-              <input type="text" value={item.photo || ""} onChange={e => updateField("photo", e.target.value)} placeholder="https://..." style={S.input} />
-              <button onClick={() => { setUploadTarget("photo"); fileInputRef.current?.click(); }} style={{ padding: "10px 14px", background: "#f0b414", color: "#28143c", border: "none", borderRadius: 8, fontWeight: 700, cursor: "pointer", fontSize: 12, whiteSpace: "nowrap" }}>Upload</button>
-            </div>
-            {item.photo && <img src={item.photo} alt="Photo" style={{ marginTop: 8, maxHeight: 100, borderRadius: 8, border: "1px solid #e5e7eb" }} />}
-          </Field>
+          <ImageUploadField
+            label="Photo" value={item.photo || ""}
+            onUpload={f => { setUploadTarget("photo"); handleImageUpload(f, "photo"); }}
+            onUrlChange={v => updateField("photo", v)}
+            fileInputRef={fileInputRef} uploadTarget={"photo"} setUploadTarget={setUploadTarget}
+            uploading={uploading}
+          />
         </div>
       )}
     />
