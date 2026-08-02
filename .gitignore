@@ -26,11 +26,12 @@ prisma/
 # Vercel
 .vercel/
 
-# Tool artifacts
+# Tool artifacts (internal)
 tool-results/
 skills/
 upload/
 scripts/
+.zscripts/
 
 # Scraping artifacts
 scrape_*.json
@@ -39,3 +40,27 @@ full_extraction.json
 seed.ts
 unistation-header.json
 bun.lock
+
+# Sanity (no longer used)
+sanity.config.ts
+sanity/
+
+# Examples (dev only)
+examples/
+mini-services/
+
+# Download artifacts (screenshots, backups, debug images)
+download/
+
+# Misc junk
+logo_analysis2.json
+pexels_tbilisi.json
+pixabay_tbilisi.json
+search_results.json
+unistation.json
+admin-panel-plan.md
+Caddyfile
+
+# OS
+.DS_Store
+Thumbs.db
