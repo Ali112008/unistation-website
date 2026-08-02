@@ -68,7 +68,7 @@ export function Header() {
     >
       {/* DESKTOP HEADER */}
       <div className="hidden lg:block">
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-[1fr_auto_1fr] items-center h-20">
+        <div className="max-w-7xl mx-auto px-6 grid items-center h-20" style={{ gridTemplateColumns: '1fr auto 1fr' }}>
           {/* LEFT NAV — pushed to inner edge (near logo) */}
           <nav className="flex items-center gap-1 justify-self-end">
             {leftNav.map((item) =>

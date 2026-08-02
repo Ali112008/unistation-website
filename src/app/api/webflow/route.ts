@@ -1,163 +1,79 @@
 import { NextResponse } from "next/server";
-
-const WEBFLOW_API_TOKEN = "91068beafa44f0f4442c67a2c75b94f472be033015abdd7a82fa6bdec225d1b2";
-const BLOG_COLLECTION = "6a51d3b689432b9105b65065";
-const VIDEO_COLLECTION = "6a51d3c85a1355ad6711662d";
-const TEAM_COLLECTION = "68fd63e9503df62b019b5c9e";
-const REVIEWS_COLLECTION = "6a537592631ebcfe230a0a7a";
-
-interface WebflowImage {
-  fileId: string;
-  url: string;
-  alt: string | null;
-}
-
-interface WebflowItem {
-  id: string;
-  fieldData: {
-    name?: string;
-    slug?: string;
-    title?: string;
-    excerpt?: string;
-    content?: string;
-    author?: string;
-    featured?: boolean;
-    "cover-image"?: WebflowImage;
-    "thumbnail"?: WebflowImage;
-    description?: string;
-    "youtube-url"?: string;
-    category?: string;
-    tags?: string;
-    "created-on"?: string;
-    "updated-on"?: string;
-  };
-  createdOn: string;
-  updatedOn: string;
-}
-
-async function fetchWebflowItems(collectionId: string): Promise<WebflowItem[]> {
-  const res = await fetch(
-    `https://api.webflow.com/v2/collections/${collectionId}/items`,
-    {
-      headers: {
-        Authorization: `Bearer ${WEBFLOW_API_TOKEN}`,
-        accept: "application/json",
-      },
-      next: { revalidate: 60 },
-    }
-  );
-
-  if (!res.ok) {
-    console.error(`Webflow API error: ${res.status} ${await res.text()}`);
-    return [];
-  }
-
-  const data = await res.json();
-  return data.items || [];
-}
+import client from "@/lib/turso";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const type = searchParams.get("type") || "blogs";
 
-  if (type === "team") {
-    const items = await fetchWebflowItems(TEAM_COLLECTION);
-    const team = items.map((item) => {
-      const fd = item.fieldData as Record<string, unknown>;
-      const photo = fd["profile-picture"] as { url: string; alt: string | null } | undefined;
+  try {
+    if (type === "team") {
+      const result = await client.execute("SELECT * FROM team_members ORDER BY created_on DESC");
+      const team = result.rows.map((row: any) => ({
+        id: row.id,
+        name: row.name,
+        slug: row.slug,
+        role: row.role,
+        bio: row.bio,
+        image: row.image,
+        email: row.email,
+        phone: row.phone,
+        twitter: row.twitter,
+        facebook: row.facebook,
+        qualifications: row.qualifications,
+        languages: row.languages,
+        hobbies: row.hobbies,
+      }));
+      return NextResponse.json({ team });
+    }
 
-      // Extract plain text from Webflow rich text or use as-is
-      const extractText = (val: unknown): string => {
-        if (!val) return "";
-        if (typeof val === "string") return val;
-        if (typeof val === "object" && val !== null && "children" in (val as object)) {
-          const rt = val as { children: Array<{ children: Array<{ text: string }> }>; type: string };
-          return rt.children
-            ?.map((block) => block.children?.map((c) => c.text).join("") || "")
-            .join("\n") || "";
-        }
-        return String(val);
-      };
+    if (type === "reviews") {
+      const result = await client.execute("SELECT * FROM reviews ORDER BY created_on DESC");
+      const reviews = result.rows.map((row: any) => ({
+        id: row.id,
+        name: row.name,
+        text: row.text,
+        rating: Number(row.rating) || 5,
+        source: row.source || "Google",
+        university: row.university,
+        photo: row.photo,
+        createdOn: row.created_on,
+      }));
+      return NextResponse.json({ reviews });
+    }
 
-      return {
-        id: item.id,
-        name: (fd["name"] as string) || "",
-        slug: (fd["slug"] as string) || "",
-        role: (fd["job-title"] as string) || "",
-        bio: (fd["bio"] as string) || (fd["bio-summary"] as string) || "",
-        image: photo?.url || "",
-        email: (fd["email"] as string) || "",
-        phone: (fd["phone-number"] as string) || "",
-        twitter: (fd["twitter-link"] as string) || "",
-        facebook: (fd["facebook-link"] as string) || "",
-        qualifications: extractText(fd["qualifications"]),
-        languages: extractText(fd["languages"]),
-        hobbies: extractText(fd["hobbies"]),
-      };
-    });
-    return NextResponse.json({ team });
-  }
+    if (type === "videos") {
+      const result = await client.execute("SELECT * FROM videos ORDER BY created_on DESC");
+      const videos = result.rows.map((row: any) => ({
+        id: row.id,
+        title: row.title,
+        description: row.description,
+        youtubeUrl: row.youtube_url,
+        thumbnail: row.thumbnail,
+        category: row.category,
+        tags: row.tags,
+        createdOn: row.created_on,
+      }));
+      return NextResponse.json({ videos });
+    }
 
-  if (type === "reviews") {
-    const items = await fetchWebflowItems(REVIEWS_COLLECTION);
-    const extractText = (val: unknown): string => {
-      if (!val) return "";
-      if (typeof val === "string") return val;
-      if (typeof val === "object" && val !== null && "children" in (val as object)) {
-        const rt = val as { children: Array<{ children: Array<{ text: string }> }>; type: string };
-        return rt.children?.map((block) => block.children?.map((c) => c.text).join("") || "").join("\n") || "";
-      }
-      return String(val);
-    };
-    const reviews = items.map((item) => {
-      const fd = item.fieldData as Record<string, unknown>;
-      const photo = fd["reviewer-photo"] as { url: string; alt: string | null } | undefined;
-      return {
-        id: item.id,
-        name: (fd["reviewer-name"] as string) || (fd["name"] as string) || "",
-        text: extractText(fd["review-text"]),
-        rating: Number(fd["rating"]) || 5,
-        source: (fd["source"] as string) || "Google",
-        university: (fd["university"] as string) || "",
-        photo: photo?.url || "",
-        createdOn: item.createdOn,
-      };
-    });
-    return NextResponse.json({ reviews });
-  }
-
-  if (type === "videos") {
-    const items = await fetchWebflowItems(VIDEO_COLLECTION);
-    const videos = items.map((item) => ({
-      id: item.id,
-      title: item.fieldData.name || item.fieldData.title || "",
-      description: item.fieldData.description || item.fieldData.excerpt || "",
-      youtubeUrl: item.fieldData["youtube-url"] || "",
-      thumbnail: item.fieldData.thumbnail?.url || "",
-      category: item.fieldData.category || "",
-      tags: item.fieldData.tags || "",
-      createdOn: item.createdOn,
+    // Default: blogs
+    const result = await client.execute("SELECT * FROM blog_posts ORDER BY created_on DESC");
+    const blogs = result.rows.map((row: any) => ({
+      id: row.id,
+      title: row.title,
+      slug: row.slug,
+      excerpt: row.excerpt,
+      content: row.content,
+      author: row.author,
+      featured: Boolean(row.featured),
+      coverImage: row.cover_image,
+      tags: row.tags,
+      createdOn: row.created_on,
+      updatedOn: row.updated_on,
     }));
-    return NextResponse.json({ videos });
+    return NextResponse.json({ blogs });
+  } catch (error) {
+    console.error(`Turso query error for type "${type}":`, error);
+    return NextResponse.json({ error: "Failed to fetch data" }, { status: 500 });
   }
-
-  // Default: blogs
-  const items = await fetchWebflowItems(BLOG_COLLECTION);
-  const blogs = items
-    .map((item) => ({
-      id: item.id,
-      title: item.fieldData.name || item.fieldData.title || "",
-      slug: item.fieldData.slug || "",
-      excerpt: item.fieldData.excerpt || "",
-      content: item.fieldData.content || "",
-      author: item.fieldData.author || "UniStation Team",
-      featured: item.fieldData.featured || false,
-      coverImage: item.fieldData["cover-image"]?.url || "",
-      tags: item.fieldData.tags || "",
-      createdOn: item.createdOn,
-      updatedOn: item.updatedOn,
-    }))
-    .sort((a, b) => new Date(b.createdOn).getTime() - new Date(a.createdOn).getTime());
-
-  return NextResponse.json({ blogs });
 }

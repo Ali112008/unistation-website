@@ -3,60 +3,21 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Calendar, User } from "lucide-react";
 import { CTASection } from "@/components/shared";
-
-const WEBFLOW_API_TOKEN = "91068beafa44f0f4442c67a2c75b94f472be033015abdd7a82fa6bdec225d1b2";
-const BLOG_COLLECTION = "6a51d3b689432b9105b65065";
-
-interface WebflowItem {
-  id: string;
-  fieldData: {
-    name?: string;
-    slug?: string;
-    title?: string;
-    excerpt?: string;
-    content?: string;
-    author?: string;
-    featured?: boolean;
-    "cover-image"?: { url: string; alt: string | null };
-  };
-  createdOn: string;
-}
+import client from "@/lib/turso";
 
 export const revalidate = 60;
 
 async function getAllBlogSlugs(): Promise<string[]> {
-  const res = await fetch(
-    `https://api.webflow.com/v2/collections/${BLOG_COLLECTION}/items`,
-    {
-      headers: {
-        Authorization: `Bearer ${WEBFLOW_API_TOKEN}`,
-        accept: "application/json",
-      },
-      next: { revalidate: 60 },
-    }
-  );
-  const data = await res.json();
-  return (data.items || []).map(
-    (item: WebflowItem) => item.fieldData.slug || ""
-  );
+  const result = await client.execute("SELECT slug FROM blog_posts WHERE slug IS NOT NULL AND slug != ''");
+  return result.rows.map((row: any) => row.slug as string);
 }
 
 async function getBlogPost(slug: string) {
-  const res = await fetch(
-    `https://api.webflow.com/v2/collections/${BLOG_COLLECTION}/items`,
-    {
-      headers: {
-        Authorization: `Bearer ${WEBFLOW_API_TOKEN}`,
-        accept: "application/json",
-      },
-      next: { revalidate: 60 },
-    }
-  );
-  const data = await res.json();
-  const item = (data.items || []).find(
-    (i: WebflowItem) => i.fieldData.slug === slug
-  );
-  return item || null;
+  const result = await client.execute({
+    sql: "SELECT * FROM blog_posts WHERE slug = ?",
+    args: [slug],
+  });
+  return result.rows[0] || null;
 }
 
 export async function generateStaticParams() {
@@ -76,11 +37,10 @@ export default async function BlogPostPage({
     notFound();
   }
 
-  const fd = item.fieldData;
-  const title = fd.name || fd.title || "Blog Post";
-  const coverImage = fd["cover-image"]?.url || "";
-  const author = fd.author || "UniStation Team";
-  const date = new Date(item.createdOn).toLocaleDateString("en-US", {
+  const title = (item.title as string) || "Blog Post";
+  const coverImage = (item.cover_image as string) || "";
+  const author = (item.author as string) || "UniStation Team";
+  const date = new Date(item.created_on as string).toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -125,14 +85,14 @@ export default async function BlogPostPage({
       {/* Content */}
       <article className="py-16 bg-white">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          {fd.excerpt && (
+          {item.excerpt && (
             <p className="text-xl text-gray-600 font-medium leading-relaxed border-l-4 border-brand-teal pl-6 mb-10">
-              {fd.excerpt}
+              {item.excerpt as string}
             </p>
           )}
           <div
             className="prose prose-lg max-w-none prose-headings:text-brand-navy prose-headings:font-bold prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4 prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3 prose-p:text-gray-600 prose-p:leading-relaxed prose-a:text-brand-teal prose-a:no-underline hover:prose-a:underline prose-ul:text-gray-600 prose-ol:text-gray-600 prose-li:mb-1 prose-strong:text-brand-navy prose-blockquote:border-brand-teal prose-blockquote:text-gray-600"
-            dangerouslySetInnerHTML={{ __html: fd.content || "" }}
+            dangerouslySetInnerHTML={{ __html: (item.content as string) || "" }}
           />
         </div>
       </article>
