@@ -126,7 +126,32 @@ function Toolbar({ editor }: { editor: any }) {
 
   const c = (isActive: boolean) => isActive ? ACTIVE_FG : NORMAL;
 
-  const addImage = () => { const u = prompt("Enter image URL:"); if (u) editor.chain().focus().setImage({ src: u }).run(); };
+  const addImage = () => {
+    const mode = prompt("Upload or URL? (type 'u' for upload, or paste image URL and press OK):", "");
+    if (!mode) return;
+    const trimmed = mode.trim().toLowerCase();
+    if (trimmed === "u" || trimmed === "upload") {
+      const input = document.createElement("input");
+      input.type = "file"; input.accept = "image/*";
+      input.onchange = async () => {
+        const file = input.files?.[0];
+        if (!file) return;
+        const formData = new FormData();
+        formData.append("file", file);
+        try {
+          const res = await fetch("/api/upload", { method: "POST", headers: { "x-admin-password": "unistation2024" }, body: formData });
+          if (!res.ok) throw new Error("Upload failed");
+          const data = await res.json();
+          if (data.url) editor.chain().focus().setImage({ src: data.url }).run();
+        } catch {
+          alert("Image upload failed. Try entering a URL instead.");
+        }
+      };
+      input.click();
+    } else if (trimmed) {
+      editor.chain().focus().setImage({ src: trimmed }).run();
+    }
+  };
   const addLink  = () => { const u = prompt("Enter URL:");     if (u) editor.chain().focus().setLink({ href: u }).run(); };
   const setColor = (clr: string) => editor.chain().focus().setColor(clr).run();
 
@@ -151,10 +176,9 @@ function Toolbar({ editor }: { editor: any }) {
       <ToolbarBtn onClick={() => editor.chain().focus().toggleBlockquote().run()} active={editor.isActive("blockquote")} title="Quote" icon={IcQuote(c(editor.isActive("blockquote")))} />
       {SEP}
 
-      <label title="Text Color" style={{ position: "relative", display: "inline-flex", alignItems: "center" }}>
+      <label title="Text Color" style={{ position: "relative", display: "inline-flex", alignItems: "center", cursor: "pointer" }}>
         <ToolbarBtn onClick={() => {}} title="Text Color" icon={IcColor(NORMAL)} />
-        <div style={{ position: "absolute", left: 26, top: 8, width: 14, height: 3, borderRadius: 2, background: "#ef4444", pointerEvents: "none" }} />
-        <input type="color" value="#000000" onChange={e => setColor(e.target.value)} style={{ position: "absolute", opacity: 0, width: 1, height: 1, pointerEvents: "none" }} />
+        <input type="color" value="#000000" onChange={e => setColor(e.target.value)} style={{ position: "absolute", left: 0, top: 0, width: "100%", height: "100%", opacity: 0, cursor: "pointer" }} />
       </label>
       {SEP}
 
@@ -176,8 +200,9 @@ const EDITOR_STYLES = `
 .tiptap-editor p { margin: 0.6em 0; }
 .tiptap-editor h2 { font-size: 1.4em; font-weight: 700; margin: 1em 0 0.4em; color: #28143c; }
 .tiptap-editor h3 { font-size: 1.15em; font-weight: 700; margin: 0.8em 0 0.3em; color: #28143c; }
-.tiptap-editor ul, .tiptap-editor ol { padding-left: 1.5em; margin: 0.5em 0; }
-.tiptap-editor li { margin: 0.2em 0; }
+.tiptap-editor ul { list-style-type: disc; padding-left: 1.5em; margin: 0.5em 0; }
+.tiptap-editor ol { list-style-type: decimal; padding-left: 1.5em; margin: 0.5em 0; }
+.tiptap-editor li { margin: 0.2em 0; display: list-item; }
 .tiptap-editor blockquote { border-left: 4px solid #f0b414; padding: 0.5em 1em; margin: 0.8em 0; background: #fffbeb; border-radius: 0 6px 6px 0; }
 .tiptap-editor hr { border: none; border-top: 2px solid #e5e7eb; margin: 1.2em 0; }
 .tiptap-editor a { color: #f0b414; text-decoration: underline; }
