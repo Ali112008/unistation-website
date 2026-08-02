@@ -1404,6 +1404,10 @@ function CmsReviewsEditor({ items, loading, editingItem, password, onRefresh, on
           </div>
           <Field label="Review Text"><TextArea value={item.text || ""} onChange={v => updateField("text", v)} /></Field>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            <Field label="Country"><TextInput value={item.country || ""} onChange={v => updateField("country", v)} placeholder="UAE" /></Field>
+            <Field label="Program"><TextInput value={item.program || ""} onChange={v => updateField("program", v)} placeholder="Medicine, UK" /></Field>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
             <Field label="Source"><TextInput value={item.source || ""} onChange={v => updateField("source", v)} placeholder="Google" /></Field>
             <Field label="University"><TextInput value={item.university || ""} onChange={v => updateField("university", v)} /></Field>
           </div>

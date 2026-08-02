@@ -13,6 +13,8 @@ export async function GET() {
       source: row.source || "Google",
       university: row.university,
       photo: row.photo,
+      country: row.country || "",
+      program: row.program || "",
       createdOn: row.created_on,
     }));
     return NextResponse.json({ reviews });
@@ -35,8 +37,8 @@ export async function POST(request: Request) {
     const now = new Date().toISOString();
 
     await client.execute({
-      sql: `INSERT INTO reviews (id, name, text, rating, source, university, photo, created_on)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      sql: `INSERT INTO reviews (id, name, text, rating, source, university, photo, country, program, created_on)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       args: [
         id,
         body.name || '',
@@ -45,6 +47,8 @@ export async function POST(request: Request) {
         body.source || 'Google',
         body.university || '',
         body.photo || '',
+        body.country || '',
+        body.program || '',
         now,
       ],
     });
@@ -68,8 +72,8 @@ export async function PUT(request: Request) {
     if (!body.id) return NextResponse.json({ error: "ID required" }, { status: 400 });
 
     await client.execute({
-      sql: `UPDATE reviews SET name=?, text=?, rating=?, source=?, university=?, photo=? WHERE id=?`,
-      args: [body.name || '', body.text || '', body.rating || 5, body.source || 'Google', body.university || '', body.photo || '', body.id],
+      sql: `UPDATE reviews SET name=?, text=?, rating=?, source=?, university=?, photo=?, country=?, program=? WHERE id=?`,
+      args: [body.name || '', body.text || '', body.rating || 5, body.source || 'Google', body.university || '', body.photo || '', body.country || '', body.program || '', body.id],
     });
 
     return NextResponse.json({ success: true });

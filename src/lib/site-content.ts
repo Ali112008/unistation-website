@@ -79,7 +79,7 @@ export async function getTestimonials(): Promise<Testimonial[]> {
   try {
     // First try CMS reviews table (full CRUD, client-editable)
     const result = await client.execute({
-      sql: "SELECT name, text, rating, source, university, photo FROM reviews ORDER BY created_on DESC",
+      sql: "SELECT name, text, rating, source, university, photo, country, program FROM reviews ORDER BY created_on DESC",
       args: [],
     });
     if (result.rows.length > 0) {
@@ -90,6 +90,8 @@ export async function getTestimonials(): Promise<Testimonial[]> {
         source: row.source,
         university: row.university,
         photo: row.photo,
+        country: row.country || "",
+        program: row.program || "",
       }));
     }
   } catch (e) {

@@ -24,6 +24,8 @@ export default async function TestimonialsPage() {
   const testimonials = tursoTestimonials.map((t: any, i: number) => ({
     ...t,
     avatar: t.name.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2),
+    program: t.program || t.university || "",
+    country: t.country || "",
   }));
 
   return (
@@ -55,7 +57,7 @@ export default async function TestimonialsPage() {
                       </div>
                       <div>
                         <p className="font-semibold text-brand-navy text-sm">{t.name}</p>
-                        <p className="text-gray-500 text-xs">{t.program}</p>
+                        <p className="text-gray-500 text-xs">{t.program}{t.country ? ` — ${t.country}` : ""}</p>
                       </div>
                       <div className="ml-auto flex">
                         {[...Array(5)].map((_, j) => (
