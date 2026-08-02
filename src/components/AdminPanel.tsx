@@ -843,8 +843,11 @@ function CmsEditorShell({ items, loading, editingItem, password, onRefresh, onEd
         body: formData,
       });
       if (!res.ok) {
-        const errBody = await res.json().catch(() => ({ error: "Unknown" }));
-        setLocalError(`Upload failed: ${errBody.error || res.status}`);
+        const errText = await res.text().catch(() => "");
+        let msg = `Upload failed (HTTP ${res.status})`;
+        try { const errJson = JSON.parse(errText); msg = `Upload failed: ${errJson.error || res.status}`; } catch {}
+        if (errText) msg += `: ${errText.slice(0, 200)}`;
+        setLocalError(msg);
         setUploading(false); return;
       }
       const data = await res.json();
