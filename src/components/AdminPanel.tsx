@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import RichTextEditor from "@/components/RichTextEditor";
 
 /* ═══════════════════════════════════════════════════
    UniStation Admin Panel — Site-wide Content Manager
@@ -769,7 +770,7 @@ function CmsEditorShell({ items, loading, editingItem, password, onRefresh, onEd
   const [localError, setLocalError] = useState("");
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [uploadTarget, setUploadTarget] = useState<"">("");
+  const [uploadTarget, setUploadTarget] = useState("");
   const localItem = useRef<CmsItem | null>(null);
 
   // Keep localItem in sync with editingItem (but only on mount / external changes)
@@ -870,7 +871,7 @@ function CmsEditorShell({ items, loading, editingItem, password, onRefresh, onEd
           <button onClick={() => onEdit(null)} style={{ ...S.deleteBtn, background: "#f3f4f6", color: "#374151" }}>← Back to List</button>
         </div>
         {localError && <div style={{ background: "#fef2f2", border: "1px solid #fecaca", color: "#991b1b", padding: 10, borderRadius: 8, marginBottom: 12, fontSize: 13 }}>{localError}</div>}
-        {renderFields && renderFields({ item: editingItem, updateField, handleImageUpload, fileInputRef, setUploadTarget })}
+        {renderFields && renderFields({ item: editingItem, updateField, handleImageUpload, fileInputRef, setUploadTarget: setUploadTarget as (t: string) => void, uploading })}
         <input
           ref={fileInputRef}
           type="file"
@@ -946,7 +947,7 @@ function CmsBlogEditor({ items, loading, editingItem, password, onRefresh, onEdi
           </div>
           <Field label="Slug"><TextInput value={item.slug || ""} onChange={v => updateField("slug", v)} placeholder="auto-generated-from-title" /></Field>
           <Field label="Excerpt"><TextArea value={item.excerpt || ""} onChange={v => updateField("excerpt", v)} /></Field>
-          <Field label="Content (HTML)"><textarea value={item.content || ""} onChange={e => updateField("content", e.target.value)} placeholder="Paste HTML content here..." style={{ ...S.textarea, minHeight: 200, fontFamily: "monospace" }} /></Field>
+          <Field label="Content"><RichTextEditor value={item.content || ""} onChange={v => updateField("content", v)} placeholder="Write your blog post here..." /></Field>
           <Field label="Tags (comma-separated)"><TextInput value={item.tags || ""} onChange={v => updateField("tags", v)} placeholder="study-abroad, georgia, tips" /></Field>
           <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 14, marginTop: 8 }}>
             <input type="checkbox" checked={!!item.featured} onChange={e => updateField("featured", e.target.checked)} style={{ width: 18, height: 18, accentColor: "#f0b414" }} />
@@ -1012,7 +1013,7 @@ function CmsTeamEditor({ items, loading, editingItem, password, onRefresh, onEdi
             <Field label="Role"><TextInput value={item.role || ""} onChange={v => updateField("role", v)} /></Field>
           </div>
           <Field label="Slug"><TextInput value={item.slug || ""} onChange={v => updateField("slug", v)} placeholder="auto-generated-from-name" /></Field>
-          <Field label="Bio (HTML)"><textarea value={item.bio || ""} onChange={e => updateField("bio", e.target.value)} placeholder="Paste HTML bio here..." style={{ ...S.textarea, minHeight: 150, fontFamily: "monospace" }} /></Field>
+          <Field label="Bio"><RichTextEditor value={item.bio || ""} onChange={v => updateField("bio", v)} placeholder="Write team member bio here..." /></Field>
           <ImageUploadField
             label="Photo" value={item.image || ""}
             onUpload={f => { setUploadTarget("image"); handleImageUpload(f, "image"); }}
