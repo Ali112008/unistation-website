@@ -7,16 +7,61 @@ import Link from "@tiptap/extension-link";
 import Underline from "@tiptap/extension-underline";
 import { TextStyle } from "@tiptap/extension-text-style";
 import Color from "@tiptap/extension-color";
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 
 const TOOLBAR_BTN = {
   padding: "5px 8px", border: "1px solid #e5e7eb", borderRadius: 6,
-  background: "white", cursor: "pointer", fontSize: 13,
+  background: "white", cursor: "pointer",
   display: "inline-flex", alignItems: "center", justifyContent: "center",
   minWidth: 30, minHeight: 30, color: "#374151",
 };
-const TOOLBAR_BTN_ACTIVE = { ...TOOLBAR_BTN, background: "#28143c", color: "white", borderColor: "#28143c" };
+const TOOLBAR_BTN_ACTIVE = { ...TOOLBAR_BTN, background: "28143c", color: "white", borderColor: "#28143c" };
 const TOOLBAR_SEP = { display: "inline-block", width: 1, height: 24, background: "#e5e7eb", margin: "0 4px", verticalAlign: "middle" };
+
+// SVG Icons for text formatting
+const IconBold = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z" />
+    <path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z" />
+  </svg>
+);
+
+const IconItalic = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="19" y1="4" x2="10" y2="4" />
+    <line x1="14" y1="20" x2="5" y2="20" />
+    <line x1="15" y1="4" x2="9" y2="20" />
+  </svg>
+);
+
+const IconUnderline = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M6 3v7a6 6 0 0 0 6 6 6 6 0 0 0 6-6V3" />
+    <line x1="4" y1="21" x2="20" y2="21" />
+  </svg>
+);
+
+const IconStrike = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M17.3 4.9c-1.3-1.1-3-1.8-4.8-1.8-3.3 0-6 2.4-6 5.4 0 .5.1 1 .2 1.5" />
+    <path d="M6.7 19.1c1.3 1.1 3 1.8 4.8 1.8 3.3 0 6-2.4 6-5.4 0-.5-.1-1-.2-1.5" />
+    <line x1="4" y1="12" x2="20" y2="12" />
+  </svg>
+);
+
+const IconH2 = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4 12h8" /><path d="M4 18V6" /><path d="M12 18V6" />
+    <path d="M21 18h-4c0-4 4-3 4-6 0-1.5-2-2.5-4-1" />
+  </svg>
+);
+
+const IconH3 = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4 12h8" /><path d="M4 18V6" /><path d="M12 18V6" />
+    <path d="M21 12h-4c0-2.5 1.5-4 3.5-4 .5 0 1.5.5 1.5 1" />
+  </svg>
+);
 
 function ToolbarBtn({ onClick, active, disabled, title, children }: {
   onClick: () => void; active?: boolean; disabled?: boolean; title: string; children: React.ReactNode;
@@ -32,6 +77,19 @@ function ToolbarBtn({ onClick, active, disabled, title, children }: {
 }
 
 function Toolbar({ editor }: { editor: any }) {
+  // Force re-render on every editor transaction so active states stay in sync
+  const [, setTick] = useState(0);
+
+  const onTransaction = useCallback(() => {
+    setTick(t => t + 1);
+  }, []);
+
+  useEffect(() => {
+    if (!editor) return;
+    editor.on("transaction", onTransaction);
+    return () => { editor.off("transaction", onTransaction); };
+  }, [editor, onTransaction]);
+
   const addImage = () => {
     const url = prompt("Enter image URL:");
     if (url) editor.chain().focus().setImage({ src: url }).run();
@@ -53,32 +111,32 @@ function Toolbar({ editor }: { editor: any }) {
       alignItems: "center",
     }}>
       {/* Text Style */}
-      <ToolbarBtn onClick={() => editor.chain().focus().toggleBold().run()} active={editor.isActive("bold")} title="Bold (Ctrl+B)"><b>B</b></ToolbarBtn>
-      <ToolbarBtn onClick={() => editor.chain().focus().toggleItalic().run()} active={editor.isActive("italic")} title="Italic (Ctrl+I)"><i>I</i></ToolbarBtn>
-      <ToolbarBtn onClick={() => editor.chain().focus().toggleUnderline().run()} active={editor.isActive("underline")} title="Underline (Ctrl+U)"><u>U</u></ToolbarBtn>
-      <ToolbarBtn onClick={() => editor.chain().focus().toggleStrike().run()} active={editor.isActive("strike")} title="Strikethrough"><s>S</s></ToolbarBtn>
+      <ToolbarBtn onClick={() => editor.chain().focus().toggleBold().run()} active={editor.isActive("bold")} title="Bold (Ctrl+B)"><IconBold /></ToolbarBtn>
+      <ToolbarBtn onClick={() => editor.chain().focus().toggleItalic().run()} active={editor.isActive("italic")} title="Italic (Ctrl+I)"><IconItalic /></ToolbarBtn>
+      <ToolbarBtn onClick={() => editor.chain().focus().toggleUnderline().run()} active={editor.isActive("underline")} title="Underline (Ctrl+U)"><IconUnderline /></ToolbarBtn>
+      <ToolbarBtn onClick={() => editor.chain().focus().toggleStrike().run()} active={editor.isActive("strike")} title="Strikethrough"><IconStrike /></ToolbarBtn>
       <span style={TOOLBAR_SEP} />
 
       {/* Headings */}
-      <ToolbarBtn onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} active={editor.isActive("heading", { level: 2 })} title="Heading 2"><b>H2</b></ToolbarBtn>
-      <ToolbarBtn onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} active={editor.isActive("heading", { level: 3 })} title="Heading 3"><b>H3</b></ToolbarBtn>
+      <ToolbarBtn onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} active={editor.isActive("heading", { level: 2 })} title="Heading 2"><IconH2 /></ToolbarBtn>
+      <ToolbarBtn onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} active={editor.isActive("heading", { level: 3 })} title="Heading 3"><IconH3 /></ToolbarBtn>
       <span style={TOOLBAR_SEP} />
 
       {/* Lists */}
       <ToolbarBtn onClick={() => editor.chain().focus().toggleBulletList().run()} active={editor.isActive("bulletList")} title="Bullet List">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="4" cy="6" r="1" fill="currentColor"/><circle cx="4" cy="12" r="1" fill="currentColor"/><circle cx="4" cy="18" r="1" fill="currentColor"/></svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" /><circle cx="4" cy="6" r="1" fill="currentColor" /><circle cx="4" cy="12" r="1" fill="currentColor" /><circle cx="4" cy="18" r="1" fill="currentColor" /></svg>
       </ToolbarBtn>
       <ToolbarBtn onClick={() => editor.chain().focus().toggleOrderedList().run()} active={editor.isActive("orderedList")} title="Numbered List">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><text x="2" y="8" fontSize="8" fill="currentColor" stroke="none" fontWeight="bold">1</text><text x="2" y="14" fontSize="8" fill="currentColor" stroke="none" fontWeight="bold">2</text><text x="2" y="20" fontSize="8" fill="currentColor" stroke="none" fontWeight="bold">3</text></svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="10" y1="6" x2="21" y2="6" /><line x1="10" y1="12" x2="21" y2="12" /><line x1="10" y1="18" x2="21" y2="18" /><text x="2" y="8" fontSize="8" fill="currentColor" stroke="none" fontWeight="bold">1</text><text x="2" y="14" fontSize="8" fill="currentColor" stroke="none" fontWeight="bold">2</text><text x="2" y="20" fontSize="8" fill="currentColor" stroke="none" fontWeight="bold">3</text></svg>
       </ToolbarBtn>
       <span style={TOOLBAR_SEP} />
 
       {/* Alignment & Block */}
       <ToolbarBtn onClick={() => editor.chain().focus().setHorizontalRule().run()} title="Horizontal Line">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="2" y1="12" x2="22" y2="12"/></svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="2" y1="12" x2="22" y2="12" /></svg>
       </ToolbarBtn>
       <ToolbarBtn onClick={() => editor.chain().focus().toggleBlockquote().run()} active={editor.isActive("blockquote")} title="Quote">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V21z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V21z"/></svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V21z" /><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V21z" /></svg>
       </ToolbarBtn>
       <span style={TOOLBAR_SEP} />
 
@@ -86,7 +144,7 @@ function Toolbar({ editor }: { editor: any }) {
       <label title="Text Color" style={{ position: "relative", display: "inline-flex", alignItems: "center" }}>
         <ToolbarBtn onClick={() => {}} title="Text Color">
           <div style={{ display: "flex", alignItems: "center", gap: 3 }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z" /></svg>
             <div style={{ width: 14, height: 3, borderRadius: 2, background: "#ef4444" }} />
           </div>
         </ToolbarBtn>
@@ -96,19 +154,19 @@ function Toolbar({ editor }: { editor: any }) {
 
       {/* Link & Image */}
       <ToolbarBtn onClick={addLink} active={editor.isActive("link")} title="Add Link">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" /></svg>
       </ToolbarBtn>
       <ToolbarBtn onClick={addImage} title="Add Image">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" /></svg>
       </ToolbarBtn>
       <span style={TOOLBAR_SEP} />
 
       {/* Undo/Redo */}
       <ToolbarBtn onClick={() => editor.chain().focus().undo().run()} disabled={!editor.can().undo()} title="Undo">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 102.13-9.36L1 10" /></svg>
       </ToolbarBtn>
       <ToolbarBtn onClick={() => editor.chain().focus().redo().run()} disabled={!editor.can().redo()} title="Redo">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.13-9.36L23 10"/></svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="23 4 23 10 17 10" /><path d="M20.49 15a9 9 0 11-2.13-9.36L23 10" /></svg>
       </ToolbarBtn>
     </div>
   );
