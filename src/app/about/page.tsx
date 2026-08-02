@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { siteConfig } from "@/data/site-data";
+import { siteConfig as fallbackData } from "@/data/site-data";
+import { pageFaqs as fallbackFaqs } from "@/data/page-faqs";
 import { ScrollAnimator, SectionHeading, CTASection } from "@/components/shared";
 import { FAQSection } from "@/components/FAQSection";
 import { LibrarySection } from "@/components/LibrarySection";
-import { pageFaqs } from "@/data/page-faqs";
 import { ArrowRight, ChevronRight } from "lucide-react";
 
 interface TeamMember {
@@ -43,7 +43,7 @@ function TeamGrid() {
         ...m,
         shortBio: m.bio?.replace(/<[^>]*>/g, "").slice(0, 150) || "",
       }))
-    : siteConfig.team.map((m) => ({
+    : fallbackData.team.map((m) => ({
         ...m,
         shortBio: m.fullBio?.replace(/<[^>]*>/g, "").slice(0, 150) || m.shortBio || "",
       }));
@@ -91,6 +91,21 @@ function TeamGrid() {
 }
 
 export default function AboutPage() {
+  const [aboutData, setAboutData] = useState(fallbackData.about);
+  const [timeline, setTimeline] = useState(fallbackData.timeline);
+  const [aboutFaqs, setAboutFaqs] = useState(fallbackFaqs.about);
+
+  useEffect(() => {
+    fetch("/api/config")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.about) setAboutData(d.about);
+        if (d.timeline) setTimeline(d.timeline);
+        if (d.faqs?.about) setAboutFaqs(d.faqs.about);
+      })
+      .catch(() => {});
+  }, []);
+
   return (
     <>
       {/* Hero */}
@@ -122,7 +137,7 @@ export default function AboutPage() {
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <ScrollAnimator>
               <div className="space-y-5 text-gray-600 leading-relaxed text-lg">
-                {siteConfig.about.paragraphs.map((p, i) => (
+                {aboutData.paragraphs.map((p, i) => (
                   <p key={i}>{p}</p>
                 ))}
               </div>
@@ -164,7 +179,7 @@ export default function AboutPage() {
           </ScrollAnimator>
           <div className="mt-16 relative">
             <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-brand-teal/20 -translate-x-1/2 hidden md:block" />
-            {siteConfig.timeline.map((item, i) => (
+            {timeline.map((item, i) => (
               <ScrollAnimator key={i} delay={i * 150}>
                 <div
                   className={`flex items-center gap-8 mb-12 ${
@@ -207,7 +222,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <FAQSection faqs={pageFaqs.about} />
+      <FAQSection faqs={aboutFaqs} />
       <LibrarySection />
       <CTASection />
     </>

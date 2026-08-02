@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollAnimator, SectionHeading } from "@/components/shared";
 import { FAQSection } from "@/components/FAQSection";
-import { pageFaqs } from "@/data/page-faqs";
+import { pageFaqs as fallbackPageFaqs, type FAQItem } from "@/data/page-faqs";
 import { BookOpen, Video, Calendar, Loader2, Play, ExternalLink } from "lucide-react";
 
 interface BlogPost {
@@ -119,6 +119,20 @@ export default function LibraryPage() {
   const [videos, setVideos] = useState<VideoItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
+  const [libraryFaqs, setLibraryFaqs] = useState<FAQItem[]>(fallbackPageFaqs.library);
+
+  // Fetch FAQs from Turso (live-editable) with TS fallback
+  useEffect(() => {
+    fetch("/api/config", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((cfg) => {
+        const faqs = cfg.faqs?.library;
+        if (Array.isArray(faqs) && faqs.length > 0) {
+          setLibraryFaqs(faqs);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     async function fetchData() {
@@ -388,7 +402,7 @@ export default function LibraryPage() {
         </div>
       </section>
 
-      <FAQSection faqs={pageFaqs.library} />
+      <FAQSection faqs={libraryFaqs} />
     </>
   );
 }

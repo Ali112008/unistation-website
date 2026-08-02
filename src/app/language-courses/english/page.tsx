@@ -26,8 +26,9 @@ import {
   BarChart3,
   MessageSquare,
 } from "lucide-react";
+import { getFaqs } from "@/lib/site-content";
+import { pageFaqs as fallbackPageFaqs } from "@/data/page-faqs";
 import { FAQSection } from "@/components/FAQSection";
-import { pageFaqs } from "@/data/page-faqs";
 
 const trustItems = [
   "Certified IELTS Trainers",
@@ -177,7 +178,8 @@ const faqs = [
   },
 ];
 
-export default function EnglishCoursePage() {
+export default async function EnglishCoursePage() {
+  const allFaqs = await getFaqs();
   return (
     <>
       {/* Hero Section */}
@@ -504,7 +506,7 @@ export default function EnglishCoursePage() {
         </div>
       </section>
 
-      <FAQSection faqs={pageFaqs["language-courses/english"]} />
+      <FAQSection faqs={(allFaqs as any)["language-courses/english"] || fallbackPageFaqs["language-courses/english"]} />
     </>
   );
 }

@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { siteConfig } from "@/data/site-data";
+import { getPackageCards, getFaqs } from "@/lib/site-content";
 import { pageFaqs as tsPageFaqs } from "@/data/page-faqs";
-import { getFaqs } from "@/lib/site-content";
 import { ScrollAnimator, CTASection } from "@/components/shared";
 import { FAQSection } from "@/components/FAQSection";
 import { ArrowRight } from "lucide-react";
@@ -21,6 +20,7 @@ export default async function PackagesPage() {
   // Read FAQs from Turso (live-editable) with TS fallback
   const allFaqs = await getFaqs();
   const packagesFaqs = (allFaqs as any).packages || tsPageFaqs.packages;
+  const packages = await getPackageCards();
 
   return (
     <>
@@ -62,7 +62,7 @@ export default async function PackagesPage() {
       <section className="py-20 md:py-28 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
-            {siteConfig.packages.map((pkg, i) => (
+            {packages.map((pkg, i) => (
               <ScrollAnimator key={pkg.name} delay={i * 80}>
                 <li>
                   <Link href={`/${pkg.slug}`} className="group block relative h-80 md:h-96 rounded-xl overflow-hidden shadow-md hover:shadow-2xl transition-shadow duration-500">

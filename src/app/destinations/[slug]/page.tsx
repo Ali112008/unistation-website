@@ -3,10 +3,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { siteConfig } from "@/data/site-data";
+import { siteConfig as fallbackData } from "@/data/site-data";
 import { destinationsContent as tsDestinationsContent } from "@/data/destinations-content";
 import { pageFaqs as tsPageFaqs } from "@/data/page-faqs";
-import { getDestinations, getFaqs } from "@/lib/site-content";
+import { getDestinations, getFaqs, getTopDestinations, getBudgetDestinations } from "@/lib/site-content";
 import { ScrollAnimator, CTASection } from "@/components/shared";
 import { FAQSection } from "@/components/FAQSection";
 import { LibrarySection } from "@/components/LibrarySection";
@@ -28,17 +28,29 @@ import {
   Star,
 } from "lucide-react";
 
-const ALL_DESTINATIONS = [
-  ...siteConfig.topDestinations.map((d) => ({ ...d, category: "Top Destination" as const })),
-  ...siteConfig.budgetDestinations.map((d) => ({ ...d, category: "Budget Friendly" as const })),
+const FALLBACK_ALL_DESTINATIONS = [
+  ...fallbackData.topDestinations.map((d) => ({ ...d, category: "Top Destination" as const })),
+  ...fallbackData.budgetDestinations.map((d) => ({ ...d, category: "Budget Friendly" as const })),
 ];
 
-function getDestination(slug: string) {
-  return ALL_DESTINATIONS.find(
+function getDestinationFromList(allDests: any[], slug: string) {
+  return allDests.find(
     (d) =>
       d.name.toLowerCase().replace(/\s+/g, "-") === slug ||
       d.name.toLowerCase() === slug
   );
+}
+
+async function getAllDestinations() {
+  try {
+    const [top, budget] = await Promise.all([getTopDestinations(), getBudgetDestinations()]);
+    return [
+      ...(top || fallbackData.topDestinations).map((d: any) => ({ ...d, category: "Top Destination" as const })),
+      ...(budget || fallbackData.budgetDestinations).map((d: any) => ({ ...d, category: "Budget Friendly" as const })),
+    ];
+  } catch {
+    return FALLBACK_ALL_DESTINATIONS;
+  }
 }
 
 export async function generateMetadata({
@@ -47,7 +59,8 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const dest = getDestination(slug);
+  const allDests = await getAllDestinations();
+  const dest = getDestinationFromList(allDests, slug);
   // Read rich content from Turso (live-editable) with TS fallback
   const allDest = await getDestinations();
   const richContent = (allDest as any)[slug] || tsDestinationsContent[slug];
@@ -61,11 +74,11 @@ export async function generateMetadata({
 // Force dynamic rendering — read fresh data from Turso on every request
 export const dynamic = "force-dynamic";
 
-export function generateStaticParams() {
-  const slugs = ALL_DESTINATIONS.map((d) => ({
+export async function generateStaticParams() {
+  const allDests = await getAllDestinations();
+  return allDests.map((d) => ({
     slug: d.name.toLowerCase().replace(/\s+/g, "-"),
   }));
-  return slugs;
 }
 
 /* ───────── Rich Spain Page ───────── */
@@ -1109,13 +1122,9 @@ export default async function DestinationPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const dest = getDestination(slug);
-
+  const [allDests, allDest, allFaqs] = await Promise.all([getAllDestinations(), getDestinations(), getFaqs()]);
+  const dest = getDestinationFromList(allDests, slug);
   if (!dest) notFound();
-
-  // Read all data from Turso (live-editable) with TS fallback
-  const allDest = await getDestinations();
-  const allFaqs = await getFaqs();
   const turkishContent = (allDest as any).turkey || tsDestinationsContent.turkey;
   const spainContent = (allDest as any).spain || tsDestinationsContent.spain;
   const spainFaqs = (allFaqs as any).spain || tsPageFaqs.spain;

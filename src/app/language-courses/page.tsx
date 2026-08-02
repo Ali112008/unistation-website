@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { getLanguageCourses } from "@/lib/site-content";
+import { getLanguageCourses, getFaqs } from "@/lib/site-content";
+import { pageFaqs as fallbackPageFaqs } from "@/data/page-faqs";
 import { ScrollAnimator, CTASection } from "@/components/shared";
 import { FAQSection } from "@/components/FAQSection";
-import { pageFaqs } from "@/data/page-faqs";
 
 export const metadata: Metadata = {
   title: "Language Courses",
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 };
 
 export default async function LanguageCoursesPage() {
-  const languageCourses = await getLanguageCourses();
+  const [languageCourses, allFaqs] = await Promise.all([getLanguageCourses(), getFaqs()]);
   return (
     <>
       {/* Hero */}
@@ -104,7 +104,7 @@ export default async function LanguageCoursesPage() {
         </div>
       </section>
 
-      <FAQSection faqs={pageFaqs["language-courses"]} />
+      <FAQSection faqs={(allFaqs as any)["language-courses"] || fallbackPageFaqs["language-courses"]} />
       <CTASection />
     </>
   );

@@ -10,12 +10,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { siteConfig } from "@/data/site-data";
+import { getTopDestinations, getBudgetDestinations, getComparisonTable, getFaqs } from "@/lib/site-content";
 import { ScrollAnimator, CTASection } from "@/components/shared";
 import { FAQSection } from "@/components/FAQSection";
 import { LibrarySection } from "@/components/LibrarySection";
 import { pageFaqs as tsPageFaqs } from "@/data/page-faqs";
-import { getFaqs } from "@/lib/site-content";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -26,6 +25,13 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function DestinationsPage() {
+  // Fetch data from Turso (live-editable) with TS fallback
+  const [topDestinations, budgetDestinations, comparisonTable] = await Promise.all([
+    getTopDestinations(),
+    getBudgetDestinations(),
+    getComparisonTable(),
+  ]);
+
   // Read FAQs from Turso (live-editable) with TS fallback
   const allFaqs = await getFaqs();
   const destinationsFaqs = (allFaqs as any).destinations || tsPageFaqs.destinations;
@@ -45,7 +51,7 @@ export default async function DestinationsPage() {
             </div>
           </ScrollAnimator>
           <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
-            {siteConfig.topDestinations.map((dest, i) => {
+            {topDestinations.map((dest, i) => {
               const isExternal = dest.link.startsWith("http");
               const Wrapper = isExternal ? "a" : Link;
               const destSlug = dest.name.toLowerCase().replace(/\s+/g, "-");
@@ -124,7 +130,7 @@ export default async function DestinationsPage() {
             {/* Right: Masonry Grid of Destination Cards */}
             <div className="lg:col-span-3">
               <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
-                {siteConfig.budgetDestinations.map((dest, i) => {
+                {budgetDestinations.map((dest, i) => {
                   const isExternal = dest.link.startsWith("http");
                   const Wrapper = isExternal ? "a" : Link;
                   const destSlug = dest.name.toLowerCase().replace(/\s+/g, "-");
@@ -187,7 +193,7 @@ export default async function DestinationsPage() {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-brand-navy hover:bg-brand-navy">
-                    {siteConfig.comparisonTable.headers.map((h) => (
+                    {comparisonTable.headers.map((h) => (
                       <TableHead
                         key={h}
                         className="text-white font-semibold text-sm py-4"
@@ -198,7 +204,7 @@ export default async function DestinationsPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {siteConfig.comparisonTable.rows.map((row, i) => (
+                  {comparisonTable.rows.map((row, i) => (
                     <TableRow
                       key={i}
                       className={i % 2 === 0 ? "bg-white" : "bg-gray-50/50"}

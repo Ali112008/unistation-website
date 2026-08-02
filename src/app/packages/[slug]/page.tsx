@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { siteConfig } from "@/data/site-data";
+import { siteConfig as fallbackData } from "@/data/site-data";
 import { pageFaqs as tsPageFaqs } from "@/data/page-faqs";
 import { packagesContent as tsPackagesContent } from "@/data/packages-content";
-import { getPackageBySlug, getFaqs } from "@/lib/site-content";
+import { getPackageBySlug, getFaqs, getPackageCards } from "@/lib/site-content";
 import { CTASection } from "@/components/shared";
 import { FAQSection } from "@/components/FAQSection";
 import { LibrarySection } from "@/components/LibrarySection";
@@ -122,8 +122,9 @@ const PROCESS_STEPS = [
 ];
 
 /* ───────── Static params for all package slugs ───────── */
-export function generateStaticParams() {
-  return siteConfig.packages.map((pkg) => ({ slug: pkg.slug }));
+export async function generateStaticParams() {
+  const packages = await getPackageCards();
+  return (packages || fallbackData.packages).map((pkg: any) => ({ slug: pkg.slug }));
 }
 
 // Force dynamic rendering — read fresh data from Turso on every request
@@ -136,7 +137,8 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const pkg = siteConfig.packages.find((p) => p.slug === slug);
+  const packages = await getPackageCards();
+  const pkg = (packages || fallbackData.packages).find((p: any) => p.slug === slug);
   if (!pkg) return { title: "Package Not Found" };
   // Read intro from Turso if available (for live-updated descriptions)
   const content = (await getPackageBySlug(slug)) || tsPackagesContent[slug];
@@ -298,15 +300,14 @@ export default async function PackageDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const pkg = siteConfig.packages.find((p) => p.slug === slug);
+  const [packages, allFaqs] = await Promise.all([getPackageCards(), getFaqs()]);
+  const pkg = (packages || fallbackData.packages).find((p: any) => p.slug === slug);
 
   if (!pkg) notFound();
 
   const tags = PACKAGE_TAGS[slug] || [];
   // Read content from Turso (live-editable) with TS fallback
   const content = (await getPackageBySlug(slug)) || tsPackagesContent[slug];
-  // Read FAQs from Turso (live-editable) with TS fallback
-  const allFaqs = await getFaqs();
   const faqsForSlug = (allFaqs as any)[slug] || tsPageFaqs[slug] || [];
   const stats = PACKAGE_STATS[slug] || PACKAGE_STATS["uk"];
 

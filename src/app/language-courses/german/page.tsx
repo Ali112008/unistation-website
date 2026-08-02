@@ -5,8 +5,9 @@ import {
 } from "@/components/ui/table";
 import { ScrollAnimator, SectionHeading } from "@/components/shared";
 import { LibrarySection } from "@/components/LibrarySection";
+import { getFaqs } from "@/lib/site-content";
+import { pageFaqs as fallbackPageFaqs } from "@/data/page-faqs";
 import { FAQSection } from "@/components/FAQSection";
-import { pageFaqs } from "@/data/page-faqs";
 import {
   CheckCircle2,
   BookOpen,
@@ -50,7 +51,8 @@ const fees = [
   { level: "C1", category: "Advanced", duration: "10 Weeks", price: "2,799 AED" },
 ];
 
-export default function GermanCoursePage() {
+export default async function GermanCoursePage() {
+  const allFaqs = await getFaqs();
   return (
     <>
       {/* Hero Section */}
@@ -195,7 +197,7 @@ export default function GermanCoursePage() {
       </section>
       <LibrarySection topicName="German" tags={["german", "germany"]} />
 
-      <FAQSection faqs={pageFaqs["language-courses/german"]} />
+      <FAQSection faqs={(allFaqs as any)["language-courses/german"] || fallbackPageFaqs["language-courses/german"]} />
     </>
   );
 }

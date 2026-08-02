@@ -8,6 +8,7 @@
  */
 
 import { getConfig } from "@/lib/turso";
+import client from "@/lib/turso";
 import { siteConfig as tsSiteConfig } from "@/data/site-data";
 import { packagesContent as tsPackages } from "@/data/packages-content";
 import { destinationsContent as tsDestinations } from "@/data/destinations-content";
@@ -75,6 +76,26 @@ export async function getOffices(): Promise<Office[]> {
 }
 
 export async function getTestimonials(): Promise<Testimonial[]> {
+  try {
+    // First try CMS reviews table (full CRUD, client-editable)
+    const result = await client.execute({
+      sql: "SELECT name, text, rating, source, university, photo FROM reviews ORDER BY created_on DESC",
+      args: [],
+    });
+    if (result.rows.length > 0) {
+      return result.rows.map((row: any) => ({
+        name: row.name,
+        text: row.text,
+        rating: row.rating,
+        source: row.source,
+        university: row.university,
+        photo: row.photo,
+      }));
+    }
+  } catch (e) {
+    console.warn("[site-content] CMS reviews query failed, trying config key:", e);
+  }
+  // Fallback: try testimonials config key, then TS file
   try {
     const v = await getConfig<Testimonial[]>("testimonials");
     if (Array.isArray(v) && v.length > 0) return v;

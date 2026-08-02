@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { siteConfig } from "@/data/site-data";
+import { siteConfig as fallbackData } from "@/data/site-data";
 import { ScrollAnimator, SectionHeading } from "@/components/shared";
 import {
   Accordion,
@@ -42,7 +42,7 @@ export function FAQSection({ faqs, subtitle = "Support" }: FAQSectionProps) {
     ? faqs
     : tursoFaqs.length > 0
       ? tursoFaqs
-      : siteConfig.faqs;
+      : fallbackData.faqs;
 
   return (
     <section className="py-24 bg-white">
@@ -53,10 +53,10 @@ export function FAQSection({ faqs, subtitle = "Support" }: FAQSectionProps) {
             Can&apos;t find the answer you&apos;re looking for? Please chat to
             our friendly team or write us an email at{" "}
             <a
-              href={`mailto:${siteConfig.brand.email}`}
+              href={`mailto:${fallbackData.brand.email}`}
               className="text-brand-teal hover:underline"
             >
-              {siteConfig.brand.email}
+              {fallbackData.brand.email}
             </a>
           </p>
         </ScrollAnimator>

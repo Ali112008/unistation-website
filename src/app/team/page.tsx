@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ScrollAnimator, SectionHeading } from "@/components/shared";
 import { FAQSection } from "@/components/FAQSection";
 import { LibrarySection } from "@/components/LibrarySection";
-import { pageFaqs } from "@/data/page-faqs";
+import { pageFaqs as fallbackPageFaqs, type FAQItem } from "@/data/page-faqs";
 import { ChevronRight, Mail } from "lucide-react";
 
 interface TeamMember {
@@ -25,6 +25,20 @@ interface TeamMember {
 
 export default function TeamPage() {
   const [team, setTeam] = useState<TeamMember[]>([]);
+  const [teamFaqs, setTeamFaqs] = useState<FAQItem[]>(fallbackPageFaqs.team);
+
+  // Fetch FAQs from Turso (live-editable) with TS fallback
+  useEffect(() => {
+    fetch("/api/config", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((cfg) => {
+        const faqs = cfg.faqs?.team;
+        if (Array.isArray(faqs) && faqs.length > 0) {
+          setTeamFaqs(faqs);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     // Check sessionStorage cache first for instant load
@@ -182,7 +196,7 @@ export default function TeamPage() {
 
       <LibrarySection />
 
-      <FAQSection faqs={pageFaqs.team} />
+      <FAQSection faqs={teamFaqs} />
     </>
   );
 }

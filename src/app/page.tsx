@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { siteConfig } from "@/data/site-data";
+import { siteConfig as fallbackData } from "@/data/site-data";
 import { ScrollAnimator, SectionHeading } from "@/components/shared";
 import { LibrarySection } from "@/components/LibrarySection";
 import { FAQSection } from "@/components/FAQSection";
@@ -156,7 +156,7 @@ export default function HomePage() {
   const [cmsTeam, setCmsTeam] = useState<{ name: string; role: string; image: string; bio: string; slug: string }[]>([]);
   const [reviews, setReviews] = useState<{ name: string; text: string; rating: number; source: string; photo?: string; university?: string }[]>([]);
   // Admin-managed stats from Turso (fallback to static siteConfig.stats)
-  const [stats, setStats] = useState<{ value: string; label: string }[]>(siteConfig.stats as { value: string; label: string }[]);
+  const [stats, setStats] = useState<{ value: string; label: string }[]>(fallbackData.stats as { value: string; label: string }[]);
 
   useEffect(() => {
     // Fetch stats from Turso (admin-managed via /admin)
@@ -179,11 +179,10 @@ export default function HomePage() {
       .then((d) => {
         const fetched = (d.reviews || []).map((r: { name: string; text: string; rating: number; source: string; photo?: string; university?: string }) => r);
         // If no reviews from CMS or none have university data, use placeholder data
-        const hasUniversity = fetched.some((r: { university?: string }) => r.university && r.university.trim() !== "");
-        if (fetched.length === 0 || !hasUniversity) {
-          setReviews(getPlaceholderReviews());
-        } else {
+        if (fetched.length > 0) {
           setReviews(fetched);
+        } else {
+          setReviews(getPlaceholderReviews());
         }
       })
       .catch(() => {
@@ -209,7 +208,7 @@ export default function HomePage() {
 
   const teamDisplay = cmsTeam.length > 0
     ? cmsTeam.map((m) => ({ ...m, shortBio: m.bio?.replace(/<[^>]*>/g, "").slice(0, 150) || "" }))
-    : siteConfig.team;
+    : fallbackData.team;
   return (
     <>
       {/* Hero Section */}

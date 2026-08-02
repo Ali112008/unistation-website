@@ -3,14 +3,14 @@ import Link from "next/link";
 import {
   Accordion, AccordionContent, AccordionItem, AccordionTrigger,
 } from "@/components/ui/accordion";
-import { getLanguageCourses } from "@/lib/site-content";
+import { getLanguageCourses, getFaqs } from "@/lib/site-content";
+import { pageFaqs as fallbackPageFaqs } from "@/data/page-faqs";
 import { ScrollAnimator, CTASection } from "@/components/shared";
 import { LibrarySection } from "@/components/LibrarySection";
 import { FAQSection } from "@/components/FAQSection";
-import { pageFaqs } from "@/data/page-faqs";
 
 export default async function TurkishCoursePage() {
-  const languageCourses = await getLanguageCourses();
+  const [languageCourses, allFaqs] = await Promise.all([getLanguageCourses(), getFaqs()]);
   const course = languageCourses.find((c) => c.slug === "turkish")!;
   return (
     <>
@@ -75,7 +75,7 @@ export default async function TurkishCoursePage() {
       </section>
       <LibrarySection topicName="Turkish" tags={["turkish", "turkey"]} />
 
-      <FAQSection faqs={pageFaqs["language-courses/turkish"]} />
+      <FAQSection faqs={(allFaqs as any)["language-courses/turkish"] || fallbackPageFaqs["language-courses/turkish"]} />
       <CTASection />
     </>
   );

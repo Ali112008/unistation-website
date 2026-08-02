@@ -1,20 +1,36 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
-import { siteConfig } from "@/data/site-data";
+import { siteConfig as fallbackData } from "@/data/site-data";
 import { ScrollAnimator, CTASection } from "@/components/shared";
 import { FAQSection } from "@/components/FAQSection";
-import { pageFaqs } from "@/data/page-faqs";
+import { pageFaqs as fallbackFaqs } from "@/data/page-faqs";
 import { MapPin, Mail, Phone, Instagram } from "lucide-react";
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
+  const [brand, setBrand] = useState(fallbackData.brand);
+  const [social, setSocial] = useState(fallbackData.social);
+  const [offices, setOffices] = useState(fallbackData.offices);
+  const [contactFaqs, setContactFaqs] = useState(fallbackFaqs.contact);
+
+  useEffect(() => {
+    fetch("/api/config")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.brand) setBrand(data.brand);
+        if (data?.social) setSocial(data.social);
+        if (data?.offices) setOffices(data.offices);
+        if (data?.faqs?.contact) setContactFaqs(data.faqs.contact);
+      })
+      .catch(() => {});
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,13 +61,13 @@ export default function ContactPage() {
               <ScrollAnimator>
                 <h2 className="text-2xl font-bold text-brand-navy mb-6">Contact Information</h2>
                 <div className="space-y-4">
-                  <a href={siteConfig.brand.whatsappUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 p-4 bg-green-50 rounded-xl hover:bg-green-100 transition-colors group">
+                  <a href={brand.whatsappUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 p-4 bg-green-50 rounded-xl hover:bg-green-100 transition-colors group">
                     <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
                       <Phone className="w-5 h-5 text-white" />
                     </div>
                     <div>
                       <p className="font-semibold text-gray-800 text-sm group-hover:text-green-700 transition-colors">WhatsApp</p>
-                      <p className="text-green-600 text-sm">{siteConfig.brand.whatsapp}</p>
+                      <p className="text-green-600 text-sm">{brand.whatsapp}</p>
                     </div>
                   </a>
 
@@ -61,11 +77,11 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <p className="font-semibold text-gray-800 text-sm">Email</p>
-                      <a href={`mailto:${siteConfig.brand.email}`} className="text-brand-teal text-sm hover:underline">{siteConfig.brand.email}</a>
+                      <a href={`mailto:${brand.email}`} className="text-brand-teal text-sm hover:underline">{brand.email}</a>
                     </div>
                   </div>
 
-                  <a href={siteConfig.social.instagram} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl hover:bg-pink-50 transition-colors group">
+                  <a href={social.instagram} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl hover:bg-pink-50 transition-colors group">
                     <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
                       <Instagram className="w-5 h-5 text-white" />
                     </div>
@@ -79,7 +95,7 @@ export default function ContactPage() {
                 {/* Offices */}
                 <h3 className="text-lg font-bold text-brand-navy mt-10 mb-4">Our Offices</h3>
                 <div className="space-y-3">
-                  {siteConfig.offices.map((office) => (
+                  {offices.map((office) => (
                     <div key={office.city} className="flex items-start gap-3">
                       <MapPin className="w-4 h-4 text-brand-teal mt-1 shrink-0" />
                       <div>
@@ -158,7 +174,7 @@ export default function ContactPage() {
         </div>
       </section>
 
-      <FAQSection faqs={pageFaqs.contact} />
+      <FAQSection faqs={contactFaqs} />
     </>
   );
 }
