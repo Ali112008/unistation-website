@@ -683,7 +683,13 @@ function ImageUploadField({ label, value, onUpload, onUrlChange, fileInputRef, u
     e.preventDefault();
     setDragOver(false);
     const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith("image/")) onUpload(file);
+    if (file && file.type.startsWith("image/")) {
+      if (file.size > 10 * 1024 * 1024) {
+        alert("Image is too large. Maximum size is 10 MB.");
+        return;
+      }
+      onUpload(file);
+    }
   };
 
   return (
@@ -710,10 +716,10 @@ function ImageUploadField({ label, value, onUpload, onUrlChange, fileInputRef, u
           </div>
         )}
         {value ? (
-          <div style={{ position: "relative" }}>
-            <img src={value} alt={label} style={{ width: "100%", maxHeight: 200, objectFit: "cover", borderRadius: 8, display: "block" }} />
-            <div style={{ position: "absolute", bottom: 8, right: 8, display: "flex", gap: 6 }}>
-              <span style={{ background: "rgba(0,0,0,0.7)", color: "white", padding: "4px 10px", borderRadius: 6, fontSize: 11, fontWeight: 600 }}>Click to replace</span>
+          <div style={{ position: "relative", padding: 8 }}>
+            <img src={value} alt={label} style={{ width: "100%", maxHeight: 400, objectFit: "contain", borderRadius: 8, display: "block", background: "white" }} />
+            <div style={{ position: "absolute", bottom: 12, right: 12, display: "flex", gap: 6 }}>
+              <span style={{ background: "rgba(0,0,0,0.7)", color: "white", padding: "5px 12px", borderRadius: 6, fontSize: 11, fontWeight: 600 }}>Click to replace</span>
             </div>
           </div>
         ) : (
@@ -836,12 +842,16 @@ function CmsEditorShell({ items, loading, editingItem, password, onRefresh, onEd
         headers: { "x-admin-password": password },
         body: formData,
       });
-      if (!res.ok) { setLocalError("Upload failed"); setUploading(false); return; }
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => ({ error: "Unknown" }));
+        setLocalError(`Upload failed: ${errBody.error || res.status}`);
+        setUploading(false); return;
+      }
       const data = await res.json();
       if (data.url) updateField(field, data.url);
       else setLocalError("No URL returned from upload");
-    } catch {
-      setLocalError("Upload connection error");
+    } catch (err: any) {
+      setLocalError(`Upload error: ${err?.message || String(err)}`);
     }
     setUploading(false);
   };
@@ -866,9 +876,15 @@ function CmsEditorShell({ items, loading, editingItem, password, onRefresh, onEd
           onChange={e => {
             const file = e.target.files?.[0];
             if (file && uploadTarget) {
+              if (file.size > 10 * 1024 * 1024) {
+                alert("Image is too large. Maximum size is 10 MB.");
+                e.target.value = "";
+                return;
+              }
               handleImageUpload(file, uploadTarget);
               setUploadTarget("");
             }
+            e.target.value = "";
           }}
         />
         <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
