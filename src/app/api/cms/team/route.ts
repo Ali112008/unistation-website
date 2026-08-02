@@ -40,7 +40,9 @@ export async function POST(request: Request) {
     if (!name) return NextResponse.json({ error: "Name is required" }, { status: 400 });
     const id = crypto.randomUUID();
     const now = new Date().toISOString();
-    const slug = body.slug || name.toLowerCase().replace(/[^\w\s]/g, '').replace(/\s+/g, '-');
+    const baseSlug = name.toLowerCase().replace(/[^\w\s]/g, '').replace(/\s+/g, '-').slice(0, 60) || 'member';
+    const suffix = Math.random().toString(36).slice(2, 7);
+    const slug = body.slug || `${baseSlug}-${suffix}`;
 
     await client.execute({
       sql: `INSERT INTO team_members (id, slug, name, role, bio, image, email, phone, twitter, facebook, qualifications, languages, hobbies, created_on, updated_on)
@@ -67,9 +69,17 @@ export async function PUT(request: Request) {
     if (!body.id) return NextResponse.json({ error: "ID required" }, { status: 400 });
 
     const now = new Date().toISOString();
+    const name = (body.name || '').trim();
+    const existingSlug = (body.slug || '').trim();
+    let slug = existingSlug;
+    if (!slug && name) {
+      const baseSlug = name.toLowerCase().replace(/[^\w\s]/g, '').replace(/\s+/g, '-').slice(0, 60) || 'member';
+      const suffix = Math.random().toString(36).slice(2, 7);
+      slug = `${baseSlug}-${suffix}`;
+    }
     await client.execute({
       sql: `UPDATE team_members SET name=?, slug=?, role=?, bio=?, image=?, email=?, phone=?, twitter=?, facebook=?, qualifications=?, languages=?, hobbies=?, updated_on=? WHERE id=?`,
-      args: [body.name || '', body.slug || '', body.role || '', body.bio || '', body.image || '', body.email || '', body.phone || '', body.twitter || '', body.facebook || '', body.qualifications || '', body.languages || '', body.hobbies || '', now, body.id],
+      args: [body.name || '', slug, body.role || '', body.bio || '', body.image || '', body.email || '', body.phone || '', body.twitter || '', body.facebook || '', body.qualifications || '', body.languages || '', body.hobbies || '', now, body.id],
     });
 
     return NextResponse.json({ success: true });

@@ -951,7 +951,6 @@ function CmsBlogEditor({ items, loading, editingItem, password, onRefresh, onEdi
             <Field label="Title"><TextInput value={item.title || ""} onChange={v => updateField("title", v)} /></Field>
             <Field label="Author"><TextInput value={item.author || ""} onChange={v => updateField("author", v)} placeholder="UniStation Team" /></Field>
           </div>
-          <Field label="Slug"><TextInput value={item.slug || ""} onChange={v => updateField("slug", v)} placeholder="auto-generated-from-title" /></Field>
           <Field label="Excerpt"><TextArea value={item.excerpt || ""} onChange={v => updateField("excerpt", v)} /></Field>
           <Field label="Content"><RichTextEditor value={item.content || ""} onChange={v => updateField("content", v)} placeholder="Write your blog post here..." /></Field>
           <Field label="Tags (comma-separated)"><TextInput value={item.tags || ""} onChange={v => updateField("tags", v)} placeholder="study-abroad, georgia, tips" /></Field>
@@ -1018,7 +1017,6 @@ function CmsTeamEditor({ items, loading, editingItem, password, onRefresh, onEdi
             <Field label="Name"><TextInput value={item.name || ""} onChange={v => updateField("name", v)} /></Field>
             <Field label="Role"><TextInput value={item.role || ""} onChange={v => updateField("role", v)} /></Field>
           </div>
-          <Field label="Slug"><TextInput value={item.slug || ""} onChange={v => updateField("slug", v)} placeholder="auto-generated-from-name" /></Field>
           <Field label="Bio"><RichTextEditor value={item.bio || ""} onChange={v => updateField("bio", v)} placeholder="Write team member bio here..." /></Field>
           <ImageUploadField
             label="Photo" value={item.image || ""}

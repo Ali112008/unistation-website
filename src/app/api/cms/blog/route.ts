@@ -38,7 +38,9 @@ export async function POST(request: Request) {
     if (!title) return NextResponse.json({ error: "Title is required" }, { status: 400 });
     const id = crypto.randomUUID();
     const now = new Date().toISOString();
-    const slug = body.slug || title.toLowerCase().replace(/[^\w\s]/g, '').replace(/\s+/g, '-').slice(0, 200);
+    const baseSlug = title.toLowerCase().replace(/[^\w\s]/g, '').replace(/\s+/g, '-').slice(0, 60) || 'post';
+    const suffix = Math.random().toString(36).slice(2, 7);
+    const slug = body.slug || `${baseSlug}-${suffix}`;
 
     await client.execute({
       sql: `INSERT INTO blog_posts (id, slug, title, excerpt, content, author, featured, cover_image, tags, created_on, updated_on)
@@ -77,11 +79,19 @@ export async function PUT(request: Request) {
     if (!body.id) return NextResponse.json({ error: "ID required" }, { status: 400 });
 
     const now = new Date().toISOString();
+    const title = (body.title || '').trim();
+    const existingSlug = (body.slug || '').trim();
+    let slug = existingSlug;
+    if (!slug && title) {
+      const baseSlug = title.toLowerCase().replace(/[^\w\s]/g, '').replace(/\s+/g, '-').slice(0, 60) || 'post';
+      const suffix = Math.random().toString(36).slice(2, 7);
+      slug = `${baseSlug}-${suffix}`;
+    }
     await client.execute({
       sql: `UPDATE blog_posts SET title=?, slug=?, excerpt=?, content=?, author=?, featured=?, cover_image=?, tags=?, updated_on=? WHERE id=?`,
       args: [
         body.title || '',
-        body.slug || '',
+        slug,
         body.excerpt || '',
         body.content || '',
         body.author || 'UniStation Team',
