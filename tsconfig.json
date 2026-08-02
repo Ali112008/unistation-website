@@ -26,9 +26,6 @@
     "paths": {
       "@/*": [
         "./src/*"
-      ],
-      "@config": [
-        "./sanity.config.ts"
       ]
     }
   },
