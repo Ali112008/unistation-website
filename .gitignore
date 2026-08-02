@@ -29,7 +29,6 @@ prisma/
 # Tool artifacts (internal)
 tool-results/
 skills/
-upload/
 scripts/
 .zscripts/
 
