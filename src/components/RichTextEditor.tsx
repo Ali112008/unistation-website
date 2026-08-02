@@ -15,7 +15,7 @@ const TOOLBAR_BTN = {
   display: "inline-flex", alignItems: "center", justifyContent: "center",
   minWidth: 30, minHeight: 30, color: "#374151",
 };
-const TOOLBAR_BTN_ACTIVE = { ...TOOLBAR_BTN, background: "28143c", color: "white", borderColor: "#28143c" };
+const TOOLBAR_BTN_ACTIVE = { ...TOOLBAR_BTN, background: "#28143c", color: "white", borderColor: "#28143c" };
 const TOOLBAR_SEP = { display: "inline-block", width: 1, height: 24, background: "#e5e7eb", margin: "0 4px", verticalAlign: "middle" };
 
 // SVG Icons for text formatting
