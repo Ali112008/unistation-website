@@ -5,7 +5,7 @@ import { ArrowLeft, Calendar, User } from "lucide-react";
 import { CTASection } from "@/components/shared";
 import client from "@/lib/turso";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 async function getAllBlogSlugs(): Promise<string[]> {
   const result = await client.execute("SELECT slug FROM blog_posts WHERE slug IS NOT NULL AND slug != ''");
