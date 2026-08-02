@@ -5,7 +5,8 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 /* ═══════════════════════════════════════════════════
    UniStation Admin Panel — Site-wide Content Manager
    Manages: brand, social, stats, offices, testimonials,
-            packages, destinations, faqs
+            packages, destinations, faqs, CMS (blogs, videos,
+            team, reviews)
    ═══════════════════════════════════════════════════ */
 
 type ConfigData = Record<string, any>;
@@ -665,6 +666,307 @@ function GeorgiaFaqsEditor({ data, onChange }: { data: any[]; onChange: (d: any[
   );
 }
 
+/* ═══════════════════════════════════════════════════
+   CMS Editors (Blog, Videos, Team, Reviews)
+   ═══════════════════════════════════════════════════ */
+
+type CmsItem = Record<string, any>;
+
+const CMS_TAB_IDS = ["cmsBlog", "cmsVideos", "cmsTeam", "cmsReviews"] as const;
+
+interface CmsEditorProps {
+  items: CmsItem[];
+  loading: boolean;
+  editingItem: CmsItem | null;
+  password: string;
+  onRefresh: () => void;
+  onEdit: (item: CmsItem | null) => void;
+  apiBase: string;
+  responseKey: string;
+  emptyTitle: string;
+  itemTitleField: string;
+  itemDateField: string;
+  children?: React.ReactNode;
+  renderFields?: (ctx: { item: CmsItem; updateField: (f: string, v: any) => void; handleImageUpload: (file: File, field: string) => Promise<void>; fileInputRef: React.RefObject<HTMLInputElement | null>; setUploadTarget: (t: "" | "coverImage" | "image" | "thumbnail" | "photo") => void }) => React.ReactNode;
+}
+
+/* ─── Generic CMS List + Edit wrapper ─── */
+function CmsEditorShell({ items, loading, editingItem, password, onRefresh, onEdit, apiBase, responseKey, emptyTitle, itemTitleField, itemDateField, renderFields }: CmsEditorProps) {
+  const [saving, setSaving] = useState(false);
+  const [localError, setLocalError] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploadTarget, setUploadTarget] = useState<"" | "coverImage" | "image" | "thumbnail" | "photo">("");
+  const localItem = useRef<CmsItem | null>(null);
+
+  // Keep localItem in sync with editingItem (but only on mount / external changes)
+  useEffect(() => {
+    localItem.current = editingItem ? { ...editingItem } : null;
+  }, [editingItem]);
+
+  const updateField = (field: string, value: any) => {
+    if (!localItem.current) return;
+    localItem.current = { ...localItem.current, [field]: value };
+    onEdit({ ...localItem.current });
+  };
+
+  const handleSave = async () => {
+    if (!localItem.current) return;
+    setSaving(true); setLocalError("");
+    try {
+      const isNew = !localItem.current.id;
+      const method = isNew ? "POST" : "PUT";
+      const res = await fetch(apiBase, {
+        method,
+        headers: { "Content-Type": "application/json", "x-admin-password": password },
+        body: JSON.stringify(localItem.current),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: "Save failed" }));
+        setLocalError(err.error || "Save failed");
+      } else {
+        onEdit(null);
+        onRefresh();
+      }
+    } catch {
+      setLocalError("Connection error");
+    }
+    setSaving(false);
+  };
+
+  const handleDelete = async (id: string, name: string) => {
+    if (!window.confirm(`Delete "${name}"? This cannot be undone.`)) return;
+    try {
+      const res = await fetch(`${apiBase}?id=${encodeURIComponent(id)}`, {
+        method: "DELETE",
+        headers: { "x-admin-password": password },
+      });
+      if (res.ok) onRefresh();
+      else setLocalError("Delete failed");
+    } catch {
+      setLocalError("Connection error");
+    }
+  };
+
+  const handleImageUpload = async (file: File, field: string) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("folder", field === "coverImage" ? "blogs" : field === "image" ? "team" : field === "thumbnail" ? "videos" : "reviews");
+    try {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        headers: { "x-admin-password": password },
+        body: formData,
+      });
+      if (!res.ok) { setLocalError("Upload failed"); return; }
+      const data = await res.json();
+      if (data.url) updateField(field, data.url);
+      else setLocalError("No URL returned from upload");
+    } catch {
+      setLocalError("Upload connection error");
+    }
+  };
+
+  // If editing an item, render the form
+  if (editingItem) {
+    return (
+      <div>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+          <h3 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: "#28143c" }}>
+            {editingItem.id ? `Edit: ${editingItem[itemTitleField] || "Item"}` : "Add New Item"}
+          </h3>
+          <button onClick={() => onEdit(null)} style={{ ...S.deleteBtn, background: "#f3f4f6", color: "#374151" }}>← Back to List</button>
+        </div>
+        {localError && <div style={{ background: "#fef2f2", border: "1px solid #fecaca", color: "#991b1b", padding: 10, borderRadius: 8, marginBottom: 12, fontSize: 13 }}>{localError}</div>}
+        {renderFields && renderFields({ item: editingItem, updateField, handleImageUpload, fileInputRef, setUploadTarget })}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          style={{ display: "none" }}
+          onChange={e => {
+            const file = e.target.files?.[0];
+            if (file && uploadTarget) {
+              handleImageUpload(file, uploadTarget);
+              setUploadTarget("");
+            }
+          }}
+        />
+        <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
+          <button onClick={handleSave} disabled={saving} style={S.saveBtn(saving)}>{saving ? "Saving..." : "Save"}</button>
+          <button onClick={() => onEdit(null)} style={S.undoBtn}>Cancel</button>
+        </div>
+      </div>
+    );
+  }
+
+  // List view
+  if (loading) return <div style={{ textAlign: "center", padding: 40, color: "#888" }}>Loading...</div>;
+
+  return (
+    <div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+        <h3 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: "#28143c" }}>{emptyTitle} ({items.length})</h3>
+        <button onClick={() => onEdit({})} style={S.addBtn}>+ Add New</button>
+      </div>
+      {localError && <div style={{ background: "#fef2f2", border: "1px solid #fecaca", color: "#991b1b", padding: 10, borderRadius: 8, marginBottom: 12, fontSize: 13 }}>{localError}</div>}
+      {!items.length && <div style={{ padding: 30, textAlign: "center", color: "#9ca3af", background: "#f9fafb", borderRadius: 10 }}>No items yet. Click "+ Add New" to create one.</div>}
+      {items.map((item) => (
+        <div key={item.id} style={S.card}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <div style={{ fontWeight: 600, fontSize: 15, color: "#28143c", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                {item[itemTitleField] || "(Untitled)"}
+              </div>
+              {item[itemDateField] && <div style={{ fontSize: 12, color: "#9ca3af", marginTop: 2 }}>{new Date(item[itemDateField]).toLocaleDateString()}</div>}
+            </div>
+            <div style={{ display: "flex", gap: 6, flexShrink: 0, marginLeft: 12 }}>
+              <button onClick={() => onEdit({ ...item })} style={{ padding: "5px 12px", background: "#eff6ff", color: "#1e40af", border: "none", borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: "pointer" }}>Edit</button>
+              <button onClick={() => handleDelete(item.id, item[itemTitleField] || "this item")} style={S.deleteBtn}>Delete</button>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ─── Blog Post Editor ─── */
+function CmsBlogEditor({ items, loading, editingItem, password, onRefresh, onEdit }: Omit<CmsEditorProps, 'apiBase' | 'responseKey' | 'emptyTitle' | 'itemTitleField' | 'itemDateField' | 'children' | 'renderFields'>) {
+  return (
+    <CmsEditorShell
+      items={items} loading={loading} editingItem={editingItem} password={password}
+      onRefresh={onRefresh} onEdit={onEdit}
+      apiBase="/api/cms/blog" responseKey="blogs"
+      emptyTitle="Blog Posts" itemTitleField="title" itemDateField="createdOn"
+      renderFields={({ item, updateField, handleImageUpload, fileInputRef, setUploadTarget }) => (
+        <div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            <Field label="Title"><TextInput value={item.title || ""} onChange={v => updateField("title", v)} /></Field>
+            <Field label="Author"><TextInput value={item.author || ""} onChange={v => updateField("author", v)} placeholder="UniStation Team" /></Field>
+          </div>
+          <Field label="Slug"><TextInput value={item.slug || ""} onChange={v => updateField("slug", v)} placeholder="auto-generated-from-title" /></Field>
+          <Field label="Excerpt"><TextArea value={item.excerpt || ""} onChange={v => updateField("excerpt", v)} /></Field>
+          <Field label="Content (HTML)"><textarea value={item.content || ""} onChange={e => updateField("content", e.target.value)} placeholder="Paste HTML content here..." style={{ ...S.textarea, minHeight: 200, fontFamily: "monospace" }} /></Field>
+          <Field label="Tags (comma-separated)"><TextInput value={item.tags || ""} onChange={v => updateField("tags", v)} placeholder="study-abroad, georgia, tips" /></Field>
+          <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 14, marginTop: 8 }}>
+            <input type="checkbox" checked={!!item.featured} onChange={e => updateField("featured", e.target.checked)} style={{ width: 18, height: 18, accentColor: "#f0b414" }} />
+            Featured post
+          </label>
+          <Field label="Cover Image URL">
+            <div style={{ display: "flex", gap: 8 }}>
+              <input type="text" value={item.coverImage || ""} onChange={e => updateField("coverImage", e.target.value)} placeholder="https://..." style={S.input} />
+              <button onClick={() => { setUploadTarget("coverImage"); fileInputRef.current?.click(); }} style={{ padding: "10px 14px", background: "#f0b414", color: "#28143c", border: "none", borderRadius: 8, fontWeight: 700, cursor: "pointer", fontSize: 12, whiteSpace: "nowrap" }}>Upload</button>
+            </div>
+            {item.coverImage && <img src={item.coverImage} alt="Cover" style={{ marginTop: 8, maxHeight: 120, borderRadius: 8, border: "1px solid #e5e7eb" }} />}
+          </Field>
+        </div>
+      )}
+    />
+  );
+}
+
+/* ─── Videos Editor ─── */
+function CmsVideosEditor({ items, loading, editingItem, password, onRefresh, onEdit }: Omit<CmsEditorProps, 'apiBase' | 'responseKey' | 'emptyTitle' | 'itemTitleField' | 'itemDateField' | 'children' | 'renderFields'>) {
+  return (
+    <CmsEditorShell
+      items={items} loading={loading} editingItem={editingItem} password={password}
+      onRefresh={onRefresh} onEdit={onEdit}
+      apiBase="/api/cms/videos" responseKey="videos"
+      emptyTitle="Videos" itemTitleField="title" itemDateField="createdOn"
+      renderFields={({ item, updateField, handleImageUpload, fileInputRef, setUploadTarget }) => (
+        <div>
+          <Field label="Title"><TextInput value={item.title || ""} onChange={v => updateField("title", v)} /></Field>
+          <Field label="Description"><TextArea value={item.description || ""} onChange={v => updateField("description", v)} /></Field>
+          <Field label="YouTube URL"><TextInput value={item.youtubeUrl || ""} onChange={v => updateField("youtubeUrl", v)} placeholder="https://youtube.com/watch?v=..." /></Field>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            <Field label="Category"><TextInput value={item.category || ""} onChange={v => updateField("category", v)} /></Field>
+            <Field label="Tags (comma-separated)"><TextInput value={item.tags || ""} onChange={v => updateField("tags", v)} /></Field>
+          </div>
+          <Field label="Thumbnail URL">
+            <div style={{ display: "flex", gap: 8 }}>
+              <input type="text" value={item.thumbnail || ""} onChange={e => updateField("thumbnail", e.target.value)} placeholder="https://..." style={S.input} />
+              <button onClick={() => { setUploadTarget("thumbnail"); fileInputRef.current?.click(); }} style={{ padding: "10px 14px", background: "#f0b414", color: "#28143c", border: "none", borderRadius: 8, fontWeight: 700, cursor: "pointer", fontSize: 12, whiteSpace: "nowrap" }}>Upload</button>
+            </div>
+            {item.thumbnail && <img src={item.thumbnail} alt="Thumbnail" style={{ marginTop: 8, maxHeight: 120, borderRadius: 8, border: "1px solid #e5e7eb" }} />}
+          </Field>
+        </div>
+      )}
+    />
+  );
+}
+
+/* ─── Team Members Editor ─── */
+function CmsTeamEditor({ items, loading, editingItem, password, onRefresh, onEdit }: Omit<CmsEditorProps, 'apiBase' | 'responseKey' | 'emptyTitle' | 'itemTitleField' | 'itemDateField' | 'children' | 'renderFields'>) {
+  return (
+    <CmsEditorShell
+      items={items} loading={loading} editingItem={editingItem} password={password}
+      onRefresh={onRefresh} onEdit={onEdit}
+      apiBase="/api/cms/team" responseKey="team"
+      emptyTitle="Team Members" itemTitleField="name" itemDateField=""
+      renderFields={({ item, updateField, handleImageUpload, fileInputRef, setUploadTarget }) => (
+        <div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            <Field label="Name"><TextInput value={item.name || ""} onChange={v => updateField("name", v)} /></Field>
+            <Field label="Role"><TextInput value={item.role || ""} onChange={v => updateField("role", v)} /></Field>
+          </div>
+          <Field label="Slug"><TextInput value={item.slug || ""} onChange={v => updateField("slug", v)} placeholder="auto-generated-from-name" /></Field>
+          <Field label="Bio (HTML)"><textarea value={item.bio || ""} onChange={e => updateField("bio", e.target.value)} placeholder="Paste HTML bio here..." style={{ ...S.textarea, minHeight: 150, fontFamily: "monospace" }} /></Field>
+          <Field label="Photo URL">
+            <div style={{ display: "flex", gap: 8 }}>
+              <input type="text" value={item.image || ""} onChange={e => updateField("image", e.target.value)} placeholder="https://..." style={S.input} />
+              <button onClick={() => { setUploadTarget("image"); fileInputRef.current?.click(); }} style={{ padding: "10px 14px", background: "#f0b414", color: "#28143c", border: "none", borderRadius: 8, fontWeight: 700, cursor: "pointer", fontSize: 12, whiteSpace: "nowrap" }}>Upload</button>
+            </div>
+            {item.image && <img src={item.image} alt="Photo" style={{ marginTop: 8, maxHeight: 120, borderRadius: 8, border: "1px solid #e5e7eb" }} />}
+          </Field>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            <Field label="Email"><TextInput value={item.email || ""} onChange={v => updateField("email", v)} /></Field>
+            <Field label="Phone"><TextInput value={item.phone || ""} onChange={v => updateField("phone", v)} /></Field>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            <Field label="Twitter"><TextInput value={item.twitter || ""} onChange={v => updateField("twitter", v)} /></Field>
+            <Field label="Facebook"><TextInput value={item.facebook || ""} onChange={v => updateField("facebook", v)} /></Field>
+          </div>
+          <Field label="Qualifications"><TextInput value={item.qualifications || ""} onChange={v => updateField("qualifications", v)} /></Field>
+          <Field label="Languages"><TextInput value={item.languages || ""} onChange={v => updateField("languages", v)} /></Field>
+          <Field label="Hobbies"><TextInput value={item.hobbies || ""} onChange={v => updateField("hobbies", v)} /></Field>
+        </div>
+      )}
+    />
+  );
+}
+
+/* ─── Reviews Editor ─── */
+function CmsReviewsEditor({ items, loading, editingItem, password, onRefresh, onEdit }: Omit<CmsEditorProps, 'apiBase' | 'responseKey' | 'emptyTitle' | 'itemTitleField' | 'itemDateField' | 'children' | 'renderFields'>) {
+  return (
+    <CmsEditorShell
+      items={items} loading={loading} editingItem={editingItem} password={password}
+      onRefresh={onRefresh} onEdit={onEdit}
+      apiBase="/api/cms/reviews" responseKey="reviews"
+      emptyTitle="Reviews" itemTitleField="name" itemDateField="createdOn"
+      renderFields={({ item, updateField, handleImageUpload, fileInputRef, setUploadTarget }) => (
+        <div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            <Field label="Name"><TextInput value={item.name || ""} onChange={v => updateField("name", v)} /></Field>
+            <Field label="Rating (1-5)"><input type="number" min={1} max={5} step={0.1} value={item.rating || 5} onChange={e => updateField("rating", parseFloat(e.target.value) || 5)} style={S.input} /></Field>
+          </div>
+          <Field label="Review Text"><TextArea value={item.text || ""} onChange={v => updateField("text", v)} /></Field>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            <Field label="Source"><TextInput value={item.source || ""} onChange={v => updateField("source", v)} placeholder="Google" /></Field>
+            <Field label="University"><TextInput value={item.university || ""} onChange={v => updateField("university", v)} /></Field>
+          </div>
+          <Field label="Photo URL">
+            <div style={{ display: "flex", gap: 8 }}>
+              <input type="text" value={item.photo || ""} onChange={e => updateField("photo", e.target.value)} placeholder="https://..." style={S.input} />
+              <button onClick={() => { setUploadTarget("photo"); fileInputRef.current?.click(); }} style={{ padding: "10px 14px", background: "#f0b414", color: "#28143c", border: "none", borderRadius: 8, fontWeight: 700, cursor: "pointer", fontSize: 12, whiteSpace: "nowrap" }}>Upload</button>
+            </div>
+            {item.photo && <img src={item.photo} alt="Photo" style={{ marginTop: 8, maxHeight: 100, borderRadius: 8, border: "1px solid #e5e7eb" }} />}
+          </Field>
+        </div>
+      )}
+    />
+  );
+}
+
 /* ─── Main Admin Component ─── */
 export default function AdminPanel() {
   const [password, setPassword] = useState("");
@@ -678,6 +980,35 @@ export default function AdminPanel() {
   const [savedKey, setSavedKey] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("brand");
   const [isMobile, setIsMobile] = useState(false);
+
+  /* ─── CMS State ─── */
+  const [cmsData, setCmsData] = useState<CmsItem[]>([]);
+  const [editingItem, setEditingItem] = useState<CmsItem | null>(null);
+  const [cmsLoading, setCmsLoading] = useState(false);
+  const isCmsTab = (CMS_TAB_IDS as readonly string[]).includes(activeTab);
+
+  const fetchCmsData = useCallback(async (tab: string) => {
+    setCmsLoading(true); setCmsData([]); setEditingItem(null);
+    let url = "";
+    let key = "";
+    if (tab === "cmsBlog") { url = "/api/cms/blog"; key = "blogs"; }
+    else if (tab === "cmsVideos") { url = "/api/cms/videos"; key = "videos"; }
+    else if (tab === "cmsTeam") { url = "/api/cms/team"; key = "team"; }
+    else if (tab === "cmsReviews") { url = "/api/cms/reviews"; key = "reviews"; }
+    if (!url) { setCmsLoading(false); return; }
+    try {
+      const res = await fetch(url, { cache: "no-store" });
+      if (res.ok) {
+        const json = await res.json();
+        setCmsData(json[key] || []);
+      }
+    } catch { /* ignore */ }
+    setCmsLoading(false);
+  }, []);
+
+  useEffect(() => {
+    if (loggedIn && isCmsTab) fetchCmsData(activeTab);
+  }, [activeTab, loggedIn, isCmsTab, fetchCmsData]);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -809,7 +1140,7 @@ export default function AdminPanel() {
     if (key) setData(prev => ({ ...prev, [key]: value }));
   };
 
-  const hasUndo = JSON.stringify(data[tabMap[activeTab] || activeTab]) !== JSON.stringify(originalData[tabMap[activeTab] || activeTab]);
+  const hasUndo = isCmsTab ? false : JSON.stringify(data[tabMap[activeTab] || activeTab]) !== JSON.stringify(originalData[tabMap[activeTab] || activeTab]);
   const handleUndo = () => {
     const key = tabMap[activeTab];
     if (key) setData(prev => ({ ...prev, [key]: originalData[key] }));
@@ -836,6 +1167,13 @@ export default function AdminPanel() {
     { id: "georgiaRegistration", label: "Registration", icon: "", group: "georgia" },
     { id: "georgiaContact", label: "Contact", icon: "", group: "georgia" },
     { id: "georgiaFaqs", label: "FAQs", icon: "", group: "georgia" },
+    // CMS divider
+    { id: "_cms_divider", label: "CMS", icon: "", group: "divider" },
+    // CMS
+    { id: "cmsBlog", label: "Blog Posts", icon: "", group: "cms" },
+    { id: "cmsVideos", label: "Videos", icon: "", group: "cms" },
+    { id: "cmsTeam", label: "Team", icon: "", group: "cms" },
+    { id: "cmsReviews", label: "Reviews", icon: "", group: "cms" },
   ];
 
   /* ─── Login Screen ─── */
@@ -921,14 +1259,15 @@ export default function AdminPanel() {
             );
           }
           const isGeorgia = t.group === "georgia";
+          const isCms = t.group === "cms";
           const isActive = activeTab === t.id;
           return (
             <button key={t.id} onClick={() => setActiveTab(t.id)}
               style={{
                 padding: isMobile ? "10px 14px" : "12px 18px", border: "none",
                 borderBottom: isActive ? "3px solid #f0b414" : "3px solid transparent",
-                background: isActive ? (isGeorgia ? "#eff6ff" : "#fffbeb") : "none",
-                color: isActive ? "#28143c" : (isGeorgia ? "#1e40af" : "#888"),
+                background: isActive ? (isGeorgia ? "#eff6ff" : isCms ? "#f0fdf4" : "#fffbeb") : "none",
+                color: isActive ? "#28143c" : (isGeorgia ? "#1e40af" : isCms ? "#166534" : "#888"),
                 fontWeight: isActive ? 700 : 500,
                 cursor: "pointer", whiteSpace: "nowrap",
                 fontSize: isMobile ? 12 : 13,
@@ -955,19 +1294,21 @@ export default function AdminPanel() {
           </div>
         )}
 
-        {loading ? (
+        {(loading && !isCmsTab) ? (
           <div style={{ textAlign: "center", padding: 80, color: "#888", fontSize: 16 }}>Loading data...</div>
         ) : (
           <div>
-            {/* Action buttons */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexWrap: "wrap", gap: 8 }}>
-              {hasUndo ? (
-                <button onClick={handleUndo} style={S.undoBtn}>Undo Changes</button>
-              ) : <div />}
-              <button onClick={handleSaveTab} disabled={saving} style={S.saveBtn(saving)}>
-                {saving ? "Saving..." : "Save Changes"}
-              </button>
-            </div>
+            {/* Action buttons — hidden for CMS tabs (they have their own save) */}
+            {!isCmsTab && (
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexWrap: "wrap", gap: 8 }}>
+                {hasUndo ? (
+                  <button onClick={handleUndo} style={S.undoBtn}>Undo Changes</button>
+                ) : <div />}
+                <button onClick={handleSaveTab} disabled={saving} style={S.saveBtn(saving)}>
+                  {saving ? "Saving..." : "Save Changes"}
+                </button>
+              </div>
+            )}
 
             {/* Tab Content */}
             <div style={{ background: "white", borderRadius: 14, padding: isMobile ? 16 : 24, border: "1px solid #e5e7eb", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
@@ -988,17 +1329,24 @@ export default function AdminPanel() {
               {activeTab === "georgiaRegistration" && <RegistrationEditor data={data.registration || {}} onChange={updateTabData} />}
               {activeTab === "georgiaContact" && <ContactEditor data={data.site || {}} onChange={updateTabData} />}
               {activeTab === "georgiaFaqs" && <GeorgiaFaqsEditor data={data.georgia_faqs || []} onChange={updateTabData} />}
+              {/* CMS */}
+              {activeTab === "cmsBlog" && <CmsBlogEditor items={cmsData} loading={cmsLoading} editingItem={editingItem} password={password} onRefresh={() => fetchCmsData("cmsBlog")} onEdit={setEditingItem} />}
+              {activeTab === "cmsVideos" && <CmsVideosEditor items={cmsData} loading={cmsLoading} editingItem={editingItem} password={password} onRefresh={() => fetchCmsData("cmsVideos")} onEdit={setEditingItem} />}
+              {activeTab === "cmsTeam" && <CmsTeamEditor items={cmsData} loading={cmsLoading} editingItem={editingItem} password={password} onRefresh={() => fetchCmsData("cmsTeam")} onEdit={setEditingItem} />}
+              {activeTab === "cmsReviews" && <CmsReviewsEditor items={cmsData} loading={cmsLoading} editingItem={editingItem} password={password} onRefresh={() => fetchCmsData("cmsReviews")} onEdit={setEditingItem} />}
             </div>
 
-            {/* Bottom Save */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 16, flexWrap: "wrap", gap: 8 }}>
-              {hasUndo ? (
-                <button onClick={handleUndo} style={S.undoBtn}>Undo Changes</button>
-              ) : <div />}
-              <button onClick={handleSaveTab} disabled={saving} style={S.saveBtn(saving)}>
-                {saving ? "Saving..." : "Save Changes"}
-              </button>
-            </div>
+            {/* Bottom Save — hidden for CMS tabs */}
+            {!isCmsTab && (
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 16, flexWrap: "wrap", gap: 8 }}>
+                {hasUndo ? (
+                  <button onClick={handleUndo} style={S.undoBtn}>Undo Changes</button>
+                ) : <div />}
+                <button onClick={handleSaveTab} disabled={saving} style={S.saveBtn(saving)}>
+                  {saving ? "Saving..." : "Save Changes"}
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>
