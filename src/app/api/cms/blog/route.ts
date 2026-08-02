@@ -28,7 +28,7 @@ export async function GET() {
 /** POST - create new blog post */
 export async function POST(request: Request) {
   const adminPassword = request.headers.get("x-admin-password");
-  if (adminPassword !== process.env.ADMIN_PASSWORD) {
+  if (adminPassword !== 'unistation2024') {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -65,7 +65,7 @@ export async function POST(request: Request) {
 /** PUT - update a blog post */
 export async function PUT(request: Request) {
   const adminPassword = request.headers.get("x-admin-password");
-  if (adminPassword !== process.env.ADMIN_PASSWORD) {
+  if (adminPassword !== 'unistation2024') {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -100,7 +100,7 @@ export async function PUT(request: Request) {
 /** DELETE - remove a blog post */
 export async function DELETE(request: Request) {
   const adminPassword = request.headers.get("x-admin-password");
-  if (adminPassword !== process.env.ADMIN_PASSWORD) {
+  if (adminPassword !== 'unistation2024') {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
