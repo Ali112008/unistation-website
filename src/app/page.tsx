@@ -154,7 +154,7 @@ function parseStatValue(raw: string): { target: number; suffix: string } {
 
 export default function HomePage() {
   const [cmsTeam, setCmsTeam] = useState<{ name: string; role: string; image: string; bio: string; slug: string }[]>([]);
-  const [reviews, setReviews] = useState<{ name: string; text: string; rating: number; source: string; photo?: string; university?: string }[]>([]);
+  const [reviews, setReviews] = useState<{ name: string; text: string; rating: number; source: string; photo?: string; university?: string; country?: string; program?: string }[]>([]);
   // Admin-managed stats from Turso (fallback to static siteConfig.stats)
   const [stats, setStats] = useState<{ value: string; label: string }[]>(fallbackData.stats as { value: string; label: string }[]);
 
@@ -174,11 +174,10 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
-    fetch("/api/webflow?type=reviews")
+    fetch("/api/cms/reviews")
       .then((r) => r.json())
       .then((d) => {
-        const fetched = (d.reviews || []).map((r: { name: string; text: string; rating: number; source: string; photo?: string; university?: string }) => r);
-        // If no reviews from CMS or none have university data, use placeholder data
+        const fetched = (d.reviews || []).map((r: any) => r);
         if (fetched.length > 0) {
           setReviews(fetched);
         } else {
@@ -191,7 +190,7 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
-    fetch("/api/webflow?type=team")
+    fetch("/api/cms/team")
       .then((r) => r.json())
       .then((d) => {
         const raw = d.team || [];
@@ -507,10 +506,12 @@ export default function HomePage() {
                     <ReviewAvatar name={review.name} photo={review.photo} />
                     <div className="min-w-0">
                       <p className="font-semibold text-brand-navy text-sm truncate">{review.name}</p>
-                      {review.university && (
-                        <p className="text-brand-teal text-xs truncate">{review.university}</p>
+                      {(review.program || review.university) && (
+                        <p className="text-brand-teal text-xs truncate">{review.program || review.university}{review.country ? ` — ${review.country}` : ""}</p>
                       )}
-                      <p className="text-gray-400 text-xs">{review.source} Review</p>
+                      {review.source && review.source !== "Website" && (
+                        <p className="text-gray-400 text-xs">{review.source} Review</p>
+                      )}
                     </div>
                   </div>
                 </div>
