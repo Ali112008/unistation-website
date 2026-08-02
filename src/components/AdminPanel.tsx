@@ -786,14 +786,20 @@ function CmsEditorShell({ items, loading, editingItem, password, onRefresh, onEd
 
   const handleSave = async () => {
     if (!localItem.current) return;
+    const item = localItem.current;
+    const nameField = itemTitleField || "title";
+    if (!item[nameField]?.toString().trim()) {
+      setLocalError(`${emptyTitle || "Title"} is required`);
+      return;
+    }
     setSaving(true); setLocalError("");
     try {
-      const isNew = !localItem.current.id;
+      const isNew = !item.id;
       const method = isNew ? "POST" : "PUT";
       const res = await fetch(apiBase, {
         method,
         headers: { "Content-Type": "application/json", "x-admin-password": password },
-        body: JSON.stringify(localItem.current),
+        body: JSON.stringify(item),
       });
       if (!res.ok) {
         const err = await res.json().catch(() => ({ error: "Save failed" }));

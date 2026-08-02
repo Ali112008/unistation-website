@@ -34,15 +34,18 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
+    const title = (body.title || "").trim();
+    if (!title) return NextResponse.json({ error: "Title is required" }, { status: 400 });
     const id = crypto.randomUUID();
     const now = new Date().toISOString();
+    const slug = body.slug || title.toLowerCase().replace(/[^\w\s]/g, '').replace(/\s+/g, '-').slice(0, 200);
 
     await client.execute({
       sql: `INSERT INTO blog_posts (id, slug, title, excerpt, content, author, featured, cover_image, tags, created_on, updated_on)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       args: [
         id,
-        body.slug || body.title.toLowerCase().replace(/[^\w\s]/g, '').replace(/\s+/g, '-').slice(0, 200),
+        slug,
         body.title || '',
         body.excerpt || '',
         body.content || '',

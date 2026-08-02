@@ -36,9 +36,11 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
+    const name = (body.name || "").trim();
+    if (!name) return NextResponse.json({ error: "Name is required" }, { status: 400 });
     const id = crypto.randomUUID();
     const now = new Date().toISOString();
-    const slug = body.slug || body.name.toLowerCase().replace(/[^\w\s]/g, '').replace(/\s+/g, '-');
+    const slug = body.slug || name.toLowerCase().replace(/[^\w\s]/g, '').replace(/\s+/g, '-');
 
     await client.execute({
       sql: `INSERT INTO team_members (id, slug, name, role, bio, image, email, phone, twitter, facebook, qualifications, languages, hobbies, created_on, updated_on)
