@@ -56,7 +56,7 @@ export default function TeamPage() {
     }
 
     // Always fetch fresh data in background
-    fetch("/api/webflow?type=team")
+    fetch("/api/cms/team")
       .then((r) => r.json())
       .then((d) => {
         const raw = d.team || [];

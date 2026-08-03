@@ -43,7 +43,7 @@ export default function TeamMemberPage() {
     }
 
     // Always fetch fresh data in background to keep cache warm
-    fetch("/api/webflow?type=team")
+    fetch("/api/cms/team")
       .then((r) => r.json())
       .then((d) => {
         const raw = d.team || [];
