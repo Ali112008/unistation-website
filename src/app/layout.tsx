@@ -1,10 +1,7 @@
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
-import { FloatingWhatsApp } from "@/components/layout/FloatingWhatsApp";
-import { ScrollProgress } from "@/components/layout/ScrollProgress";
+import { SiteShell } from "@/components/layout/SiteShell";
 import { getSiteLayoutData } from "@/lib/site-content";
 
 const montserrat = Montserrat({
@@ -51,7 +48,7 @@ export const metadata: Metadata = {
     siteName: "UniStation",
     title: "UniStation | Your Gateway to Global Education",
     description:
-      "Personalized guidance for university admissions, language courses, and test preparation across 25+ destinations worldwide.",
+    "Personalized guidance for university admissions, language courses, and test preparation across 25+ destinations worldwide.",
     images: [
       {
         url: "/og-image.png",
@@ -65,7 +62,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "UniStation | Your Gateway to Global Education",
     description:
-      "Personalized guidance for university admissions, language courses, and test preparation across 25+ destinations worldwide.",
+    "Personalized guidance for university admissions, language courses, and test preparation across 25+ destinations worldwide.",
     images: ["/twitter-card.png"],
   },
   robots: {
@@ -130,11 +127,7 @@ export default async function RootLayout({
             }),
           }}
         />
-        <ScrollProgress />
-        <Header data={siteData} />
-        <main>{children}</main>
-        <Footer data={siteData} />
-        <FloatingWhatsApp whatsappUrl={siteData.brand.whatsappUrl} />
+        <SiteShell data={siteData}>{children}</SiteShell>
       </body>
     </html>
   );
