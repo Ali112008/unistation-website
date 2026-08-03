@@ -21,10 +21,7 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.DEPLOY_PRIVATE_KEY }}" | base64 -d > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          echo "Key file size: $(wc -c < ~/.ssh/deploy_key) bytes"
-          echo "Key starts with: $(head -1 ~/.ssh/deploy_key)"
-          ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts
-          ssh -i ~/.ssh/deploy_key -T git@github.com 2>&1 || true
+          ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
 
       - name: Push to client repo
         run: |
