@@ -29,4 +29,11 @@ jobs:
           git config --global user.email "info@unistation.org"
           git remote add client git@github.com:UniStation/unistation-website.git
           GIT_SSH_COMMAND="ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" git push client main --force
-          echo "Synced successfully to UniStation/unistation-website"
+          echo "Synced to GitHub successfully"
+
+      - name: Trigger Vercel Deploy
+        run: |
+          curl -s -X POST "https://api.vercel.com/v1/integrations/deploy" \
+            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"type": "git", "repoName": "UniStation/unistation-website", "branch": "main"}' || true
