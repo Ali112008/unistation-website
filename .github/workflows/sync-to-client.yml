@@ -19,7 +19,7 @@ jobs:
       - name: Setup SSH key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.DEPLOY_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          echo "${{ secrets.DEPLOY_PRIVATE_KEY }}" | base64 -d > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts
 
@@ -28,5 +28,5 @@ jobs:
           git config --global user.name "UniStation Sync"
           git config --global user.email "info@unistation.org"
           git remote add client git@github.com:UniStation/unistation-website.git
-          GIT_SSH_COMMAND="ssh -i ~/.ssh/deploy_key" git push client main --force
+          GIT_SSH_COMMAND="ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" git push client main --force
           echo "Synced successfully to UniStation/unistation-website"
