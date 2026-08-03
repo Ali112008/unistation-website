@@ -506,14 +506,11 @@ export default function HomePage() {
                     <ReviewAvatar name={review.name} photo={review.photo} />
                     <div className="min-w-0">
                       <p className="font-semibold text-brand-navy text-sm truncate">{review.name}</p>
-                      {(review.program || review.university) && (
-                        <p className="text-brand-teal text-xs truncate">{review.program || review.university}{review.country ? ` — ${review.country}` : ""}</p>
+                      {review.university && (
+                        <p className="text-brand-teal text-xs truncate">{review.university}</p>
                       )}
-                      {review.university && review.program && review.university !== review.program && (
-                        <p className="text-gray-400 text-xs truncate">{review.university}</p>
-                      )}
-                      {review.source && review.source !== "Website" && (
-                        <p className="text-gray-400 text-xs">{review.source} Review</p>
+                      {review.program && (
+                        <p className="text-gray-400 text-xs truncate">{review.program}{review.country ? ` · ${review.country}` : ""}</p>
                       )}
                     </div>
                   </div>

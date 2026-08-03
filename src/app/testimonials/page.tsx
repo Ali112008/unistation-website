@@ -71,12 +71,11 @@ export default async function TestimonialsPage() {
                       )}
                       <div className="min-w-0">
                         <p className="font-semibold text-brand-navy text-sm truncate">{t.name}</p>
-                        <p className="text-brand-teal text-xs truncate">{t.program}{t.country ? ` — ${t.country}` : ""}</p>
-                        {t.university && t.program && t.university !== t.program && (
-                          <p className="text-gray-400 text-xs truncate">{t.university}</p>
+                        {t.university && (
+                          <p className="text-brand-teal text-xs truncate">{t.university}</p>
                         )}
-                        {t.source && t.source !== "Website" && (
-                          <p className="text-gray-300 text-xs">{t.source} Review</p>
+                        {t.program && (
+                          <p className="text-gray-400 text-xs truncate">{t.program}{t.country ? ` · ${t.country}` : ""}</p>
                         )}
                       </div>
                       <div className="ml-auto flex shrink-0">
