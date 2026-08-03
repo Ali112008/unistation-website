@@ -25,8 +25,12 @@ jobs:
 
       - name: Push to client repo
         run: |
-          git config --global user.name "UniStation Sync"
-          git config --global user.email "info@unistation.org"
+          FILTER_BRANCH_SQUELCH_WARNING=1 git filter-branch -f --env-filter '
+          export GIT_AUTHOR_NAME="UniStation"
+          export GIT_AUTHOR_EMAIL="309199471+UniStation@users.noreply.github.com"
+          export GIT_COMMITTER_NAME="UniStation"
+          export GIT_COMMITTER_EMAIL="309199471+UniStation@users.noreply.github.com"
+          ' HEAD
           git remote add client git@github.com:UniStation/unistation-website.git
           GIT_SSH_COMMAND="ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" git push client main --force
           echo "Synced to UniStation/unistation-website successfully"
