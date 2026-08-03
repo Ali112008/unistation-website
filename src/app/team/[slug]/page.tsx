@@ -6,6 +6,30 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Mail, Phone, GraduationCap, Languages, Heart } from "lucide-react";
 
+/* Parse comma/newline/HTML-list text into tag pills */
+function parseTags(text: string): string[] {
+  // Strip HTML tags first
+  const clean = text.replace(/<[^>]*>/g, '').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+  // Split by comma, newline, or bullet
+  return clean.split(/[,\n•\-]/).map(s => s.trim()).filter(Boolean);
+}
+
+function TagList({ text }: { text: string }) {
+  const tags = parseTags(text);
+  return (
+    <div className="flex flex-wrap gap-2">
+      {tags.map((tag, i) => (
+        <span
+          key={i}
+          className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-brand-teal/10 text-brand-teal border border-brand-teal/20"
+        >
+          {tag}
+        </span>
+      ))}
+    </div>
+  );
+}
+
 interface TeamMember {
   id: string;
   name: string;
@@ -130,7 +154,7 @@ export default function TeamMemberPage() {
                 <p className="text-gray-400 italic">No bio available yet.</p>
               )}
 
-              {/* Qualifications, Languages, Hobbies */}
+              {/* Tags */}
               {(member.qualifications || member.languages || member.hobbies) && (
                 <div className="mt-8 pt-6 border-t border-gray-200 grid sm:grid-cols-3 gap-6">
                   {member.qualifications && (
@@ -138,10 +162,7 @@ export default function TeamMemberPage() {
                       <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
                         <GraduationCap className="w-4 h-4" /> Qualifications
                       </h3>
-                      <div
-                        className="text-gray-700 text-sm leading-relaxed"
-                        dangerouslySetInnerHTML={{ __html: member.qualifications }}
-                      />
+                      <TagList text={member.qualifications} />
                     </div>
                   )}
                   {member.languages && (
@@ -149,10 +170,7 @@ export default function TeamMemberPage() {
                       <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
                         <Languages className="w-4 h-4" /> Languages
                       </h3>
-                      <div
-                        className="text-gray-700 text-sm leading-relaxed"
-                        dangerouslySetInnerHTML={{ __html: member.languages }}
-                      />
+                      <TagList text={member.languages} />
                     </div>
                   )}
                   {member.hobbies && (
@@ -160,10 +178,7 @@ export default function TeamMemberPage() {
                       <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
                         <Heart className="w-4 h-4" /> Hobbies
                       </h3>
-                      <div
-                        className="text-gray-700 text-sm leading-relaxed"
-                        dangerouslySetInnerHTML={{ __html: member.hobbies }}
-                      />
+                      <TagList text={member.hobbies} />
                     </div>
                   )}
                 </div>

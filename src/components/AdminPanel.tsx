@@ -37,6 +37,12 @@ function clearSession() {
   localStorage.removeItem(SESSION_KEY);
 }
 
+/* ─── Helper: strip HTML tags for plain-text display in inputs ─── */
+function stripHtml(html: string | undefined | null): string {
+  if (!html) return "";
+  return html.replace(/<[^>]*>/g, "").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').trim();
+}
+
 /* ─── Helper: detect non-Latin1 chars (HTTP headers can't carry them) ─── */
 function stringHasNonLatin1(str: string): boolean {
   for (let i = 0; i < str.length; i++) {
@@ -1378,9 +1384,9 @@ function CmsTeamEditor({ items, loading, editingItem, password, onRefresh, onEdi
             <Field label="Twitter"><TextInput value={item.twitter || ""} onChange={v => updateField("twitter", v)} /></Field>
             <Field label="Facebook"><TextInput value={item.facebook || ""} onChange={v => updateField("facebook", v)} /></Field>
           </div>
-          <Field label="Qualifications"><TextInput value={item.qualifications || ""} onChange={v => updateField("qualifications", v)} /></Field>
-          <Field label="Languages"><TextInput value={item.languages || ""} onChange={v => updateField("languages", v)} /></Field>
-          <Field label="Hobbies"><TextInput value={item.hobbies || ""} onChange={v => updateField("hobbies", v)} /></Field>
+          <Field label="Qualifications (comma-separated)"><TextInput value={stripHtml(item.qualifications) || ""} onChange={v => updateField("qualifications", v)} placeholder="BSc Computer Science, MBA" /></Field>
+          <Field label="Languages (comma-separated)"><TextInput value={stripHtml(item.languages) || ""} onChange={v => updateField("languages", v)} placeholder="Arabic, English, Turkish" /></Field>
+          <Field label="Hobbies (comma-separated)"><TextInput value={stripHtml(item.hobbies) || ""} onChange={v => updateField("hobbies", v)} placeholder="Reading, Football, Travel" /></Field>
         </div>
       )}
     />
