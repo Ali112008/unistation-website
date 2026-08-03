@@ -1,0 +1,26 @@
+name: Sync to Client Repo
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  sync:
+    name: Push to UniStation GitHub
+    runs-on: ubuntu-latest
+    # Only run on the original repo, not on the client's copy
+    if: github.repository != 'UniStation/unistation-website'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Push to client repo
+        env:
+          CLIENT_TOKEN: ${{ secrets.CLIENT_GITHUB_TOKEN }}
+        run: |
+          git remote add client https://x-access-token:${CLIENT_TOKEN}@github.com/UniStation/unistation-website.git
+          git push client main --force
+          echo "✅ Synced successfully to UniStation/unistation-website"
