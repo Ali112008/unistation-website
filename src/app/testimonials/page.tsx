@@ -26,6 +26,9 @@ export default async function TestimonialsPage() {
     avatar: t.name.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2),
     program: t.program || t.university || "",
     country: t.country || "",
+    university: t.university || "",
+    source: t.source || "",
+    photo: t.photo || "",
   }));
 
   return (
@@ -52,16 +55,33 @@ export default async function TestimonialsPage() {
                     <Quote className="w-8 h-8 text-brand-teal/20 mb-4" />
                     <p className="text-gray-600 leading-relaxed flex-1">{t.text}</p>
                     <div className="mt-6 pt-4 border-t flex items-center gap-3">
-                      <div className="w-10 h-10 bg-brand-teal rounded-full flex items-center justify-center text-white font-bold text-sm">
-                        {t.avatar}
+                      {t.photo ? (
+                        <Image
+                          src={t.photo}
+                          alt={t.name}
+                          width={40}
+                          height={40}
+                          className="w-10 h-10 rounded-full object-cover shrink-0"
+                          unoptimized={t.photo.startsWith("http")}
+                        />
+                      ) : (
+                        <div className="w-10 h-10 bg-brand-teal rounded-full flex items-center justify-center text-white font-bold text-sm shrink-0">
+                          {t.avatar}
+                        </div>
+                      )}
+                      <div className="min-w-0">
+                        <p className="font-semibold text-brand-navy text-sm truncate">{t.name}</p>
+                        <p className="text-brand-teal text-xs truncate">{t.program}{t.country ? ` — ${t.country}` : ""}</p>
+                        {t.university && t.program && t.university !== t.program && (
+                          <p className="text-gray-400 text-xs truncate">{t.university}</p>
+                        )}
+                        {t.source && t.source !== "Website" && (
+                          <p className="text-gray-300 text-xs">{t.source} Review</p>
+                        )}
                       </div>
-                      <div>
-                        <p className="font-semibold text-brand-navy text-sm">{t.name}</p>
-                        <p className="text-gray-500 text-xs">{t.program}{t.country ? ` — ${t.country}` : ""}</p>
-                      </div>
-                      <div className="ml-auto flex">
+                      <div className="ml-auto flex shrink-0">
                         {[...Array(5)].map((_, j) => (
-                          <Star key={j} className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+                          <Star key={j} className={`w-3.5 h-3.5 ${j < (t.rating || 5) ? "text-amber-400 fill-amber-400" : "text-gray-200"}`} />
                         ))}
                       </div>
                     </div>
