@@ -29,12 +29,4 @@ jobs:
           git config --global user.email "info@unistation.org"
           git remote add client git@github.com:UniStation/unistation-website.git
           GIT_SSH_COMMAND="ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" git push client main --force
-          echo "Synced to GitHub successfully"
-
-      - name: Deploy to Vercel
-        run: |
-          npm i -g vercel
-          vercel deploy --prod --yes \
-            --token "${{ secrets.VERCEL_TOKEN }}" \
-            --project unistation-website \
-            --team unistation-5461s-projects
+          echo "Synced to UniStation/unistation-website successfully"
