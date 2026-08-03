@@ -509,6 +509,9 @@ export default function HomePage() {
                       {(review.program || review.university) && (
                         <p className="text-brand-teal text-xs truncate">{review.program || review.university}{review.country ? ` — ${review.country}` : ""}</p>
                       )}
+                      {review.university && review.program && review.university !== review.program && (
+                        <p className="text-gray-400 text-xs truncate">{review.university}</p>
+                      )}
                       {review.source && review.source !== "Website" && (
                         <p className="text-gray-400 text-xs">{review.source} Review</p>
                       )}
