@@ -31,9 +31,10 @@ jobs:
           GIT_SSH_COMMAND="ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" git push client main --force
           echo "Synced to GitHub successfully"
 
-      - name: Trigger Vercel Deploy
+      - name: Deploy to Vercel
         run: |
-          curl -s -X POST "https://api.vercel.com/v1/integrations/deploy" \
-            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            -d '{"type": "git", "repoName": "UniStation/unistation-website", "branch": "main"}' || true
+          npm i -g vercel
+          vercel deploy --prod --yes \
+            --token "${{ secrets.VERCEL_TOKEN }}" \
+            --project unistation-website \
+            --team unistation-5461s-projects
