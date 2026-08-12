@@ -227,8 +227,8 @@ export default function HomePage() {
         </div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32">
-          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
-            <div className="max-w-2xl flex-1">
+          <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-12">
+            <div className="max-w-2xl lg:max-w-3xl xl:max-w-4xl flex-1">
               <div className="hero-animate inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-brand-teal-light text-sm font-medium mb-6">
                 <Globe2 className="w-4 h-4" />
                 25+ Destinations Worldwide
