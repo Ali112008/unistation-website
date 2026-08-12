@@ -7,7 +7,7 @@ export async function GET(request: Request) {
 
   try {
     if (type === "team") {
-      const result = await client.execute("SELECT * FROM team_members ORDER BY created_on DESC");
+      const result = await client.execute("SELECT * FROM team_members ORDER BY sort_order ASC, created_on DESC");
       const team = result.rows.map((row: any) => ({
         id: row.id,
         name: row.name,

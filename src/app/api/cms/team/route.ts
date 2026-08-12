@@ -4,7 +4,7 @@ import client from "@/lib/turso";
 /** GET all team members */
 export async function GET() {
   try {
-    const result = await client.execute("SELECT * FROM team_members ORDER BY created_on DESC");
+    const result = await client.execute("SELECT * FROM team_members ORDER BY sort_order ASC, created_on DESC");
     const team = result.rows.map((row: any) => ({
       id: row.id,
       name: row.name,
