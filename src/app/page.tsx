@@ -227,40 +227,58 @@ export default function HomePage() {
         </div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32">
-          <div className="max-w-3xl">
-            <div className="hero-animate inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-brand-teal-light text-sm font-medium mb-6">
-              <Globe2 className="w-4 h-4" />
-              25+ Destinations Worldwide
+          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
+            <div className="max-w-2xl flex-1">
+              <div className="hero-animate inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-brand-teal-light text-sm font-medium mb-6">
+                <Globe2 className="w-4 h-4" />
+                25+ Destinations Worldwide
+              </div>
+              <h1 className="hero-animate hero-delay-1 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-6">
+                Your Gateway to{" "}
+                <span className="text-teal-shimmer">Study Abroad</span>
+              </h1>
+              <p className="hero-animate hero-delay-2 text-lg sm:text-xl text-gray-300 mb-8 max-w-2xl leading-relaxed">
+                Personalized guidance for university admissions, language courses,
+                and test preparation. We help students from 30+ countries reach
+                their dream universities.
+              </p>
+              <div className="hero-animate hero-delay-3 flex flex-col sm:flex-row gap-4">
+                <a
+                  href="https://calendly.com/unistation-info/30min"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center px-8 py-3 bg-brand-teal hover:bg-brand-teal-light text-white font-semibold rounded-lg btn-primary-hover transition-colors text-base"
+                >
+                  <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                  Book a Free Video Call
+                </a>
+                <Button
+                  asChild
+                  variant="outline"
+                  size="lg"
+                  className="border-white/40 text-white bg-transparent hover:bg-white/15 hover:border-white/60 rounded-lg text-base px-8"
+                >
+                  <Link href="/about">Learn More</Link>
+                </Button>
+              </div>
             </div>
-            <h1 className="hero-animate hero-delay-1 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-6">
-              Your Gateway to{" "}
-              <span className="text-teal-shimmer">Study Abroad</span>
-            </h1>
-            <p className="hero-animate hero-delay-2 text-lg sm:text-xl text-gray-300 mb-8 max-w-2xl leading-relaxed">
-              Personalized guidance for university admissions, language courses,
-              and test preparation. We help students from 30+ countries reach
-              their dream universities.
-            </p>
-            <div className="hero-animate hero-delay-3 flex flex-col sm:flex-row gap-4">
-              <a
-                href="https://calendly.com/unistation-info/30min"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center px-8 py-3 bg-brand-teal hover:bg-brand-teal-light text-white font-semibold rounded-lg btn-primary-hover transition-colors text-base"
-              >
-                <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                </svg>
-                Book a Free Video Call
-              </a>
-              <Button
-                asChild
-                variant="outline"
-                size="lg"
-                className="border-white/40 text-white bg-transparent hover:bg-white/15 hover:border-white/60 rounded-lg text-base px-8"
-              >
-                <Link href="/about">Learn More</Link>
-              </Button>
+
+            {/* Hero Video */}
+            <div className="hero-animate hero-delay-2 flex-shrink-0 w-full max-w-sm lg:max-w-md">
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-teal-500/20 ring-1 ring-white/10 group">
+                <div className="aspect-[9/16]">
+                  <iframe
+                    className="absolute inset-0 w-full h-full"
+                    src="https://www.youtube.com/embed/BC9w7fA3bzw?autoplay=0&mute=1&loop=1&playlist=BC9w7fA3bzw&controls=0&modestbranding=1&rel=0&showinfo=0&playsinline=1"
+                    title="UniStation"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+                <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/10 pointer-events-none" />
+              </div>
             </div>
           </div>
         </div>
