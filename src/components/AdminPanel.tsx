@@ -237,6 +237,18 @@ function OfficesEditor({ data, onChange }: { data: any[]; onChange: (d: any[]) =
 }
 
 /* ─── Packages Editor ─── */
+const pkgLabels: Record<string, string> = {
+  "uk": "🇬🇧 UK",
+  "uk-medicine": "🇬🇧 UK Medicine",
+  "early-bird": "🐦 Early Bird",
+  "europe": "🇪🇺 Europe",
+  "usa": "🇺🇸 USA",
+  "canada": "🇨🇦 Canada",
+  "asia": "🌏 Asia",
+  "spain-foundation-year": "🇪🇸 Spain Foundation Year",
+  "profile-building": "📋 Profile Building",
+};
+
 function PackagesEditor({ data, onChange }: { data: any; onChange: (d: any) => void }) {
   const packages = data || {};
   const slugs = Object.keys(packages);
@@ -262,7 +274,7 @@ function PackagesEditor({ data, onChange }: { data: any; onChange: (d: any) => v
           onChange={e => setSelectedSlug(e.target.value)}
           style={{ ...S.input, padding: "10px 12px", cursor: "pointer" }}
         >
-          {slugs.map(s => <option key={s} value={s}>{s}</option>)}
+          {slugs.map(s => <option key={s} value={s}>{pkgLabels[s] || s}</option>)}
         </select>
       </Field>
 
@@ -332,7 +344,7 @@ function DestinationsEditor({ data, onChange }: { data: any; onChange: (d: any) 
           onChange={e => setSelectedSlug(e.target.value)}
           style={{ ...S.input, padding: "10px 12px", cursor: "pointer" }}
         >
-          {slugs.map(s => <option key={s} value={s}>{s}</option>)}
+          {slugs.map(s => <option key={s} value={s}>{pkgLabels[s] || s}</option>)}
         </select>
       </Field>
 
