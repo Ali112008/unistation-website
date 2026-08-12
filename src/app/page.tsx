@@ -265,11 +265,12 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Hero Video — click to play with sound */}
+            {/* Hero Video — click to play/pause with sound */}
             <div className="hero-animate hero-delay-2 flex-shrink-0 w-full max-w-sm lg:max-w-md">
               <div className="relative block rounded-2xl overflow-hidden shadow-2xl shadow-teal-500/20 ring-1 ring-white/10 cursor-pointer group">
                 <div className="aspect-[9/16] bg-brand-navy/80">
                   <video
+                    id="hero-video"
                     loop
                     playsInline
                     poster="/videos/unistation-hero-poster.jpg"
@@ -278,39 +279,53 @@ export default function HomePage() {
                     <source src="/videos/unistation-hero.mp4" type="video/mp4" />
                   </video>
                   <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/30 via-transparent to-brand-navy/5 pointer-events-none" />
-                  {/* Play overlay — disappears once playing */}
+                  {/* Play / Pause overlay — toggles on click */}
                   <button
                     type="button"
+                    id="hero-video-toggle"
                     aria-label="Play video"
                     onClick={(e) => {
-                      const vid = (e.currentTarget.closest('[class*="aspect"]')?.querySelector('video') ?? null) as HTMLVideoElement | null;
-                      if (!vid) return;
+                      const vid = document.getElementById("hero-video") as HTMLVideoElement | null;
+                      const btn = document.getElementById("hero-video-toggle");
+                      if (!vid || !btn) return;
                       if (vid.paused) {
                         vid.muted = false;
                         vid.play();
-                        // hide play overlay
-                        e.currentTarget.style.opacity = "0";
-                        e.currentTarget.style.pointerEvents = "none";
+                        btn.setAttribute("aria-label", "Pause video");
+                        btn.querySelector(".play-icon")!.classList.add("hidden");
+                        btn.querySelector(".pause-icon")!.classList.remove("hidden");
+                      } else {
+                        vid.pause();
+                        btn.setAttribute("aria-label", "Play video");
+                        btn.querySelector(".play-icon")!.classList.remove("hidden");
+                        btn.querySelector(".pause-icon")!.classList.add("hidden");
                       }
                     }}
                     className="absolute inset-0 z-10 flex items-center justify-center bg-black/20 transition-opacity duration-300 group-hover:bg-black/30"
                   >
-                    <span className="flex items-center justify-center w-16 h-16 rounded-full bg-brand-teal/90 text-white shadow-lg shadow-teal-500/30 hover:scale-110 transition-transform">
+                    {/* Play icon (visible when paused) */}
+                    <span className="play-icon flex items-center justify-center w-16 h-16 rounded-full bg-brand-teal/90 text-white shadow-lg shadow-teal-500/30 hover:scale-110 transition-transform">
                       <svg className="w-7 h-7 ml-1" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M8 5v14l11-7z" />
                       </svg>
                     </span>
+                    {/* Pause icon (visible when playing) */}
+                    <span className="pause-icon hidden flex items-center justify-center w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-colors">
+                      <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M6 4h4v16H6zM14 4h4v16h-4z" />
+                      </svg>
+                    </span>
                   </button>
-                  {/* Mute / Unmute — visible only while playing */}
+                  {/* Mute / Unmute — visible while playing */}
                   <button
                     type="button"
                     aria-label="Toggle sound"
                     onClick={(e) => {
                       e.stopPropagation();
-                      const vid = (e.currentTarget.closest('[class*="aspect"]')?.querySelector('video') ?? null) as HTMLVideoElement | null;
+                      const vid = document.getElementById("hero-video") as HTMLVideoElement | null;
                       if (!vid) return;
                       vid.muted = !vid.muted;
-                      const icon = e.currentTarget.querySelector('svg');
+                      const icon = e.currentTarget.querySelector("svg");
                       if (icon) icon.innerHTML = vid.muted
                         ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"/>'
                         : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M12 6.253v11.494M17.657 6.343a8 8 0 010 11.314M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/>';
