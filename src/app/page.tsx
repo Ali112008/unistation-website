@@ -265,13 +265,11 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Hero Video — self-hosted MP4 with mute/unmute toggle */}
+            {/* Hero Video — click to play with sound */}
             <div className="hero-animate hero-delay-2 flex-shrink-0 w-full max-w-sm lg:max-w-md">
-              <div className="relative block rounded-2xl overflow-hidden shadow-2xl shadow-teal-500/20 ring-1 ring-white/10">
+              <div className="relative block rounded-2xl overflow-hidden shadow-2xl shadow-teal-500/20 ring-1 ring-white/10 cursor-pointer group">
                 <div className="aspect-[9/16] bg-brand-navy/80">
                   <video
-                    autoPlay
-                    muted
                     loop
                     playsInline
                     poster="/videos/unistation-hero-poster.jpg"
@@ -280,12 +278,36 @@ export default function HomePage() {
                     <source src="/videos/unistation-hero.mp4" type="video/mp4" />
                   </video>
                   <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/30 via-transparent to-brand-navy/5 pointer-events-none" />
-                  {/* Mute / Unmute button */}
+                  {/* Play overlay — disappears once playing */}
+                  <button
+                    type="button"
+                    aria-label="Play video"
+                    onClick={(e) => {
+                      const vid = (e.currentTarget.closest('[class*="aspect"]')?.querySelector('video') ?? null) as HTMLVideoElement | null;
+                      if (!vid) return;
+                      if (vid.paused) {
+                        vid.muted = false;
+                        vid.play();
+                        // hide play overlay
+                        e.currentTarget.style.opacity = "0";
+                        e.currentTarget.style.pointerEvents = "none";
+                      }
+                    }}
+                    className="absolute inset-0 z-10 flex items-center justify-center bg-black/20 transition-opacity duration-300 group-hover:bg-black/30"
+                  >
+                    <span className="flex items-center justify-center w-16 h-16 rounded-full bg-brand-teal/90 text-white shadow-lg shadow-teal-500/30 hover:scale-110 transition-transform">
+                      <svg className="w-7 h-7 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                    </span>
+                  </button>
+                  {/* Mute / Unmute — visible only while playing */}
                   <button
                     type="button"
                     aria-label="Toggle sound"
                     onClick={(e) => {
-                      const vid = (e.currentTarget.parentElement?.querySelector('video') ?? null) as HTMLVideoElement | null;
+                      e.stopPropagation();
+                      const vid = (e.currentTarget.closest('[class*="aspect"]')?.querySelector('video') ?? null) as HTMLVideoElement | null;
                       if (!vid) return;
                       vid.muted = !vid.muted;
                       const icon = e.currentTarget.querySelector('svg');
@@ -296,8 +318,7 @@ export default function HomePage() {
                     className="absolute bottom-3 right-3 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-white/15 backdrop-blur-sm text-white/80 hover:bg-white/25 hover:text-white transition-colors cursor-pointer"
                   >
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.536 8.464a5 5 0 010 7.072M12 6.253v11.494M17.657 6.343a8 8 0 010 11.314M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
                     </svg>
                   </button>
                 </div>
