@@ -265,7 +265,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Hero Video — click to play/pause with sound */}
+            {/* Hero Video — YouTube-style play/pause overlay */}
             <div className="hero-animate hero-delay-2 flex-shrink-0 w-full max-w-sm lg:max-w-md">
               <div className="relative block rounded-2xl overflow-hidden shadow-2xl shadow-teal-500/20 ring-1 ring-white/10 cursor-pointer group">
                 <div className="aspect-[9/16] bg-brand-navy/80">
@@ -279,44 +279,56 @@ export default function HomePage() {
                     <source src="/videos/unistation-hero.mp4" type="video/mp4" />
                   </video>
                   <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/30 via-transparent to-brand-navy/5 pointer-events-none" />
-                  {/* Play / Pause overlay — toggles on click */}
-                  <button
-                    type="button"
-                    id="hero-video-toggle"
-                    aria-label="Play video"
-                    onClick={(e) => {
+                  {/* Click overlay — YouTube style: play always visible when paused, pause flashes briefly when playing */}
+                  <div
+                    id="hero-video-overlay"
+                    onClick={() => {
                       const vid = document.getElementById("hero-video") as HTMLVideoElement | null;
-                      const btn = document.getElementById("hero-video-toggle");
-                      if (!vid || !btn) return;
+                      const overlay = document.getElementById("hero-video-overlay");
+                      if (!vid || !overlay) return;
+
+                      // --- helpers ---
+                      const showPlay = () => {
+                        overlay.querySelector(".play-icon")!.classList.remove("opacity-0", "pointer-events-none");
+                        overlay.querySelector(".pause-icon")!.classList.add("opacity-0");
+                      };
+                      const showPause = () => {
+                        overlay.querySelector(".play-icon")!.classList.add("opacity-0", "pointer-events-none");
+                        const pi = overlay.querySelector(".pause-icon")!;
+                        pi.classList.remove("opacity-0");
+                        // auto-hide after 2 s
+                        clearTimeout((overlay as any)._hideTimer);
+                        (overlay as any)._hideTimer = setTimeout(() => {
+                          pi.classList.add("opacity-0");
+                        }, 2000);
+                      };
+
                       if (vid.paused) {
                         vid.muted = false;
                         vid.play();
-                        btn.setAttribute("aria-label", "Pause video");
-                        btn.querySelector(".play-icon")!.classList.add("hidden");
-                        btn.querySelector(".pause-icon")!.classList.remove("hidden");
+                        showPause();
                       } else {
                         vid.pause();
-                        btn.setAttribute("aria-label", "Play video");
-                        btn.querySelector(".play-icon")!.classList.remove("hidden");
-                        btn.querySelector(".pause-icon")!.classList.add("hidden");
+                        clearTimeout((overlay as any)._hideTimer);
+                        showPlay();
                       }
                     }}
-                    className="absolute inset-0 z-10 flex items-center justify-center bg-black/20 transition-opacity duration-300 group-hover:bg-black/30"
+                    className="absolute inset-0 z-10 flex items-center justify-center"
                   >
-                    {/* Play icon (visible when paused) */}
-                    <span className="play-icon flex items-center justify-center w-16 h-16 rounded-full bg-brand-teal/90 text-white shadow-lg shadow-teal-500/30 hover:scale-110 transition-transform">
+                    {/* Play icon — visible only when paused */}
+                    <span className="play-icon flex items-center justify-center w-16 h-16 rounded-full bg-brand-teal/90 text-white shadow-lg shadow-teal-500/30 transition-opacity duration-300 hover:scale-110">
                       <svg className="w-7 h-7 ml-1" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M8 5v14l11-7z" />
                       </svg>
                     </span>
-                    {/* Pause icon (visible when playing) */}
-                    <span className="pause-icon hidden flex items-center justify-center w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-colors">
+                    {/* Pause icon — hidden by default, flashes briefly on tap when playing */}
+                    <span className="pause-icon opacity-0 flex items-center justify-center w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm text-white transition-opacity duration-300 hover:bg-white/30">
                       <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M6 4h4v16H6zM14 4h4v16h-4z" />
                       </svg>
                     </span>
-                  </button>
-                  {/* Mute / Unmute — visible while playing */}
+                  </div>
+                  {/* Mute / Unmute — always visible while video exists */}
                   <button
                     type="button"
                     aria-label="Toggle sound"
