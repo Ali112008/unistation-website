@@ -267,31 +267,22 @@ export default function HomePage() {
 
             {/* Hero Video */}
             <div className="hero-animate hero-delay-2 flex-shrink-0 w-full max-w-sm lg:max-w-md">
-              <a
-                href="https://youtube.com/shorts/BC9w7fA3bzw"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="relative block rounded-2xl overflow-hidden shadow-2xl shadow-teal-500/20 ring-1 ring-white/10 group cursor-pointer"
-              >
-                <div className="aspect-[9/16] bg-brand-navy/80 flex items-center justify-center">
-                  <img
-                    src="https://img.youtube.com/vi/BC9w7fA3bzw/maxresdefault.jpg"
-                    alt="UniStation"
+              <div className="relative block rounded-2xl overflow-hidden shadow-2xl shadow-teal-500/20 ring-1 ring-white/10">
+                <div className="aspect-[9/16] bg-brand-navy/80">
+                  <video
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    poster="https://img.youtube.com/vi/BC9w7fA3bzw/maxresdefault.jpg"
                     className="absolute inset-0 w-full h-full object-cover"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = 'https://img.youtube.com/vi/BC9w7fA3bzw/hqdefault.jpg';
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/60 via-transparent to-brand-navy/20" />
-                  {/* Play button */}
-                  <div className="relative z-10 w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center group-hover:scale-110 group-hover:bg-brand-teal/80 transition-all duration-300">
-                    <svg className="w-7 h-7 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                  </div>
+                  >
+                    <source src="https://cdn.prod.website-files.com/68fd63e9503df62b019b5c75/68fd63e9503df62b019b5d0f_8061028-hd_1920_1080_25fps-transcode.mp4" type="video/mp4" />
+                  </video>
+                  <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/40 via-transparent to-brand-navy/10" />
                 </div>
                 <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/10 pointer-events-none" />
-              </a>
+              </div>
             </div>
           </div>
         </div>
