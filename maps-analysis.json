@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "Based on the Google Maps screenshot provided, here is a detailed description of what is visible:\n\n**Overall Layout:**\nThe screen displays the Google Maps interface, split between an information panel on the left and the map view on the right. The interface language appears to be Traditional Chinese (Taiwan/Hong Kong), with some English text for business names and addresses.\n\n**Left Panel (Business Information):**\n\n*   **Search Bar:** At the top, the search query is \"Unistation FZCO\".\n*   **Business Header:**\n    *   **Name:** Unistation FZCO\n    *   **Rating:** 5.0 stars (represented by 5 yellow stars).\n    *   **Category:** 公司辦公室 (Company Office).\n*   **Action Buttons:** A row of circular icons for:\n    *   規劃路線 (Directions)\n    *   儲存 (Save)\n    *   附近 (Nearby)\n    *   傳送到手機 (Send to phone)\n    *   分享 (Share)\n*   **Details Section:**\n    *   **Address:** Digital Park, A1 - Nadd Hessa - Dubai Silicon Oasis - Dubai - 阿拉伯聯合酋長國 (United Arab Emirates).\n    *   **Hours:** 已打烊 · 開始營業時間：週四08:00 (Closed · Opens Thursday at 08:00). It also notes \"這個商家在 4 個前確認過\" (This business was confirmed 4 times ago).\n    *   **Website:** unistation.org\n    *   **Phone:** +971 52 273 2589\n    *   **Plus Code:** 49CH+JR 杜拜 阿拉伯聯合大公園杜拜\n*   **Edit Option:** There is a button to \"提出修改建議\" (Suggest an edit).\n*   **Photos Section:** Labeled \"相片\" (Photos) with one thumbnail visible labeled \"圖庫\" (Stock/Library photo).\n\n**Right Panel (Map View):**\n\n*   **Location Pin:** A red pin marks the location of **Unistation FZCO**.\n*   **Label Box:** A black tooltip box pointing to the pin reads \"收合側邊面板\" (Collapse side panel).\n*   **Surrounding Landmarks:**\n    *   **North:** Dubai Silicon Oasis Headquarters, DSO HQ public parking, HYVN REALTY, Strom water pumping station.\n    *   **East:** Onesto Home UAE, Purilyfixing appliances repair.\n    *   **South:** Axiom Telecom HQ, Axiom Town, Fordrough Site Office, DSO Etisalat, and a hotel (杜拜矽綠洲薈芮酒店).\n    *   **West:** Lounge US (مقهى).\n*   **Streets:** 57 Street and 74 Street are visible.\n*   **Map Controls:** Zoom in/out buttons (+/-), Street View pegman, and location button are in the bottom right corner.\n\n**Answers to your specific questions:**\n\n1.  **Is there a business listing for Unistation?**\n    **Yes**, there is a full business listing for \"Unistation FZCO\" displayed in the left panel. It includes the name, rating, category, address, hours, website, and phone number.\n\n2.  **Any reviews visible?**\n    **No specific reviews are visible.** While the listing shows a **5.0-star rating**, there are no written review snippets or the total number of reviews displayed in this view. The high rating is shown, but the actual text of customer feedback is not present on this screen.",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1786545076,
+  "id": "2026081222310849f118ec6ddf490f",
+  "model": "glm-5v-turbo",
+  "object": "chat.completion",
+  "request_id": "2026081222310849f118ec6ddf490f",
+  "usage": {
+    "completion_tokens": 791,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 1263,
+    "prompt_tokens_details": {
+      "cached_tokens": 2
+    },
+    "total_tokens": 2054
+  }
+}
