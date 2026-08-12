@@ -321,6 +321,59 @@ function PackagesEditor({ data, onChange }: { data: any; onChange: (d: any) => v
   );
 }
 
+/* ─── Page Intros Editor ─── */
+const PAGE_INTRO_LABELS: Record<string, string> = {
+  portfolio: "Our Portfolio",
+  packages: "Our Packages",
+  team: "Our Team",
+  testimonials: "Testimonials",
+  about: "About Us",
+};
+
+function PageIntrosEditor({ data, onChange }: { data: any; onChange: (d: any) => void }) {
+  const intros = data || {};
+  const pages = Object.keys(PAGE_INTRO_LABELS);
+  const [selectedPage, setSelectedPage] = useState<string>(pages[0] || "portfolio");
+
+  useEffect(() => {
+    if (!intros[selectedPage]) {
+      onChange({ ...intros, [selectedPage]: { subtitle: "", title: "", description: "", ctaText: "", ctaLink: "/contact" } });
+    }
+  }, [selectedPage]);
+
+  const current = intros[selectedPage] || {};
+
+  const updateField = (field: string, value: string) => {
+    onChange({ ...intros, [selectedPage]: { ...current, [field]: value } });
+  };
+
+  return (
+    <div>
+      <Field label="Select Page">
+        <select
+          value={selectedPage}
+          onChange={e => setSelectedPage(e.target.value)}
+          style={{ ...S.input, padding: "10px 12px", cursor: "pointer" }}
+        >
+          {pages.map(p => <option key={p} value={p}>{PAGE_INTRO_LABELS[p] || p}</option>)}
+        </select>
+      </Field>
+
+      <div style={S.card}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+          <Field label="Subtitle (small label above title)"><TextInput value={current.subtitle || ""} onChange={v => updateField("subtitle", v)} placeholder="e.g. Success Stories" /></Field>
+          <Field label="Page Title"><TextInput value={current.title || ""} onChange={v => updateField("title", v)} placeholder="e.g. Our Portfolio" /></Field>
+        </div>
+        <Field label="Description"><TextArea value={current.description || ""} onChange={v => updateField("description", v)} placeholder="Main hero description text..." /></Field>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 8 }}>
+          <Field label="CTA Button Text"><TextInput value={current.ctaText || ""} onChange={v => updateField("ctaText", v)} placeholder="e.g. Start your journey" /></Field>
+          <Field label="CTA Button Link"><TextInput value={current.ctaLink || ""} onChange={v => updateField("ctaLink", v)} placeholder="/contact" /></Field>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ─── Destinations Editor ─── */
 function DestinationsEditor({ data, onChange }: { data: any; onChange: (d: any) => void }) {
   const dests = data || {};
@@ -1640,7 +1693,7 @@ export default function AdminPanel() {
     brand: "brand", social: "social", stats: "stats", offices: "offices",
     testimonials: "testimonials", packages: "packages", destinations: "destinations",
     faqs: "faqs",
-    navigation: "navigation", about: "about", timeline: "timeline",
+    navigation: "navigation", about: "about", pageIntros: "page_intros", timeline: "timeline",
     comparisonTable: "comparisonTable", languageCourses: "languageCourses",
     examTypes: "examTypes",
     georgiaHero: "hero", georgiaContact: "site", georgiaStats: "georgia_stats",
@@ -1676,6 +1729,7 @@ export default function AdminPanel() {
     { id: "destinations", label: "Destinations", icon: "", group: "general" },
     { id: "portfolio", label: "Portfolio", icon: "", group: "general" },
     { id: "faqs", label: "FAQs", icon: "", group: "general" },
+    { id: "pageIntros", label: "Page Intros", icon: "", group: "general" },
     { id: "navigation", label: "Navigation", icon: "", group: "general" },
     { id: "about", label: "About Us", icon: "", group: "general" },
     { id: "timeline", label: "Timeline", icon: "", group: "general" },
@@ -1848,6 +1902,7 @@ export default function AdminPanel() {
               {activeTab === "faqs" && <FaqsEditor data={data.faqs} onChange={updateTabData} />}
               {activeTab === "navigation" && <NavigationEditor data={data.navigation || []} onChange={updateTabData} />}
               {activeTab === "about" && <AboutEditor data={data.about || { paragraphs: [] }} onChange={updateTabData} />}
+              {activeTab === "pageIntros" && <PageIntrosEditor data={data.page_intros || {}} onChange={updateTabData} />}
               {activeTab === "timeline" && <TimelineEditor data={data.timeline || []} onChange={updateTabData} />}
               {activeTab === "comparisonTable" && <ComparisonTableEditor data={data.comparisonTable || { headers: [], rows: [] }} onChange={updateTabData} />}
               {activeTab === "languageCourses" && <LanguageCoursesEditor data={data.languageCourses || []} onChange={updateTabData} />}

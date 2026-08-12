@@ -22,10 +22,26 @@ interface PortfolioItem {
   createdOn: string;
 }
 
+interface PageIntro {
+  subtitle?: string;
+  title?: string;
+  description?: string;
+  ctaText?: string;
+  ctaLink?: string;
+}
+
 export default function PortfolioPage() {
   const [items, setItems] = useState<PortfolioItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [portfolioFaqs, setPortfolioFaqs] = useState<FAQItem[]>(fallbackPageFaqs.packages || []);
+  const [pageIntro, setPageIntro] = useState<PageIntro>({});
+
+  // Default hero text (fallback if config not loaded)
+  const heroSubtitle = pageIntro.subtitle || "Success Stories";
+  const heroTitle = pageIntro.title || "Our Portfolio";
+  const heroDescription = pageIntro.description || "Meet our students who successfully secured admissions to top universities worldwide with UniStation's expert guidance and support.";
+  const heroCtaText = pageIntro.ctaText || "Start your journey";
+  const heroCtaLink = pageIntro.ctaLink || "/contact";
 
   useEffect(() => {
     fetch("/api/cms/portfolio", { cache: "no-store" })
@@ -44,6 +60,10 @@ export default function PortfolioPage() {
         const faqs = cfg.faqs?.portfolio;
         if (Array.isArray(faqs) && faqs.length > 0) {
           setPortfolioFaqs(faqs);
+        }
+        // Load page intro from config
+        if (cfg.page_intros?.portfolio) {
+          setPageIntro(cfg.page_intros.portfolio);
         }
       })
       .catch(() => {});
@@ -64,21 +84,19 @@ export default function PortfolioPage() {
         <div className="absolute inset-0 bg-gradient-to-r from-brand-navy to-brand-navy/80" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 hero-animate">
           <p className="text-brand-teal font-semibold text-sm uppercase tracking-wider mb-2">
-            Success Stories
+            {heroSubtitle}
           </p>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white">
-            Our Portfolio
+            {heroTitle}
           </h1>
           <p className="text-gray-300 mt-4 max-w-2xl text-lg">
-            <strong>Meet our students</strong> who successfully secured
-            admissions to top universities worldwide with UniStation&apos;s
-            expert guidance and support.
+            {heroDescription}
           </p>
           <Link
-            href="/contact"
+            href={heroCtaLink}
             className="mt-8 inline-flex items-center gap-2 px-7 py-3 bg-brand-teal hover:bg-brand-teal-light text-white font-semibold rounded-lg btn-primary-hover transition-colors"
           >
-            Start your journey
+            {heroCtaText}
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
