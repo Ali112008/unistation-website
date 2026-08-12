@@ -1108,7 +1108,8 @@ function ExamTypesEditor({ data, onChange }: { data: any[]; onChange: (d: any[])
 
 type CmsItem = Record<string, any>;
 
-const CMS_TAB_IDS = ["cmsBlog", "cmsVideos", "cmsTeam", "cmsReviews", "cmsPortfolio"] as const;
+const CMS_TAB_IDS = ["cmsBlog", "cmsVideos", "cmsTeam", "cmsReviews"] as const;
+const PORTFOLIO_TAB_ID = "portfolio" as const;
 
 interface CmsEditorProps {
   items: CmsItem[];
@@ -1499,7 +1500,7 @@ export default function AdminPanel() {
   const [cmsData, setCmsData] = useState<CmsItem[]>([]);
   const [editingItem, setEditingItem] = useState<CmsItem | null>(null);
   const [cmsLoading, setCmsLoading] = useState(false);
-  const isCmsTab = (CMS_TAB_IDS as readonly string[]).includes(activeTab);
+  const isCmsTab = (CMS_TAB_IDS as readonly string[]).includes(activeTab) || activeTab === PORTFOLIO_TAB_ID;
 
   const fetchCmsData = useCallback(async (tab: string) => {
     setCmsLoading(true); setCmsData([]); setEditingItem(null);
@@ -1509,7 +1510,7 @@ export default function AdminPanel() {
     else if (tab === "cmsVideos") { url = "/api/cms/videos"; key = "videos"; }
     else if (tab === "cmsTeam") { url = "/api/cms/team"; key = "team"; }
     else if (tab === "cmsReviews") { url = "/api/cms/reviews"; key = "reviews"; }
-    else if (tab === "cmsPortfolio") { url = "/api/cms/portfolio"; key = "portfolio"; }
+    if (tab === PORTFOLIO_TAB_ID) { url = "/api/cms/portfolio"; key = "portfolio"; }
     if (!url) { setCmsLoading(false); return; }
     try {
       const res = await fetch(url, { cache: "no-store" });
@@ -1673,6 +1674,7 @@ export default function AdminPanel() {
     { id: "offices", label: "Offices", icon: "", group: "general" },
     { id: "packages", label: "Packages", icon: "", group: "general" },
     { id: "destinations", label: "Destinations", icon: "", group: "general" },
+    { id: "portfolio", label: "Portfolio", icon: "", group: "general" },
     { id: "faqs", label: "FAQs", icon: "", group: "general" },
     { id: "navigation", label: "Navigation", icon: "", group: "general" },
     { id: "about", label: "About Us", icon: "", group: "general" },
@@ -1698,7 +1700,6 @@ export default function AdminPanel() {
     { id: "cmsVideos", label: "Videos", icon: "", group: "cms" },
     { id: "cmsTeam", label: "Team", icon: "", group: "cms" },
     { id: "cmsReviews", label: "Reviews", icon: "", group: "cms" },
-    { id: "cmsPortfolio", label: "Portfolio", icon: "", group: "cms" },
   ];
 
   /* ─── Login Screen ─── */
@@ -1865,7 +1866,7 @@ export default function AdminPanel() {
               {activeTab === "cmsVideos" && <CmsVideosEditor items={cmsData} loading={cmsLoading} editingItem={editingItem} password={password} onRefresh={() => fetchCmsData("cmsVideos")} onEdit={setEditingItem} />}
               {activeTab === "cmsTeam" && <CmsTeamEditor items={cmsData} loading={cmsLoading} editingItem={editingItem} password={password} onRefresh={() => fetchCmsData("cmsTeam")} onEdit={setEditingItem} />}
               {activeTab === "cmsReviews" && <CmsReviewsEditor items={cmsData} loading={cmsLoading} editingItem={editingItem} password={password} onRefresh={() => fetchCmsData("cmsReviews")} onEdit={setEditingItem} />}
-              {activeTab === "cmsPortfolio" && <CmsPortfolioEditor items={cmsData} loading={cmsLoading} editingItem={editingItem} password={password} onRefresh={() => fetchCmsData("cmsPortfolio")} onEdit={setEditingItem} />}
+              {activeTab === "portfolio" && <CmsPortfolioEditor items={cmsData} loading={cmsLoading} editingItem={editingItem} password={password} onRefresh={() => fetchCmsData(PORTFOLIO_TAB_ID)} onEdit={setEditingItem} />}
             </div>
 
             {/* Bottom Save — hidden for CMS tabs */}
