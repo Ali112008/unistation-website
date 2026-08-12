@@ -265,21 +265,19 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Hero Video */}
+            {/* Hero Video — embedded YouTube Short, autoplay & muted */}
             <div className="hero-animate hero-delay-2 flex-shrink-0 w-full max-w-sm lg:max-w-md">
               <div className="relative block rounded-2xl overflow-hidden shadow-2xl shadow-teal-500/20 ring-1 ring-white/10">
                 <div className="aspect-[9/16] bg-brand-navy/80">
-                  <video
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    poster="https://img.youtube.com/vi/BC9w7fA3bzw/maxresdefault.jpg"
+                  <iframe
+                    src="https://www.youtube.com/embed/BC9w7fA3bzw?autoplay=1&mute=1&loop=1&playlist=BC9w7fA3bzw&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&enablejsapi=1"
                     className="absolute inset-0 w-full h-full object-cover"
-                  >
-                    <source src="https://cdn.prod.website-files.com/68fd63e9503df62b019b5c75/68fd63e9503df62b019b5d0f_8061028-hd_1920_1080_25fps-transcode.mp4" type="video/mp4" />
-                  </video>
-                  <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/40 via-transparent to-brand-navy/10" />
+                    allow="autoplay; encrypted-media; picture-in-picture"
+                    allowFullScreen
+                    title="UniStation Platform Overview"
+                    style={{ border: 0 }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/30 via-transparent to-brand-navy/5 pointer-events-none" />
                 </div>
                 <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/10 pointer-events-none" />
               </div>
