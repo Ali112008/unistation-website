@@ -267,18 +267,31 @@ export default function HomePage() {
 
             {/* Hero Video */}
             <div className="hero-animate hero-delay-2 flex-shrink-0 w-full max-w-sm lg:max-w-md">
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-teal-500/20 ring-1 ring-white/10 group">
-                <div className="aspect-[9/16]">
-                  <iframe
-                    className="absolute inset-0 w-full h-full"
-                    src="https://www.youtube.com/embed/BC9w7fA3bzw?autoplay=0&mute=1&loop=1&playlist=BC9w7fA3bzw&controls=0&modestbranding=1&rel=0&showinfo=0&playsinline=1"
-                    title="UniStation"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
+              <a
+                href="https://youtube.com/shorts/BC9w7fA3bzw"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="relative block rounded-2xl overflow-hidden shadow-2xl shadow-teal-500/20 ring-1 ring-white/10 group cursor-pointer"
+              >
+                <div className="aspect-[9/16] bg-brand-navy/80 flex items-center justify-center">
+                  <img
+                    src="https://img.youtube.com/vi/BC9w7fA3bzw/maxresdefault.jpg"
+                    alt="UniStation"
+                    className="absolute inset-0 w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = 'https://img.youtube.com/vi/BC9w7fA3bzw/hqdefault.jpg';
+                    }}
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/60 via-transparent to-brand-navy/20" />
+                  {/* Play button */}
+                  <div className="relative z-10 w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center group-hover:scale-110 group-hover:bg-brand-teal/80 transition-all duration-300">
+                    <svg className="w-7 h-7 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  </div>
                 </div>
                 <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/10 pointer-events-none" />
-              </div>
+              </a>
             </div>
           </div>
         </div>
