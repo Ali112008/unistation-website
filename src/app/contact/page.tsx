@@ -93,7 +93,7 @@ export default function ContactPage() {
                 </div>
 
                 {/* Offices */}
-                <h3 className="text-lg font-bold text-brand-navy mt-10 mb-4">Our Offices</h3>
+                <h3 className="text-lg font-bold text-brand-navy mt-10 mb-4">Our Office</h3>
                 <div className="space-y-3">
                   {offices.map((office) => (
                     <div key={office.city} className="flex items-start gap-3">
