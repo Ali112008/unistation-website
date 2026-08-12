@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "Based on the image provided, here is the information you requested:\n\n### **1. Original Text (Reviews 4, 5, 6, and 9)**\n\nYes, for these reviews, Google has detected that the text was written in a different language and automatically translated it to Arabic. You can see the **\"عرض النص الأصلي\"** (View original text) link at the bottom of each of these reviews.\n\n*   **Review 4 (Tharushi Imasha):** The link is visible.\n*   **Review 5 (Bruna Toro):** The link is visible.\n*   **Review 6 (Unistation FZCO الباني):** The link is visible.\n*   **Review 9 (Roshen Dinaksha):** The link is visible.\n\n*Note: The screenshot only shows the Arabic translation. To see the actual original language (which appears to be English based on the names), you would need to click that link on the actual device.*\n\n---\n\n### **2. Cut-off Text (Reviews 7, 8, and 10)**\n\nHere is what is visible near these names:\n\n*   **Review 7 (Ahmad Alsubaie):**\n    *   **Status:** This review appears to be **completely empty**. There is no review text visible between the star rating and the \"3 years ago\" date. It looks like the user may have left a rating without writing a comment, or the text failed to load.\n\n*   **Review 8 (mo fayad):**\n    *   **Status:** Similar to the review above, this one also appears to be **empty**. There is no text content visible in the space where the review should be.\n\n*   **Review 10 (Busra Gulbaba):**\n    *   **Status:** This review is at the very bottom of the screen and is **cut off by the edge**. I cannot see any text for this review. Only the name, profile picture, date (\"4 years ago\"), and star rating are visible. The actual written review (if there is one) would be below the visible area of the screenshot.",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1786545344,
+  "id": "20260812223538e324306909dd4cb7",
+  "model": "glm-5v-turbo",
+  "object": "chat.completion",
+  "request_id": "20260812223538e324306909dd4cb7",
+  "usage": {
+    "completion_tokens": 449,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 3501,
+    "prompt_tokens_details": {
+      "cached_tokens": 2
+    },
+    "total_tokens": 3950
+  }
+}

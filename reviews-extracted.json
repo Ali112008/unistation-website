@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "Here are all the reviews extracted from the image:\n\n**1. jasmin fayad**\n- **Stars:** 5/5\n- **Text:** مكان راقي وتنظيفه اكثر من ممتاز وخدمة العملاء التفوق\n\n**2. Lina Fayad**\n- **Stars:** 5/5\n- **Text:** افضل خدمة\n\n**3. Mohamad Alhalak**\n- **Stars:** 5/5\n- **Text:** خبر من اموال الاستشارات وكذا سرويس ممتاز جدا للدلالين الى الامام\n\n**4. Tharushi Imasha**\n- **Stars:** 5/5\n- **Text:** أود أن أشكر UniStation بشكل خاص لرائدة الأعمال في اللغة، فهم محترفون، وعلى دراية وساعدوا، وتوفيرو رضا عميل دائمًا مطلوب المزيد سيكون هناك في المستقبل على المدى الطويل ... النجاح. تمت الترجمة بواسطة Google - عرض النسخة الأصلية (الإنجليزية)\n\n**5. Bruna Toro**\n- **Stars:** 5/5\n- **Text:** أود أن أشكر كريستينا كيتك تجربتي ممتازة هنا هذا البنك. السيد ريان شقيق ممتاز ومحترف ومساعدة السيدة المسؤولة. إذا أردت أي شيء توفر نوفذ وتقديم الكادكينه ... النجاح. تمت الترجمة بواسطة Google - عرض النسخة الأصلية (الإنجليزية)\n\n**6. Unistation FZCO (الباني)**\n- **Stars:** 5/5\n- **Text:** شكراً جزيلاً لكل العاملين المتواجدين في UniStation. لقد بنيتم باستمرار طوال هذه الفترة. تحياتنا واستمرارية وسلامات لكم جميعاً جبارة لكم حظاً، تنميه يكفيكم كل التوفيق والنجاح في إرسالكم. تمت الترجمة بواسطة Google - عرض النسخة الأصلية (الإنجليزية)\n\n**7. Ahmad Alsubaie**\n- **Stars:** 5/5\n- **Text:** *(No text visible in image)*\n\n**8. mo fayad**\n- **Stars:** 5/5\n- **Text:** *(No text visible in image)*\n\n**9. Roshen Dinaksha**\n- **Stars:** 5/5\n- **Text:** أود أن أشكر UniStation والسيد ريان! استلمت باقة عالية وممتازة، وتوفيرو رضا عميل دائمًا في النجاح. شكراً جزيلاً بورصة الموظفين أوفروا في بريمان متخصصه السيد ريان، بكثيره الاعمال علامه وإرسالك في خبير. تمت الترجمة بواسطة Google - عرض النسخة الأصلية (الإنجليزية)\n\n**10. Busra Gulbaba**\n- **Stars:** 5/5\n- **Text:** *(No text visible in image)*",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1786545325,
+  "id": "202608122234449d72ec2a9b45497b",
+  "model": "glm-5v-turbo",
+  "object": "chat.completion",
+  "request_id": "202608122234449d72ec2a9b45497b",
+  "usage": {
+    "completion_tokens": 721,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 3378,
+    "prompt_tokens_details": {
+      "cached_tokens": 2
+    },
+    "total_tokens": 4099
+  }
+}
