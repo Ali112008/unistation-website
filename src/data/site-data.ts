@@ -250,6 +250,7 @@ export const siteConfig = {
     },
     { label: "Exam/Test Prep.", href: "/tests-exams", side: "left" as const },
     { label: "Our Packages", href: "/packages", side: "right" as const },
+    { label: "Our Portfolio", href: "/portfolio", side: "right" as const },
     {
       label: "Resources",
       href: "/resources",

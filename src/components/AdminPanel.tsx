@@ -1108,7 +1108,7 @@ function ExamTypesEditor({ data, onChange }: { data: any[]; onChange: (d: any[])
 
 type CmsItem = Record<string, any>;
 
-const CMS_TAB_IDS = ["cmsBlog", "cmsVideos", "cmsTeam", "cmsReviews"] as const;
+const CMS_TAB_IDS = ["cmsBlog", "cmsVideos", "cmsTeam", "cmsReviews", "cmsPortfolio"] as const;
 
 interface CmsEditorProps {
   items: CmsItem[];
@@ -1442,6 +1442,45 @@ function CmsReviewsEditor({ items, loading, editingItem, password, onRefresh, on
   );
 }
 
+function CmsPortfolioEditor({ items, loading, editingItem, password, onRefresh, onEdit }: Omit<CmsEditorProps, 'apiBase' | 'responseKey' | 'emptyTitle' | 'itemTitleField' | 'itemDateField' | 'children' | 'renderFields'>) {
+  return (
+    <CmsEditorShell
+      items={items} loading={loading} editingItem={editingItem} password={password}
+      onRefresh={onRefresh} onEdit={onEdit}
+      apiBase="/api/cms/portfolio" responseKey="portfolio"
+      emptyTitle="Student Name" itemTitleField="name" itemDateField="createdOn"
+      imageField="image"
+      renderFields={({ item, updateField, handleImageUpload, fileInputRef, setUploadTarget, uploading }) => (
+        <div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            <Field label="Student Name"><TextInput value={item.name || ""} onChange={v => updateField("name", v)} /></Field>
+            <Field label="Country"><TextInput value={item.country || ""} onChange={v => updateField("country", v)} placeholder="Egypt" /></Field>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            <Field label="Curriculum"><TextInput value={item.curriculum || ""} onChange={v => updateField("curriculum", v)} placeholder="A-Level, IB, Emirati" /></Field>
+            <Field label="Program"><TextInput value={item.program || ""} onChange={v => updateField("program", v)} placeholder="Medicine" /></Field>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            <Field label="University"><TextInput value={item.university || ""} onChange={v => updateField("university", v)} /></Field>
+            <Field label="Destination"><TextInput value={item.destination || ""} onChange={v => updateField("destination", v)} placeholder="UK, USA" /></Field>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            <Field label="Featured"><select value={item.featured || 0} onChange={e => updateField("featured", parseInt(e.target.value))} style={S.input}><option value={0}>No</option><option value={1}>Yes</option></select></Field>
+            <Field label="Sort Order"><input type="number" min={1} max={999} value={item.sortOrder ?? 99} onChange={e => updateField("sortOrder", parseInt(e.target.value) || 99)} style={S.input} /></Field>
+          </div>
+          <ImageUploadField
+            label="Photo (optional)" value={item.image || ""}
+            onUpload={f => { setUploadTarget("image"); handleImageUpload(f, "image"); }}
+            onUrlChange={v => updateField("image", v)}
+            fileInputRef={fileInputRef} uploadTarget={"image"} setUploadTarget={setUploadTarget}
+            uploading={uploading}
+          />
+        </div>
+      )}
+    />
+  );
+}
+
 /* ─── Main Admin Component ─── */
 export default function AdminPanel() {
   const [password, setPassword] = useState("");
@@ -1470,6 +1509,7 @@ export default function AdminPanel() {
     else if (tab === "cmsVideos") { url = "/api/cms/videos"; key = "videos"; }
     else if (tab === "cmsTeam") { url = "/api/cms/team"; key = "team"; }
     else if (tab === "cmsReviews") { url = "/api/cms/reviews"; key = "reviews"; }
+    else if (tab === "cmsPortfolio") { url = "/api/cms/portfolio"; key = "portfolio"; }
     if (!url) { setCmsLoading(false); return; }
     try {
       const res = await fetch(url, { cache: "no-store" });
@@ -1658,6 +1698,7 @@ export default function AdminPanel() {
     { id: "cmsVideos", label: "Videos", icon: "", group: "cms" },
     { id: "cmsTeam", label: "Team", icon: "", group: "cms" },
     { id: "cmsReviews", label: "Reviews", icon: "", group: "cms" },
+    { id: "cmsPortfolio", label: "Portfolio", icon: "", group: "cms" },
   ];
 
   /* ─── Login Screen ─── */
@@ -1824,6 +1865,7 @@ export default function AdminPanel() {
               {activeTab === "cmsVideos" && <CmsVideosEditor items={cmsData} loading={cmsLoading} editingItem={editingItem} password={password} onRefresh={() => fetchCmsData("cmsVideos")} onEdit={setEditingItem} />}
               {activeTab === "cmsTeam" && <CmsTeamEditor items={cmsData} loading={cmsLoading} editingItem={editingItem} password={password} onRefresh={() => fetchCmsData("cmsTeam")} onEdit={setEditingItem} />}
               {activeTab === "cmsReviews" && <CmsReviewsEditor items={cmsData} loading={cmsLoading} editingItem={editingItem} password={password} onRefresh={() => fetchCmsData("cmsReviews")} onEdit={setEditingItem} />}
+              {activeTab === "cmsPortfolio" && <CmsPortfolioEditor items={cmsData} loading={cmsLoading} editingItem={editingItem} password={password} onRefresh={() => fetchCmsData("cmsPortfolio")} onEdit={setEditingItem} />}
             </div>
 
             {/* Bottom Save — hidden for CMS tabs */}
