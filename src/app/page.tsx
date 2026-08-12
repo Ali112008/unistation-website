@@ -313,19 +313,23 @@ export default function HomePage() {
                         showPlay();
                       }
                     }}
-                    className="absolute inset-0 z-10 flex items-center justify-center"
+                    className="absolute inset-0 z-10"
                   >
-                    {/* Play icon — visible only when paused */}
-                    <span className="play-icon flex items-center justify-center w-16 h-16 rounded-full bg-brand-teal/90 text-white shadow-lg shadow-teal-500/30 transition-opacity duration-300 hover:scale-110">
-                      <svg className="w-7 h-7 ml-1" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M8 5v14l11-7z" />
-                      </svg>
+                    {/* Play icon — centered, visible only when paused */}
+                    <span className="play-icon absolute inset-0 flex items-center justify-center transition-opacity duration-300 pointer-events-none">
+                      <span className="flex items-center justify-center w-16 h-16 rounded-full bg-brand-teal/90 text-white shadow-lg shadow-teal-500/30 hover:scale-110 transition-transform pointer-events-auto">
+                        <svg className="w-7 h-7 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M8 5v14l11-7z" />
+                        </svg>
+                      </span>
                     </span>
-                    {/* Pause icon — hidden by default, flashes briefly on tap when playing */}
-                    <span className="pause-icon opacity-0 flex items-center justify-center w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm text-white transition-opacity duration-300 hover:bg-white/30">
-                      <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M6 4h4v16H6zM14 4h4v16h-4z" />
-                      </svg>
+                    {/* Pause icon — centered, hidden by default, flashes briefly on tap */}
+                    <span className="pause-icon absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 pointer-events-none">
+                      <span className="flex items-center justify-center w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 pointer-events-auto">
+                        <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M6 4h4v16H6zM14 4h4v16h-4z" />
+                        </svg>
+                      </span>
                     </span>
                   </div>
                   {/* Mute / Unmute — always visible while video exists */}
