@@ -122,7 +122,7 @@ export default function PortfolioPage() {
                   <li className="group">
                     <div className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-500 h-full flex flex-col">
                       {/* Photo */}
-                      <div className="relative h-56 w-full bg-gray-100 overflow-hidden">
+                      <div className="relative h-64 w-full bg-gray-100 overflow-hidden">
                         {item.image ? (
                           <Image
                             src={item.image}
