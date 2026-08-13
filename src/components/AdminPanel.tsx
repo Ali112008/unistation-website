@@ -375,19 +375,75 @@ function PageIntrosEditor({ data, onChange }: { data: any; onChange: (d: any) =>
 }
 
 /* ─── Destinations Editor ─── */
-function DestinationsEditor({ data, onChange }: { data: any; onChange: (d: any) => void }) {
+const destLabels: Record<string, string> = {
+  "spain": "🇪🇸 Spain",
+  "turkey": "🇹🇷 Turkey",
+  "usa": "🇺🇸 USA",
+  "uk": "🇬🇧 UK",
+  "canada": "🇨🇦 Canada",
+  "australia": "🇦🇺 Australia",
+  "new-zealand": "🇳🇿 New Zealand",
+  "ireland": "🇮🇪 Ireland",
+  "germany": "🇩🇪 Germany",
+  "italy": "🇮🇹 Italy",
+  "finland": "🇫🇮 Finland",
+  "czech-republic": "🇨🇿 Czech Republic",
+  "hungary": "🇭🇺 Hungary",
+  "poland": "🇵🇱 Poland",
+  "malta": "🇲🇹 Malta",
+  "cyprus": "🇨🇾 Cyprus",
+  "georgia": "🇬🇪 Georgia",
+  "malaysia": "🇲🇾 Malaysia",
+  "china": "🇨🇳 China",
+  "russia": "🇷🇺 Russia",
+  "romia": "🇷🇴 Romania",
+};
+
+function DestinationsEditor({ data, allConfig, onChange }: { data: any; allConfig: any; onChange: (d: any) => void }) {
   const dests = data || {};
-  const slugs = Object.keys(dests);
-  const [selectedSlug, setSelectedSlug] = useState<string>(slugs[0] || "");
+  const destSlugs = Object.keys(dests);
+
+  // Build list of ALL destinations from topDestinations + budgetDestinations
+  const topDests: { name: string; link: string }[] = allConfig?.topDestinations || [];
+  const budgetDests: { name: string; link: string }[] = allConfig?.budgetDestinations || [];
+
+  const allDestsByName: Record<string, string> = {};
+  for (const d of [...topDests, ...budgetDests]) {
+    const slug = (d.link || "").replace(/^\//, "").replace(/^https?:\/\/[^/]+\//, "").toLowerCase();
+    // Only take direct destination pages (not /contact, /europe, /asia)
+    if (slug && slug !== "contact" && slug !== "europe" && slug !== "asia" && !slug.startsWith("http")) {
+      allDestsByName[slug] = d.name;
+    }
+  }
+  // Also add spain and turkey (they may not be in top/budget lists but have rich content)
+  if (!allDestsByName["spain"]) allDestsByName["spain"] = "Spain";
+  if (!allDestsByName["turkey"]) allDestsByName["turkey"] = "Turkey";
+
+  const allSlugs = [...new Set([...Object.keys(allDestsByName), ...destSlugs])].sort();
+  const [selectedSlug, setSelectedSlug] = useState<string>(allSlugs[0] || "");
 
   useEffect(() => {
-    if (!selectedSlug && slugs.length > 0) setSelectedSlug(slugs[0]);
-  }, [slugs, selectedSlug]);
+    if (!selectedSlug && allSlugs.length > 0) setSelectedSlug(allSlugs[0]);
+  }, [allSlugs, selectedSlug]);
 
-  if (slugs.length === 0) return <div>No destinations found</div>;
+  if (allSlugs.length === 0) return <div>No destinations found</div>;
 
-  const dest = dests[selectedSlug];
-  const updateDest = (newDest: any) => onChange({ ...dests, [selectedSlug]: newDest });
+  // If this destination has no rich content yet, create a default entry
+  const dest = dests[selectedSlug] || {
+    slug: selectedSlug,
+    heroSubtitle: allDestsByName[selectedSlug] || selectedSlug,
+    heroDescription: "",
+    overviewTitle: "",
+    overviewParagraphs: [],
+    stats: [],
+    additionalSections: [],
+  };
+
+  const updateDest = (newDest: any) => {
+    // Ensure slug is always set
+    newDest.slug = selectedSlug;
+    onChange({ ...dests, [selectedSlug]: newDest });
+  };
 
   return (
     <div>
@@ -397,7 +453,7 @@ function DestinationsEditor({ data, onChange }: { data: any; onChange: (d: any) 
           onChange={e => setSelectedSlug(e.target.value)}
           style={{ ...S.input, padding: "10px 12px", cursor: "pointer" }}
         >
-          {slugs.map(s => <option key={s} value={s}>{pkgLabels[s] || s}</option>)}
+          {allSlugs.map(s => <option key={s} value={s}>{destLabels[s] || allDestsByName[s] || s}</option>)}
         </select>
       </Field>
 
@@ -1898,7 +1954,7 @@ export default function AdminPanel() {
               {activeTab === "testimonials" && <TestimonialsEditor data={data.testimonials || []} onChange={updateTabData} />}
               {activeTab === "offices" && <OfficesEditor data={data.offices || []} onChange={updateTabData} />}
               {activeTab === "packages" && <PackagesEditor data={data.packages} onChange={updateTabData} />}
-              {activeTab === "destinations" && <DestinationsEditor data={data.destinations} onChange={updateTabData} />}
+              {activeTab === "destinations" && <DestinationsEditor data={data.destinations} allConfig={data} onChange={updateTabData} />}
               {activeTab === "faqs" && <FaqsEditor data={data.faqs} onChange={updateTabData} />}
               {activeTab === "navigation" && <NavigationEditor data={data.navigation || []} onChange={updateTabData} />}
               {activeTab === "about" && <AboutEditor data={data.about || { paragraphs: [] }} onChange={updateTabData} />}

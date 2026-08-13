@@ -941,11 +941,24 @@ function GenericDestinationPage({
   dest,
   genericFaqs,
   slugForTags,
+  destContent,
 }: {
   dest: (typeof ALL_DESTINATIONS)[number];
   genericFaqs: { q: string; a: string }[];
   slugForTags: string;
+  destContent?: any;
 }) {
+  // Use admin-edited content if available, otherwise use defaults
+  const heroSubtitle = destContent?.heroSubtitle || `${dest.name} — Your Next Study Destination`;
+  const heroDescription = destContent?.heroDescription
+    || `Discover world-class universities, vibrant student life, and endless opportunities in ${dest.name}. Let UniStation guide you through every step of your journey.`;
+  const overviewTitle = destContent?.overviewTitle || `Why Study in ${dest.name}?`;
+  const overviewParagraphs = (destContent?.overviewParagraphs?.length ? destContent.overviewParagraphs : [
+    `${dest.name} is one of the most sought-after study destinations for international students, offering a unique blend of academic excellence, cultural diversity, and career opportunities. Whether you are looking for undergraduate, graduate, or language programs, ${dest.name} has something to offer every ambitious student.`,
+    `At UniStation, we have helped hundreds of students successfully navigate the admission process for universities in ${dest.name}. Our experienced advisors provide personalized guidance tailored to your academic background, career goals, and budget — ensuring you find the perfect program and institution.`,
+    `From application preparation and document review to visa guidance and pre-departure orientation, we are with you at every step. Start your journey today and let us help you turn your dream of studying in ${dest.name} into reality.`,
+  ]);
+  const stats = (destContent?.stats?.length ? destContent.stats : undefined);
   return (
     <>
       {/* Hero */}
@@ -968,14 +981,13 @@ function GenericDestinationPage({
               <span className="text-white/40">/</span>
               <span>{dest.name}</span>
             </div>
+            <p className="text-brand-teal-light text-sm font-medium mb-2">{heroSubtitle}</p>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
               Study in{" "}
               <span className="text-teal-gradient">{dest.name}</span>
             </h1>
             <p className="text-gray-300 text-lg max-w-2xl">
-              Discover world-class universities, vibrant student life, and
-              endless opportunities in {dest.name}. Let UniStation guide you
-              through every step of your journey.
+              {heroDescription}
             </p>
           </div>
         </div>
@@ -987,28 +999,9 @@ function GenericDestinationPage({
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <ScrollAnimator>
               <div className="space-y-5 text-gray-600 leading-relaxed text-lg">
-                <p>
-                  {dest.name} is one of the most sought-after study destinations
-                  for international students, offering a unique blend of
-                  academic excellence, cultural diversity, and career
-                  opportunities. Whether you are looking for undergraduate,
-                  graduate, or language programs, {dest.name} has something to
-                  offer every ambitious student.
-                </p>
-                <p>
-                  At UniStation, we have helped hundreds of students
-                  successfully navigate the admission process for universities in{" "}
-                  {dest.name}. Our experienced advisors provide personalized
-                  guidance tailored to your academic background, career goals,
-                  and budget — ensuring you find the perfect program and
-                  institution.
-                </p>
-                <p>
-                  From application preparation and document review to visa
-                  guidance and pre-departure orientation, we are with you at
-                  every step. Start your journey today and let us help you turn
-                  your dream of studying in {dest.name} into reality.
-                </p>
+                {overviewParagraphs.map((p: string, i: number) => (
+                  <p key={i}>{p}</p>
+                ))}
               </div>
               <div className="mt-8 flex flex-col sm:flex-row gap-4">
                 <Button
@@ -1145,5 +1138,5 @@ export default async function DestinationPage({
     return <SpainPage dest={dest} content={spainContent} faqs={spainFaqs} />;
   }
 
-  return <GenericDestinationPage dest={dest} genericFaqs={destinationsFaqs} slugForTags={slugForTags} />;
+  return <GenericDestinationPage dest={dest} genericFaqs={destinationsFaqs} slugForTags={slugForTags} destContent={(allDest as any)[slug]} />;
 }
