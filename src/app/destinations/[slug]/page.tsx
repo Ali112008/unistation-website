@@ -940,9 +940,11 @@ function TurkeyPage({
 function GenericDestinationPage({
   dest,
   genericFaqs,
+  slugForTags,
 }: {
   dest: (typeof ALL_DESTINATIONS)[number];
   genericFaqs: { q: string; a: string }[];
+  slugForTags: string;
 }) {
   return (
     <>
@@ -1109,6 +1111,7 @@ function GenericDestinationPage({
         </div>
       </section>
 
+      <LibrarySection topicName={dest.name} tags={[slugForTags]} />
       <FAQSection faqs={genericFaqs} />
       <CTASection />
     </>
@@ -1131,6 +1134,9 @@ export default async function DestinationPage({
   const turkeyFaqs = (allFaqs as any).turkey || tsPageFaqs.turkey;
   const destinationsFaqs = (allFaqs as any).destinations || tsPageFaqs.destinations;
 
+  // Build tags for LibrarySection — slug is already the canonical name e.g. "usa", "uk", "australia"
+  const slugForTags = slug.toLowerCase();
+
   // Use rich content for destinations that have it, generic fallback otherwise
   if (slug === "turkey" && turkishContent) {
     return <TurkeyPage dest={dest} content={turkishContent} faqs={turkeyFaqs} />;
@@ -1139,5 +1145,5 @@ export default async function DestinationPage({
     return <SpainPage dest={dest} content={spainContent} faqs={spainFaqs} />;
   }
 
-  return <GenericDestinationPage dest={dest} genericFaqs={destinationsFaqs} />;
+  return <GenericDestinationPage dest={dest} genericFaqs={destinationsFaqs} slugForTags={slugForTags} />;
 }
