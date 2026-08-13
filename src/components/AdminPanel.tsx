@@ -421,6 +421,7 @@ function DestinationsEditor({ data, allConfig, onChange }: { data: any; allConfi
 
   const allSlugs = [...new Set([...Object.keys(allDestsByName), ...destSlugs])].sort();
   const [selectedSlug, setSelectedSlug] = useState<string>(allSlugs[0] || "");
+  const [activeSection, setActiveSection] = useState<string>("basic");
 
   useEffect(() => {
     if (!selectedSlug && allSlugs.length > 0) setSelectedSlug(allSlugs[0]);
@@ -431,7 +432,7 @@ function DestinationsEditor({ data, allConfig, onChange }: { data: any; allConfi
   // If this destination has no rich content yet, create a default entry
   const dest = dests[selectedSlug] || {
     slug: selectedSlug,
-    heroSubtitle: allDestsByName[selectedSlug] || selectedSlug,
+    heroSubtitle: allDestsByName[selectedSlug] ? `${allDestsByName[selectedSlug]} — Your Next Study Destination` : selectedSlug,
     heroDescription: "",
     overviewTitle: "",
     overviewParagraphs: [],
@@ -445,57 +446,388 @@ function DestinationsEditor({ data, allConfig, onChange }: { data: any; allConfi
     onChange({ ...dests, [selectedSlug]: newDest });
   };
 
+  // Additional sections helpers
+  const sections = dest.additionalSections || [];
+  const sectionTypes = [
+    { type: "quick-facts", label: "Quick Facts", icon: "📋" },
+    { type: "key-advantages", label: "Key Advantages", icon: "✅" },
+    { type: "student-cities", label: "Student Cities", icon: "🏙️" },
+    { type: "why-universities", label: "Why Universities", icon: "🎓" },
+    { type: "things-to-consider", label: "Things to Consider", icon: "⚠️" },
+    { type: "tuition-table", label: "Tuition Table", icon: "💰" },
+    { type: "living-costs", label: "Living Costs", icon: "🏠" },
+    { type: "post-graduation", label: "Post-Graduation", icon: "💼" },
+    { type: "majors", label: "Popular Majors", icon: "📚" },
+    { type: "why-unistation", label: "Why UniStation", icon: "⭐" },
+    { type: "cta", label: "CTA Section", icon: "📢" },
+  ];
+
+  const addSection = (type: string) => {
+    const defaultData: Record<string, any> = {};
+    switch (type) {
+      case "quick-facts": defaultData.title = ""; defaultData.subtitle = "Quick Facts"; defaultData.items = []; break;
+      case "key-advantages": defaultData.title = "Key Advantages"; defaultData.items = []; break;
+      case "student-cities": defaultData.title = ""; defaultData.cities = []; break;
+      case "why-universities": defaultData.title = ""; defaultData.description = ""; break;
+      case "things-to-consider": defaultData.title = ""; defaultData.intro = ""; defaultData.items = []; break;
+      case "tuition-table": defaultData.title = ""; defaultData.headers = []; defaultData.rows = []; defaultData.note = ""; break;
+      case "living-costs": defaultData.title = ""; defaultData.amount = ""; defaultData.factors = []; defaultData.note = ""; break;
+      case "post-graduation": defaultData.title = ""; defaultData.description = ""; defaultData.items = []; break;
+      case "majors": defaultData.title = ""; defaultData.description = ""; defaultData.majors = []; break;
+      case "why-unistation": defaultData.title = ""; defaultData.description = ""; defaultData.services = []; defaultData.closing = ""; break;
+      case "cta": defaultData.title = ""; defaultData.description = ""; defaultData.disclaimer = ""; break;
+    }
+    updateDest({ ...dest, additionalSections: [...sections, { type, data: defaultData }] });
+  };
+
+  const removeSection = (index: number) => {
+    updateDest({ ...dest, additionalSections: sections.filter((_: any, i: number) => i !== index) });
+  };
+
+  const updateSectionData = (index: number, newData: any) => {
+    const n = [...sections];
+    n[index] = { ...n[index], data: { ...n[index].data, ...newData } };
+    updateDest({ ...dest, additionalSections: n });
+  };
+
+  // Render a section editor based on type
+  const renderSectionEditor = (index: number) => {
+    const section = sections[index];
+    if (!section) return null;
+    const d = section.data;
+    const type = section.type;
+
+    switch (type) {
+      case "quick-facts":
+        return (
+          <div key={index}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <h4 style={{ fontWeight: 700, fontSize: 15 }}>📋 Quick Facts</h4>
+              <button onClick={() => removeSection(index)} style={S.deleteBtn}>Delete Section</button>
+            </div>
+            <Field label="Section Title"><TextInput value={d.title || ""} onChange={v => updateSectionData(index, { title: v })} /></Field>
+            <Field label="Subtitle (e.g. Quick Facts)"><TextInput value={d.subtitle || ""} onChange={v => updateSectionData(index, { subtitle: v })} /></Field>
+            <strong style={{ display: "block", marginTop: 12, marginBottom: 8, fontSize: 13 }}>Fact Cards ({(d.items || []).length})</strong>
+            {(d.items || []).map((item: any, i: number) => (
+              <div key={i} style={{ ...S.card, background: "white", marginBottom: 8 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                  <small>Card #{i + 1}</small>
+                  <button onClick={() => { const items = [...(d.items || [])]; items.splice(i, 1); updateSectionData(index, { items }); }} style={S.deleteBtn}>✕</button>
+                </div>
+                <Field label="Title"><TextInput value={item.title || ""} onChange={v => { const items = [...d.items]; items[i] = { ...item, title: v }; updateSectionData(index, { items }); }} /></Field>
+                <Field label="Description"><TextArea value={item.description || ""} onChange={v => { const items = [...d.items]; items[i] = { ...item, description: v }; updateSectionData(index, { items }); }} /></Field>
+              </div>
+            ))}
+            <button onClick={() => updateSectionData(index, { items: [...(d.items || []), { title: "", description: "" }] })} style={S.addBtn}>+ Add Fact Card</button>
+          </div>
+        );
+
+      case "key-advantages":
+        return (
+          <div key={index}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <h4 style={{ fontWeight: 700, fontSize: 15 }}>✅ Key Advantages</h4>
+              <button onClick={() => removeSection(index)} style={S.deleteBtn}>Delete Section</button>
+            </div>
+            <Field label="Title"><TextInput value={d.title || ""} onChange={v => updateSectionData(index, { title: v })} /></Field>
+            <strong style={{ display: "block", marginTop: 12, marginBottom: 8, fontSize: 13 }}>Advantage Items ({(d.items || []).length})</strong>
+            {(d.items || []).map((item: string, i: number) => (
+              <div key={i} style={{ display: "flex", gap: 8, marginBottom: 6 }}>
+                <textarea value={item} onChange={e => { const items = [...d.items]; items[i] = e.target.value; updateSectionData(index, { items }); }} style={{ ...S.textarea, minHeight: 60 }} />
+                <button onClick={() => { const items = [...d.items]; items.splice(i, 1); updateSectionData(index, { items }); }} style={S.deleteBtn}>✕</button>
+              </div>
+            ))}
+            <button onClick={() => updateSectionData(index, { items: [...(d.items || []), ""] })} style={S.addBtn}>+ Add Advantage</button>
+          </div>
+        );
+
+      case "student-cities":
+        return (
+          <div key={index}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <h4 style={{ fontWeight: 700, fontSize: 15 }}>🏙️ Student Cities</h4>
+              <button onClick={() => removeSection(index)} style={S.deleteBtn}>Delete Section</button>
+            </div>
+            <Field label="Title"><TextInput value={d.title || ""} onChange={v => updateSectionData(index, { title: v })} /></Field>
+            <strong style={{ display: "block", marginTop: 12, marginBottom: 8, fontSize: 13 }}>Cities ({(d.cities || []).length})</strong>
+            {(d.cities || []).map((city: any, i: number) => (
+              <div key={i} style={{ ...S.card, background: "white", marginBottom: 10 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                  <small>City #{i + 1}</small>
+                  <button onClick={() => { const cities = [...(d.cities || [])]; cities.splice(i, 1); updateSectionData(index, { cities }); }} style={S.deleteBtn}>✕</button>
+                </div>
+                <Field label="City Name"><TextInput value={city.name || ""} onChange={v => { const cities = [...d.cities]; cities[i] = { ...city, name: v }; updateSectionData(index, { cities }); }} /></Field>
+                <Field label="Image URL"><TextInput value={city.image || ""} onChange={v => { const cities = [...d.cities]; cities[i] = { ...city, image: v }; updateSectionData(index, { cities }); }} /></Field>
+                <Field label="Description"><TextArea value={city.description || ""} onChange={v => { const cities = [...d.cities]; cities[i] = { ...city, description: v }; updateSectionData(index, { cities }); }} /></Field>
+              </div>
+            ))}
+            <button onClick={() => updateSectionData(index, { cities: [...(d.cities || []), { name: "", image: "", description: "" }] })} style={S.addBtn}>+ Add City</button>
+          </div>
+        );
+
+      case "why-universities":
+        return (
+          <div key={index}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <h4 style={{ fontWeight: 700, fontSize: 15 }}>🎓 Why Universities</h4>
+              <button onClick={() => removeSection(index)} style={S.deleteBtn}>Delete Section</button>
+            </div>
+            <Field label="Title"><TextInput value={d.title || ""} onChange={v => updateSectionData(index, { title: v })} /></Field>
+            <Field label="Description"><TextArea value={d.description || ""} onChange={v => updateSectionData(index, { description: v })} /></Field>
+          </div>
+        );
+
+      case "things-to-consider":
+        return (
+          <div key={index}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <h4 style={{ fontWeight: 700, fontSize: 15 }}>⚠️ Things to Consider</h4>
+              <button onClick={() => removeSection(index)} style={S.deleteBtn}>Delete Section</button>
+            </div>
+            <Field label="Title"><TextInput value={d.title || ""} onChange={v => updateSectionData(index, { title: v })} /></Field>
+            <Field label="Intro Text"><TextArea value={d.intro || ""} onChange={v => updateSectionData(index, { intro: v })} /></Field>
+            <strong style={{ display: "block", marginTop: 12, marginBottom: 8, fontSize: 13 }}>Items ({(d.items || []).length})</strong>
+            {(d.items || []).map((item: any, i: number) => (
+              <div key={i} style={{ ...S.card, background: "white", marginBottom: 10 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                  <small>Item #{i + 1}</small>
+                  <button onClick={() => { const items = [...(d.items || [])]; items.splice(i, 1); updateSectionData(index, { items }); }} style={S.deleteBtn}>✕</button>
+                </div>
+                <Field label="Title"><TextInput value={item.title || ""} onChange={v => { const items = [...d.items]; items[i] = { ...item, title: v }; updateSectionData(index, { items }); }} /></Field>
+                <Field label="Description"><TextArea value={item.description || ""} onChange={v => { const items = [...d.items]; items[i] = { ...item, description: v }; updateSectionData(index, { items }); }} /></Field>
+              </div>
+            ))}
+            <button onClick={() => updateSectionData(index, { items: [...(d.items || []), { title: "", description: "" }] })} style={S.addBtn}>+ Add Item</button>
+          </div>
+        );
+
+      case "tuition-table":
+        return (
+          <div key={index}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <h4 style={{ fontWeight: 700, fontSize: 15 }}>💰 Tuition Table</h4>
+              <button onClick={() => removeSection(index)} style={S.deleteBtn}>Delete Section</button>
+            </div>
+            <Field label="Title"><TextInput value={d.title || ""} onChange={v => updateSectionData(index, { title: v })} /></Field>
+            <Field label="Note"><TextInput value={d.note || ""} onChange={v => updateSectionData(index, { note: v })} /></Field>
+            <strong style={{ display: "block", marginTop: 12, marginBottom: 8, fontSize: 13 }}>Headers ({(d.headers || []).length})</strong>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 8 }}>
+              {(d.headers || []).map((h: string, i: number) => (
+                <div key={i} style={{ display: "flex", gap: 4 }}>
+                  <input type="text" value={h} onChange={e => { const headers = [...d.headers]; headers[i] = e.target.value; updateSectionData(index, { headers }); }} style={{ ...S.input, minWidth: 120 }} />
+                  <button onClick={() => { const headers = [...d.headers]; headers.splice(i, 1); updateSectionData(index, { headers }); }} style={S.deleteBtn}>✕</button>
+                </div>
+              ))}
+              <button onClick={() => updateSectionData(index, { headers: [...(d.headers || []), ""] })} style={{ ...S.addBtn, padding: "4px 8px" }}>+ Col</button>
+            </div>
+            <strong style={{ display: "block", marginTop: 12, marginBottom: 8, fontSize: 13 }}>Rows ({(d.rows || []).length})</strong>
+            {(d.rows || []).map((row: string[], ri: number) => (
+              <div key={ri} style={{ display: "flex", gap: 4, marginBottom: 4, alignItems: "center" }}>
+                <span style={{ fontSize: 11, color: "#9ca3af", minWidth: 20 }}>R{ri + 1}</span>
+                {(row || []).map((cell: string, ci: number) => (
+                  <input key={ci} type="text" value={cell} onChange={e => { const rows = [...d.rows]; rows[ri] = [...row]; rows[ri][ci] = e.target.value; updateSectionData(index, { rows }); }} style={{ ...S.input, minWidth: 100, flex: 1 }} />
+                ))}
+                <button onClick={() => { const rows = [...d.rows]; rows.splice(ri, 1); updateSectionData(index, { rows }); }} style={S.deleteBtn}>✕</button>
+              </div>
+            ))}
+            <button onClick={() => updateSectionData(index, { rows: [...(d.rows || []), Array((d.headers || []).length).fill("")] })} style={S.addBtn}>+ Add Row</button>
+          </div>
+        );
+
+      case "living-costs":
+        return (
+          <div key={index}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <h4 style={{ fontWeight: 700, fontSize: 15 }}>🏠 Living Costs</h4>
+              <button onClick={() => removeSection(index)} style={S.deleteBtn}>Delete Section</button>
+            </div>
+            <Field label="Title"><TextInput value={d.title || ""} onChange={v => updateSectionData(index, { title: v })} /></Field>
+            <Field label="Amount (e.g. $300 – $1,000 per month)"><TextInput value={d.amount || ""} onChange={v => updateSectionData(index, { amount: v })} /></Field>
+            <Field label="Note"><TextInput value={d.note || ""} onChange={v => updateSectionData(index, { note: v })} /></Field>
+            <strong style={{ display: "block", marginTop: 12, marginBottom: 8, fontSize: 13 }}>Factors ({(d.factors || []).length})</strong>
+            {(d.factors || []).map((f: string, i: number) => (
+              <div key={i} style={{ display: "flex", gap: 8, marginBottom: 6 }}>
+                <input type="text" value={f} onChange={e => { const factors = [...d.factors]; factors[i] = e.target.value; updateSectionData(index, { factors }); }} style={S.input} />
+                <button onClick={() => { const factors = [...d.factors]; factors.splice(i, 1); updateSectionData(index, { factors }); }} style={S.deleteBtn}>✕</button>
+              </div>
+            ))}
+            <button onClick={() => updateSectionData(index, { factors: [...(d.factors || []), ""] })} style={S.addBtn}>+ Add Factor</button>
+          </div>
+        );
+
+      case "post-graduation":
+        return (
+          <div key={index}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <h4 style={{ fontWeight: 700, fontSize: 15 }}>💼 Post-Graduation</h4>
+              <button onClick={() => removeSection(index)} style={S.deleteBtn}>Delete Section</button>
+            </div>
+            <Field label="Title"><TextInput value={d.title || ""} onChange={v => updateSectionData(index, { title: v })} /></Field>
+            <Field label="Description"><TextArea value={d.description || ""} onChange={v => updateSectionData(index, { description: v })} /></Field>
+            <strong style={{ display: "block", marginTop: 12, marginBottom: 8, fontSize: 13 }}>Items ({(d.items || []).length})</strong>
+            {(d.items || []).map((item: string, i: number) => (
+              <div key={i} style={{ display: "flex", gap: 8, marginBottom: 6 }}>
+                <textarea value={item} onChange={e => { const items = [...d.items]; items[i] = e.target.value; updateSectionData(index, { items }); }} style={{ ...S.textarea, minHeight: 60 }} />
+                <button onClick={() => { const items = [...d.items]; items.splice(i, 1); updateSectionData(index, { items }); }} style={S.deleteBtn}>✕</button>
+              </div>
+            ))}
+            <button onClick={() => updateSectionData(index, { items: [...(d.items || []), ""] })} style={S.addBtn}>+ Add Item</button>
+          </div>
+        );
+
+      case "majors":
+        return (
+          <div key={index}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <h4 style={{ fontWeight: 700, fontSize: 15 }}>📚 Popular Majors</h4>
+              <button onClick={() => removeSection(index)} style={S.deleteBtn}>Delete Section</button>
+            </div>
+            <Field label="Title"><TextInput value={d.title || ""} onChange={v => updateSectionData(index, { title: v })} /></Field>
+            <Field label="Description"><TextArea value={d.description || ""} onChange={v => updateSectionData(index, { description: v })} /></Field>
+            <strong style={{ display: "block", marginTop: 12, marginBottom: 8, fontSize: 13 }}>Majors ({(d.majors || []).length})</strong>
+            {(d.majors || []).map((m: string, i: number) => (
+              <div key={i} style={{ display: "flex", gap: 8, marginBottom: 6 }}>
+                <input type="text" value={m} onChange={e => { const majors = [...d.majors]; majors[i] = e.target.value; updateSectionData(index, { majors }); }} style={S.input} />
+                <button onClick={() => { const majors = [...d.majors]; majors.splice(i, 1); updateSectionData(index, { majors }); }} style={S.deleteBtn}>✕</button>
+              </div>
+            ))}
+            <button onClick={() => updateSectionData(index, { majors: [...(d.majors || []), ""] })} style={S.addBtn}>+ Add Major</button>
+          </div>
+        );
+
+      case "why-unistation":
+        return (
+          <div key={index}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <h4 style={{ fontWeight: 700, fontSize: 15 }}>⭐ Why UniStation</h4>
+              <button onClick={() => removeSection(index)} style={S.deleteBtn}>Delete Section</button>
+            </div>
+            <Field label="Title"><TextInput value={d.title || ""} onChange={v => updateSectionData(index, { title: v })} /></Field>
+            <Field label="Description"><TextArea value={d.description || ""} onChange={v => updateSectionData(index, { description: v })} /></Field>
+            <strong style={{ display: "block", marginTop: 12, marginBottom: 8, fontSize: 13 }}>Services ({(d.services || []).length})</strong>
+            {(d.services || []).map((s: string, i: number) => (
+              <div key={i} style={{ display: "flex", gap: 8, marginBottom: 6 }}>
+                <input type="text" value={s} onChange={e => { const services = [...d.services]; services[i] = e.target.value; updateSectionData(index, { services }); }} style={S.input} />
+                <button onClick={() => { const services = [...d.services]; services.splice(i, 1); updateSectionData(index, { services }); }} style={S.deleteBtn}>✕</button>
+              </div>
+            ))}
+            <button onClick={() => updateSectionData(index, { services: [...(d.services || []), ""] })} style={S.addBtn}>+ Add Service</button>
+            <div style={{ marginTop: 10 }}>
+              <Field label="Closing Text"><TextArea value={d.closing || ""} onChange={v => updateSectionData(index, { closing: v })} /></Field>
+            </div>
+          </div>
+        );
+
+      case "cta":
+        return (
+          <div key={index}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <h4 style={{ fontWeight: 700, fontSize: 15 }}>📢 CTA Section</h4>
+              <button onClick={() => removeSection(index)} style={S.deleteBtn}>Delete Section</button>
+            </div>
+            <Field label="Title"><TextInput value={d.title || ""} onChange={v => updateSectionData(index, { title: v })} /></Field>
+            <Field label="Description"><TextArea value={d.description || ""} onChange={v => updateSectionData(index, { description: v })} /></Field>
+            <Field label="Disclaimer"><TextArea value={d.disclaimer || ""} onChange={v => updateSectionData(index, { disclaimer: v })} /></Field>
+          </div>
+        );
+
+      default:
+        return <div key={index} style={{ padding: 12, background: "#fef3c7", borderRadius: 8, fontSize: 12, color: "#92400e" }}>Unknown section type: {type}</div>;
+    }
+  };
+
+  const sectionTabs = ["basic", ...sections.map((_: any, i: number) => `section-${i}`)];
+
   return (
     <div>
       <Field label="Select Destination">
         <select
           value={selectedSlug}
-          onChange={e => setSelectedSlug(e.target.value)}
+          onChange={e => { setSelectedSlug(e.target.value); setActiveSection("basic"); }}
           style={{ ...S.input, padding: "10px 12px", cursor: "pointer" }}
         >
           {allSlugs.map(s => <option key={s} value={s}>{destLabels[s] || allDestsByName[s] || s}</option>)}
         </select>
       </Field>
 
+      {/* Section tabs */}
+      <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 12, padding: "0 0 8px 0", borderBottom: "2px solid #e5e7eb" }}>
+        <button onClick={() => setActiveSection("basic")} style={{ ...S.addBtn, background: activeSection === "basic" ? "#0d9488" : undefined, color: activeSection === "basic" ? "white" : undefined, fontWeight: activeSection === "basic" ? 700 : 400 }}>
+          📝 Basic Info
+        </button>
+        {sections.map((s: any, i: number) => {
+          const st = sectionTypes.find(t => t.type === s.type);
+          return (
+            <button key={i} onClick={() => setActiveSection(`section-${i}`)} style={{ ...S.addBtn, background: activeSection === `section-${i}` ? "#0d9488" : undefined, color: activeSection === `section-${i}` ? "white" : undefined, fontWeight: activeSection === `section-${i}` ? 700 : 400 }}>
+              {st?.icon || "📄"} {st?.label || s.type}
+            </button>
+          );
+        })}
+      </div>
+
       <div style={S.card}>
-        <div style={{ fontSize: 12, color: "#9ca3af", marginBottom: 8 }}>Destination ID: <code>{selectedSlug}</code></div>
+        <div style={{ fontSize: 12, color: "#9ca3af", marginBottom: 8 }}>Destination ID: <code>{selectedSlug}</code> — Editing: <strong>{activeSection === "basic" ? "Basic Info" : sections[parseInt(activeSection.split("-")[1])]?.type || "Unknown"}</strong></div>
 
-        <Field label="Hero Subtitle"><TextInput value={dest.heroSubtitle} onChange={v => updateDest({ ...dest, heroSubtitle: v })} /></Field>
-        <Field label="Hero Description"><TextArea value={dest.heroDescription} onChange={v => updateDest({ ...dest, heroDescription: v })} /></Field>
-        <Field label="Overview Title"><TextInput value={dest.overviewTitle} onChange={v => updateDest({ ...dest, overviewTitle: v })} /></Field>
+        {/* Basic Info Tab */}
+        {activeSection === "basic" && (
+          <>
+            <Field label="Hero Subtitle"><TextInput value={dest.heroSubtitle} onChange={v => updateDest({ ...dest, heroSubtitle: v })} /></Field>
+            <Field label="Hero Description"><TextArea value={dest.heroDescription} onChange={v => updateDest({ ...dest, heroDescription: v })} /></Field>
+            <Field label="Overview Title"><TextInput value={dest.overviewTitle} onChange={v => updateDest({ ...dest, overviewTitle: v })} /></Field>
 
-        {/* Overview Paragraphs */}
-        <div style={{ marginTop: 10 }}>
-          <strong style={{ display: "block", marginBottom: 6, fontSize: 13 }}>Overview Paragraphs ({(dest.overviewParagraphs || []).length})</strong>
-          {(dest.overviewParagraphs || []).map((p: string, pi: number) => (
-            <div key={pi} style={{ display: "flex", gap: 8, marginBottom: 6 }}>
-              <textarea
-                value={p}
-                onChange={e => { const n = [...dest.overviewParagraphs]; n[pi] = e.target.value; updateDest({ ...dest, overviewParagraphs: n }); }}
-                style={{ ...S.textarea, minHeight: 60 }}
-              />
-              <button onClick={() => updateDest({ ...dest, overviewParagraphs: dest.overviewParagraphs.filter((_: string, idx: number) => idx !== pi) })} style={S.deleteBtn}>✕</button>
+            {/* Overview Paragraphs */}
+            <div style={{ marginTop: 10 }}>
+              <strong style={{ display: "block", marginBottom: 6, fontSize: 13 }}>Overview Paragraphs ({(dest.overviewParagraphs || []).length})</strong>
+              {(dest.overviewParagraphs || []).map((p: string, pi: number) => (
+                <div key={pi} style={{ display: "flex", gap: 8, marginBottom: 6 }}>
+                  <textarea
+                    value={p}
+                    onChange={e => { const n = [...dest.overviewParagraphs]; n[pi] = e.target.value; updateDest({ ...dest, overviewParagraphs: n }); }}
+                    style={{ ...S.textarea, minHeight: 60 }}
+                  />
+                  <button onClick={() => updateDest({ ...dest, overviewParagraphs: dest.overviewParagraphs.filter((_: string, idx: number) => idx !== pi) })} style={S.deleteBtn}>✕</button>
+                </div>
+              ))}
+              <button onClick={() => updateDest({ ...dest, overviewParagraphs: [...(dest.overviewParagraphs || []), ""] })} style={S.addBtn}>+ Add Paragraph</button>
             </div>
-          ))}
-          <button onClick={() => updateDest({ ...dest, overviewParagraphs: [...(dest.overviewParagraphs || []), ""] })} style={S.addBtn}>+ Add Paragraph</button>
-        </div>
 
-        {/* Stats */}
-        <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #e5e7eb" }}>
-          <strong style={{ display: "block", marginBottom: 10 }}>Stats ({(dest.stats || []).length})</strong>
-          {(dest.stats || []).map((s: any, si: number) => (
-            <div key={si} style={{ display: "flex", gap: 8, marginBottom: 6 }}>
-              <input type="text" placeholder="value" value={s.value} onChange={e => { const n = [...dest.stats]; n[si] = { ...s, value: e.target.value }; updateDest({ ...dest, stats: n }); }} style={S.input} />
-              <input type="text" placeholder="label" value={s.label} onChange={e => { const n = [...dest.stats]; n[si] = { ...s, label: e.target.value }; updateDest({ ...dest, stats: n }); }} style={S.input} />
-              <button onClick={() => updateDest({ ...dest, stats: dest.stats.filter((_: any, idx: number) => idx !== si) })} style={S.deleteBtn}>✕</button>
+            {/* Stats */}
+            <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #e5e7eb" }}>
+              <strong style={{ display: "block", marginBottom: 10 }}>Stats ({(dest.stats || []).length})</strong>
+              {(dest.stats || []).map((s: any, si: number) => (
+                <div key={si} style={{ display: "flex", gap: 8, marginBottom: 6 }}>
+                  <input type="text" placeholder="value" value={s.value} onChange={e => { const n = [...dest.stats]; n[si] = { ...s, value: e.target.value }; updateDest({ ...dest, stats: n }); }} style={S.input} />
+                  <input type="text" placeholder="label" value={s.label} onChange={e => { const n = [...dest.stats]; n[si] = { ...s, label: e.target.value }; updateDest({ ...dest, stats: n }); }} style={S.input} />
+                  <button onClick={() => updateDest({ ...dest, stats: dest.stats.filter((_: any, idx: number) => idx !== si) })} style={S.deleteBtn}>✕</button>
+                </div>
+              ))}
+              <button onClick={() => updateDest({ ...dest, stats: [...(dest.stats || []), { label: "", value: "" }] })} style={S.addBtn}>+ Add Stat</button>
             </div>
-          ))}
-          <button onClick={() => updateDest({ ...dest, stats: [...(dest.stats || []), { label: "", value: "" }] })} style={S.addBtn}>+ Add Stat</button>
-        </div>
 
-        <div style={{ marginTop: 16, padding: 12, background: "#fef3c7", borderRadius: 8, fontSize: 12, color: "#92400e" }}>
-          Note: Advanced sections (two-paths, key-advantages, etc.) are best edited in code. The fields above cover the most important content.
-        </div>
+            {/* Add Section */}
+            <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #e5e7eb" }}>
+              <strong style={{ display: "block", marginBottom: 10 }}>Add Page Section</strong>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                {sectionTypes.map(st => (
+                  <button key={st.type} onClick={() => addSection(st.type)} style={{ ...S.addBtn, fontSize: 12, padding: "6px 12px" }}>
+                    {st.icon} {st.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {sections.length === 0 && (
+              <div style={{ marginTop: 16, padding: 12, background: "#eff6ff", borderRadius: 8, fontSize: 12, color: "#1e40af" }}>
+                No additional sections yet. Click a button above to add sections like Quick Facts, Key Advantages, Student Cities, Tuition Table, etc. Each section is fully editable and will appear on the destination page.
+              </div>
+            )}
+          </>
+        )}
+
+        {/* Section-specific editors */}
+        {activeSection.startsWith("section-") && (
+          renderSectionEditor(parseInt(activeSection.split("-")[1]))
+        )}
       </div>
     </div>
   );

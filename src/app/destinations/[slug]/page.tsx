@@ -936,7 +936,7 @@ function TurkeyPage({
   );
 }
 
-/* ───────── Generic Destination Page (fallback) ───────── */
+/* ───────── Generic Destination Page (fully admin-driven) ───────── */
 function GenericDestinationPage({
   dest,
   genericFaqs,
@@ -959,6 +959,33 @@ function GenericDestinationPage({
     `From application preparation and document review to visa guidance and pre-departure orientation, we are with you at every step. Start your journey today and let us help you turn your dream of studying in ${dest.name} into reality.`,
   ]);
   const stats = (destContent?.stats?.length ? destContent.stats : undefined);
+  const additionalSections: any[] = destContent?.additionalSections || [];
+
+  // Extract additional sections (same pattern as TurkeyPage)
+  const keyAdvantages = additionalSections.find((s: any) => s.type === "key-advantages")?.data as { title: string; items: string[] } | undefined;
+  const quickFacts = additionalSections.find((s: any) => s.type === "quick-facts")?.data as { title: string; subtitle: string; items: { title: string; description: string }[] } | undefined;
+  const studentCities = additionalSections.find((s: any) => s.type === "student-cities")?.data as { title: string; cities: { name: string; image: string; description: string }[] } | undefined;
+  const whyUniversities = additionalSections.find((s: any) => s.type === "why-universities")?.data as { title: string; description: string } | undefined;
+  const thingsToConsider = additionalSections.find((s: any) => s.type === "things-to-consider")?.data as { title: string; intro?: string; items: { title: string; description: string }[] } | undefined;
+  const tuitionTable = additionalSections.find((s: any) => s.type === "tuition-table")?.data as { title: string; headers: string[]; rows: string[][]; note?: string } | undefined;
+  const livingCosts = additionalSections.find((s: any) => s.type === "living-costs")?.data as { title: string; amount: string; factors: string[]; note?: string } | undefined;
+  const postGraduation = additionalSections.find((s: any) => s.type === "post-graduation")?.data as { title: string; description: string; items: string[] } | undefined;
+  const popularMajors = additionalSections.find((s: any) => s.type === "majors")?.data as { title: string; description: string; majors: string[] } | undefined;
+  const whyUnistation = additionalSections.find((s: any) => s.type === "why-unistation")?.data as { title: string; description: string; services: string[]; closing?: string } | undefined;
+  const ctaSection = additionalSections.find((s: any) => s.type === "cta")?.data as { title: string; description: string; disclaimer: string } | undefined;
+
+  // If no admin content at all, use a minimal default quickFacts section
+  const defaultQuickFacts = !quickFacts ? {
+    title: `Why Study in ${dest.name}?`,
+    subtitle: "Quick Facts",
+    items: [
+      { title: "World-Class Universities", description: `${dest.name} is home to globally ranked institutions known for academic excellence and research.` },
+      { title: "Global Recognition", description: `Degrees from ${dest.name} are recognized worldwide, opening doors to international career opportunities.` },
+      { title: "Diverse Community", description: `Join a vibrant, multicultural student community from around the world.` },
+      { title: "UniStation Support", description: `End-to-end guidance from application to arrival — we handle the details so you can focus on your studies.` },
+    ],
+  } : quickFacts;
+
   return (
     <>
       {/* Hero */}
@@ -990,112 +1017,67 @@ function GenericDestinationPage({
               {heroDescription}
             </p>
           </div>
+          {/* Stats bar (if admin provided stats) */}
+          {stats && stats.length > 0 && (
+            <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4">
+              {stats.map((stat: any) => (
+                <div
+                  key={stat.label}
+                  className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4 text-center"
+                >
+                  <p className="text-brand-teal font-bold text-2xl md:text-3xl">{stat.value}</p>
+                  <p className="text-gray-400 text-sm mt-1">{stat.label}</p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
-      {/* Destination Overview */}
-      <section className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <ScrollAnimator>
-              <div className="space-y-5 text-gray-600 leading-relaxed text-lg">
+      {/* Overview */}
+      <section className="py-20 bg-white">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <ScrollAnimator>
+            <div className="relative">
+              <div className="absolute -left-4 top-0 w-1 h-full bg-gradient-to-b from-brand-teal to-brand-teal/20 rounded-full hidden md:block" />
+              <h2 className="text-2xl md:text-3xl font-bold text-brand-navy mb-6 md:pl-6">
+                {overviewTitle}
+              </h2>
+              <div className="space-y-4 text-gray-600 leading-relaxed text-lg md:pl-6">
                 {overviewParagraphs.map((p: string, i: number) => (
                   <p key={i}>{p}</p>
                 ))}
               </div>
-              <div className="mt-8 flex flex-col sm:flex-row gap-4">
-                <Button
-                  asChild
-                  size="lg"
-                  className="bg-brand-teal hover:bg-brand-teal-dark text-white btn-primary-hover rounded-lg"
-                >
-                  <Link href="/packages">
-                    View Packages
-                    <ArrowRight className="w-5 h-5 ml-2" />
-                  </Link>
-                </Button>
-                <Button
-                  asChild
-                  variant="outline"
-                  size="lg"
-                  className="border-brand-navy text-brand-navy hover:bg-brand-navy hover:text-white rounded-lg"
-                >
-                  <a
-                    href="https://calendly.com/unistation-info/30min"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Book Free Consultation
-                  </a>
-                </Button>
-              </div>
-            </ScrollAnimator>
-            <ScrollAnimator delay={200}>
-              <div className="relative rounded-2xl overflow-hidden h-[450px] group">
-                <Image
-                  src={dest.image}
-                  alt={`Study in ${dest.name}`}
-                  fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/40 via-transparent to-transparent" />
-                <div className="absolute bottom-6 left-6 right-6">
-                  <span className="inline-block px-4 py-1.5 bg-brand-teal text-white text-sm font-semibold rounded-full mb-2">
-                    {dest.category}
-                  </span>
-                </div>
-              </div>
-            </ScrollAnimator>
-          </div>
+            </div>
+          </ScrollAnimator>
         </div>
       </section>
 
-      {/* Quick Facts */}
+      {/* Quick Facts (admin-driven) */}
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollAnimator>
             <div className="text-center mb-12">
               <p className="text-brand-teal font-semibold text-sm uppercase tracking-wider mb-2">
-                Quick Facts
+                {defaultQuickFacts.subtitle}
               </p>
               <h2 className="text-3xl md:text-4xl font-bold text-brand-navy">
-                Why Study in {dest.name}?
+                {defaultQuickFacts.title}
               </h2>
             </div>
           </ScrollAnimator>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              {
-                icon: GraduationCap,
-                title: "World-Class Universities",
-                desc: `${dest.name} is home to globally ranked institutions known for academic excellence and research.`,
-              },
-              {
-                icon: Globe2,
-                title: "Global Recognition",
-                desc: `Degrees from ${dest.name} are recognized worldwide, opening doors to international career opportunities.`,
-              },
-              {
-                icon: Users,
-                title: "Diverse Community",
-                desc: `Join a vibrant, multicultural student community from around the world.`,
-              },
-              {
-                icon: MapPin,
-                title: "UniStation Support",
-                desc: `End-to-end guidance from application to arrival — we handle the details so you can focus on your studies.`,
-              },
-            ].map((item, i) => (
+            {defaultQuickFacts.items.map((item, i) => (
               <ScrollAnimator key={item.title} delay={i * 100}>
                 <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 h-full card-hover">
                   <div className="w-12 h-12 bg-brand-teal/10 rounded-xl flex items-center justify-center mb-4">
-                    <item.icon className="w-6 h-6 text-brand-teal" />
+                    <GraduationCap className="w-6 h-6 text-brand-teal" />
                   </div>
                   <h3 className="font-bold text-brand-navy text-lg mb-2">
                     {item.title}
                   </h3>
                   <p className="text-gray-500 text-sm leading-relaxed">
-                    {item.desc}
+                    {item.description}
                   </p>
                 </div>
               </ScrollAnimator>
@@ -1103,6 +1085,322 @@ function GenericDestinationPage({
           </div>
         </div>
       </section>
+
+      {/* Key Advantages */}
+      {keyAdvantages && (
+        <section className="py-20 bg-gray-50">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <ScrollAnimator>
+              <h2 className="text-2xl md:text-3xl font-bold text-brand-navy mb-8 text-center">
+                {keyAdvantages.title}
+              </h2>
+            </ScrollAnimator>
+            <div className="grid sm:grid-cols-2 gap-4">
+              {keyAdvantages.items.map((item, i) => (
+                <ScrollAnimator key={i} delay={i * 50}>
+                  <div className="flex items-start gap-3 bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                    <CheckCircle2 className="w-5 h-5 text-brand-teal mt-0.5 shrink-0" />
+                    <span className="text-gray-700 text-sm leading-relaxed">{item}</span>
+                  </div>
+                </ScrollAnimator>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Student Cities */}
+      {studentCities && (
+        <section className="py-20 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <ScrollAnimator>
+              <h2 className="text-2xl md:text-3xl font-bold text-brand-navy mb-10 text-center">
+                {studentCities.title}
+              </h2>
+            </ScrollAnimator>
+            <div className="grid md:grid-cols-2 gap-6">
+              {studentCities.cities.map((city, i) => (
+                <ScrollAnimator key={city.name} delay={i * 100}>
+                  <div className="relative rounded-2xl overflow-hidden h-72 group">
+                    <Image
+                      src={city.image}
+                      alt={city.name}
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-105"
+                      unoptimized
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/80 via-brand-navy/30 to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-6">
+                      <h3 className="text-white text-xl font-bold mb-2">{city.name}</h3>
+                      <p className="text-gray-200 text-sm leading-relaxed">{city.description}</p>
+                    </div>
+                  </div>
+                </ScrollAnimator>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Why Universities */}
+      {whyUniversities && (
+        <section className="py-20 bg-brand-navy">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <ScrollAnimator>
+              <div className="w-14 h-14 bg-brand-teal/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <GraduationCap className="w-7 h-7 text-brand-teal" />
+              </div>
+              <h2 className="text-2xl md:text-3xl font-bold text-white mb-6">
+                {whyUniversities.title}
+              </h2>
+              <p className="text-gray-300 text-lg leading-relaxed max-w-3xl mx-auto">
+                {whyUniversities.description}
+              </p>
+            </ScrollAnimator>
+          </div>
+        </section>
+      )}
+
+      {/* Things to Consider */}
+      {thingsToConsider && (
+        <section className="py-20 bg-gray-50">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <ScrollAnimator>
+              <h2 className="text-2xl md:text-3xl font-bold text-brand-navy mb-4 text-center">
+                {thingsToConsider.title}
+              </h2>
+              {thingsToConsider.intro && (
+                <p className="text-gray-500 text-center mb-10 max-w-2xl mx-auto">
+                  {thingsToConsider.intro}
+                </p>
+              )}
+            </ScrollAnimator>
+            <div className="space-y-6">
+              {thingsToConsider.items.map((item, i) => (
+                <ScrollAnimator key={i} delay={i * 80}>
+                  <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                    <div className="flex items-start gap-4">
+                      <div className="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center shrink-0 mt-0.5">
+                        <AlertTriangle className="w-5 h-5 text-amber-500" />
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-brand-navy text-lg mb-2">{item.title}</h3>
+                        <p className="text-gray-600 leading-relaxed">{item.description}</p>
+                      </div>
+                    </div>
+                  </div>
+                </ScrollAnimator>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Tuition Fees Table */}
+      {tuitionTable && (
+        <section className="py-20 bg-white">
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <ScrollAnimator>
+              <div className="text-center mb-10">
+                <div className="w-14 h-14 bg-brand-teal/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <DollarSign className="w-7 h-7 text-brand-teal" />
+                </div>
+                <h2 className="text-2xl md:text-3xl font-bold text-brand-navy">
+                  {tuitionTable.title}
+                </h2>
+              </div>
+            </ScrollAnimator>
+            <ScrollAnimator delay={100}>
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse rounded-2xl overflow-hidden shadow-sm border border-gray-100">
+                  <thead>
+                    <tr className="bg-brand-navy text-white">
+                      {tuitionTable.headers.map((h, i) => (
+                        <th key={i} className="px-6 py-4 text-left text-sm font-semibold">
+                          {h}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {tuitionTable.rows.map((row, i) => (
+                      <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                        {row.map((cell, j) => (
+                          <td key={j} className="px-6 py-4 text-sm text-gray-700">
+                            {j === 0 ? <span className="font-semibold text-brand-navy">{cell}</span> : cell}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              {tuitionTable.note && (
+                <p className="text-gray-500 text-xs mt-4 text-center">{tuitionTable.note}</p>
+              )}
+            </ScrollAnimator>
+          </div>
+        </section>
+      )}
+
+      {/* Living Costs */}
+      {livingCosts && (
+        <section className="py-20 bg-gray-50">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <ScrollAnimator>
+              <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 text-center">
+                <div className="w-14 h-14 bg-brand-teal/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <DollarSign className="w-7 h-7 text-brand-teal" />
+                </div>
+                <h2 className="text-2xl md:text-3xl font-bold text-brand-navy mb-4">
+                  {livingCosts.title}
+                </h2>
+                <p className="text-4xl md:text-5xl font-bold text-brand-teal mb-6">
+                  {livingCosts.amount}
+                </p>
+                <p className="text-gray-500 text-sm mb-2">Most international students spend between these amounts depending on:</p>
+                <div className="flex flex-wrap justify-center gap-2 mt-3">
+                  {livingCosts.factors.map((f) => (
+                    <span
+                      key={f}
+                      className="px-3 py-1.5 bg-brand-navy/5 text-brand-navy text-sm rounded-full"
+                    >
+                      {f}
+                    </span>
+                  ))}
+                </div>
+                {livingCosts.note && (
+                  <p className="text-gray-400 text-xs mt-4">{livingCosts.note}</p>
+                )}
+              </div>
+            </ScrollAnimator>
+          </div>
+        </section>
+      )}
+
+      {/* Post-Graduation */}
+      {postGraduation && (
+        <section className="py-20 bg-white">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <ScrollAnimator>
+              <div className="text-center mb-10">
+                <div className="w-14 h-14 bg-brand-teal/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <Briefcase className="w-7 h-7 text-brand-teal" />
+                </div>
+                <h2 className="text-2xl md:text-3xl font-bold text-brand-navy mb-4">
+                  {postGraduation.title}
+                </h2>
+                <p className="text-gray-600 text-lg max-w-2xl mx-auto">{postGraduation.description}</p>
+              </div>
+            </ScrollAnimator>
+            <div className="grid sm:grid-cols-2 gap-4 max-w-3xl mx-auto">
+              {postGraduation.items.map((item, i) => (
+                <ScrollAnimator key={i} delay={i * 80}>
+                  <div className="flex items-start gap-3 bg-gray-50 rounded-xl p-4">
+                    <CheckCircle2 className="w-5 h-5 text-brand-teal mt-0.5 shrink-0" />
+                    <span className="text-gray-700 text-sm leading-relaxed">{item}</span>
+                  </div>
+                </ScrollAnimator>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Popular Majors */}
+      {popularMajors && (
+        <section className="py-20 bg-brand-navy">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <ScrollAnimator>
+              <div className="text-center mb-10">
+                <p className="text-brand-teal font-semibold text-sm uppercase tracking-wider mb-2">
+                  Available Majors
+                </p>
+                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                  {popularMajors.title}
+                </h2>
+                <p className="text-gray-300 max-w-2xl mx-auto">{popularMajors.description}</p>
+              </div>
+            </ScrollAnimator>
+            <div className="flex flex-wrap justify-center gap-3">
+              {popularMajors.majors.map((major, i) => (
+                <ScrollAnimator key={major} delay={i * 40}>
+                  <span className="px-4 py-2.5 bg-white/10 border border-white/10 text-white text-sm rounded-xl backdrop-blur-sm hover:bg-brand-teal/20 hover:border-brand-teal/30 transition-all duration-300">
+                    {major}
+                  </span>
+                </ScrollAnimator>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Why UniStation */}
+      {whyUnistation && (
+        <section className="py-20 bg-white">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <ScrollAnimator>
+              <div className="text-center mb-10">
+                <h2 className="text-2xl md:text-3xl font-bold text-brand-navy mb-4">
+                  {whyUnistation.title}
+                </h2>
+                <p className="text-gray-600 text-lg max-w-2xl mx-auto">{whyUnistation.description}</p>
+              </div>
+            </ScrollAnimator>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {whyUnistation.services.map((service, i) => (
+                <ScrollAnimator key={i} delay={i * 60}>
+                  <div className="flex items-start gap-3 bg-gray-50 rounded-xl p-4">
+                    <Star className="w-5 h-5 text-brand-teal mt-0.5 shrink-0" />
+                    <span className="text-gray-700 text-sm leading-relaxed">{service}</span>
+                  </div>
+                </ScrollAnimator>
+              ))}
+            </div>
+            {whyUnistation.closing && (
+              <p className="text-center text-gray-500 mt-8 text-sm italic">
+                {whyUnistation.closing}
+              </p>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* CTA Section */}
+      {ctaSection && (
+        <section className="py-20 bg-gray-50">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <ScrollAnimator>
+              <h3 className="text-2xl md:text-3xl font-bold text-brand-navy mb-4">
+                {ctaSection.title}
+              </h3>
+              <p className="text-gray-600 mb-8 max-w-xl mx-auto text-lg leading-relaxed">
+                {ctaSection.description}
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <a
+                  href="https://calendly.com/unistation-info/30min"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center px-8 py-4 bg-brand-teal hover:bg-brand-teal-light text-white font-semibold rounded-xl btn-primary-hover transition-colors text-lg shadow-lg hover:shadow-xl hover:shadow-brand-teal/20"
+                >
+                  Book a Free Consultation
+                </a>
+                <Link
+                  href="/packages"
+                  className="inline-flex items-center justify-center px-8 py-4 border border-brand-navy text-brand-navy hover:bg-brand-navy hover:text-white font-semibold rounded-xl transition-all duration-300 text-lg"
+                >
+                  View Packages
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Link>
+              </div>
+              <p className="text-gray-400 text-xs mt-6 max-w-2xl mx-auto">
+                {ctaSection.disclaimer}
+              </p>
+            </ScrollAnimator>
+          </div>
+        </section>
+      )}
 
       <LibrarySection topicName={dest.name} tags={[slugForTags]} />
       <FAQSection faqs={genericFaqs} />

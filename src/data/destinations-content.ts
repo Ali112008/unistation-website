@@ -15,6 +15,7 @@ export interface AdditionalSection {
     | "who-fits"
     | "majors"
     | "cta"
+    | "quick-facts"
     | "key-advantages"
     | "student-cities"
     | "why-universities"

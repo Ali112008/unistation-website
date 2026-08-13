@@ -42,8 +42,17 @@ function getYouTubeId(url: string): string | null {
 function matchesTag(itemTags: string | undefined, filterTags: string[]): boolean {
   if (!filterTags || filterTags.length === 0) return true;
   if (!itemTags) return false;
-  const itemTagsLower = itemTags.toLowerCase();
-  return filterTags.some((tag) => itemTagsLower.includes(tag.toLowerCase()));
+  // Normalize both sides: lowercase, replace hyphens/spaces/commas with a common separator
+  const normalize = (s: string) => s.toLowerCase().replace(/[_\-,]/g, " ").replace(/\s+/g, " ").trim();
+  const normalizedItemTags = normalize(itemTags);
+  // Split item tags by comma to get individual tags
+  const individualItemTags = normalizedItemTags.split(",").map((t: string) => t.trim());
+  return filterTags.some((tag) => {
+    const normalizedTag = normalize(tag);
+    return individualItemTags.some((it: string) =>
+      it === normalizedTag || it.includes(normalizedTag) || normalizedTag.includes(it)
+    );
+  });
 }
 
 function formatDate(dateStr: string) {
