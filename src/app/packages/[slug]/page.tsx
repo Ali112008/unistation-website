@@ -45,7 +45,32 @@ const PACKAGE_TAGS: Record<string, string[]> = {
   "profile-building": ["profile-building", "scholarship", "mentorship"],
 };
 
-/* ───────── Stats for each package ───────── */
+/* ───────── Icon mapping based on label keywords ───────── */
+const ICON_MAP: Record<string, React.ElementType> = {
+  GraduationCap, TrendingUp, Users, ShieldCheck, Globe, Sparkles, BookOpen, FileCheck, MessageSquare, Star, Handshake,
+};
+const ICON_KEYWORDS: [string[], React.ElementType][] = [
+  [["university", "school", "college", "partner", "medical"], GraduationCap],
+  [["rate", "success", "acceptance", "gain", "cost", "affordable", "from"], TrendingUp],
+  [["students", "placed", "people"], Users],
+  [["immigration", "full", "experience", "years"], ShieldCheck],
+  [["countries", "covered"], Globe],
+  [["scholarship", "affordable"], Sparkles],
+  [["program", "english", "duration"], BookOpen],
+  [["applications", "deadline", "early"], FileCheck],
+  [["alerts", "coaching", "one-to-one"], MessageSquare],
+  [["spots", "top", "limited", "qs"], Star],
+  [["work", "study", "options"], Handshake],
+];
+function getStatIcon(label: string): React.ElementType {
+  const lower = label.toLowerCase();
+  for (const [keywords, icon] of ICON_KEYWORDS) {
+    if (keywords.some(k => lower.includes(k))) return icon;
+  }
+  return GraduationCap;
+}
+
+/* ───────── Stats for each package (fallback) ───────── */
 const PACKAGE_STATS: Record<string, { label: string; value: string; icon: React.ElementType }[]> = {
   uk: [
     { label: "Partner Universities", value: "50+", icon: GraduationCap },
@@ -309,7 +334,20 @@ export default async function PackageDetailPage({
   // Read content from Turso (live-editable) with TS fallback
   const content = (await getPackageBySlug(slug)) || tsPackagesContent[slug];
   const faqsForSlug = (allFaqs as any)[slug] || tsPageFaqs[slug] || [];
-  const stats = PACKAGE_STATS[slug] || PACKAGE_STATS["uk"];
+  // Stats: prefer admin data, fallback to hardcoded
+  const adminStats = content?.stats;
+  const fallbackStats = PACKAGE_STATS[slug] || PACKAGE_STATS["uk"];
+  const stats = (adminStats && adminStats.length > 0
+    ? adminStats.map((s: any) => ({ label: s.label, value: s.value, icon: getStatIcon(s.label) }))
+    : fallbackStats
+  );
+  // Process steps: prefer admin data, fallback to hardcoded
+  const processSteps = (content?.processSteps && content.processSteps.length > 0 ? content.processSteps : PROCESS_STEPS);
+  // Additional sections from admin data
+  const additionalSections = content?.additionalSections || [];
+
+  // Helper: find section by type from additionalSections
+  const findSection = (type: string) => additionalSections.find((s: any) => s.type === type)?.data as Record<string, any> | undefined;
 
   return (
     <>
@@ -532,378 +570,428 @@ export default async function PackageDetailPage({
           )}
 
           {/* Spain-specific: Not Included + How to Enroll */}
-          {slug === "spain-foundation-year" && (
+          {(slug === "spain-foundation-year" || findSection("not-included") || findSection("enrollment-info")) && (
             <>
-              <section className="py-16 bg-gray-50">
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                  <ScrollAnimator>
-                    <div className="text-center mb-10">
-                      <p className="text-brand-teal font-semibold text-sm uppercase tracking-wider mb-2">
-                        Good to Know
-                      </p>
-                      <h2 className="text-2xl md:text-3xl font-bold text-brand-navy mb-4">
-                        What&apos;s Not Included
-                      </h2>
-                      <div className="brand-line mx-auto" />
-                    </div>
-                  </ScrollAnimator>
-                  <ScrollAnimator delay={100}>
-                    <div className="grid sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
-                      {[
-                        "Visa and embassy fees",
-                        "Health insurance",
-                        "Flights",
-                        "Housing and living costs",
-                      ].map((item) => (
-                        <div
-                          key={item}
-                          className="flex items-center gap-3 bg-white rounded-xl px-5 py-4 border border-gray-100"
-                        >
-                          <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
-                            <span className="text-gray-400 text-xs font-bold">—</span>
-                          </div>
-                          <span className="text-gray-600 text-sm">{item}</span>
+              {(slug === "spain-foundation-year" || findSection("not-included")) && (() => {
+                const notIncData = findSection("not-included");
+                const notIncItems = notIncData?.items || [
+                  "Visa and embassy fees",
+                  "Health insurance",
+                  "Flights",
+                  "Housing and living costs",
+                ];
+                return (
+                  <section className="py-16 bg-gray-50">
+                    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                      <ScrollAnimator>
+                        <div className="text-center mb-10">
+                          <p className="text-brand-teal font-semibold text-sm uppercase tracking-wider mb-2">
+                            Good to Know
+                          </p>
+                          <h2 className="text-2xl md:text-3xl font-bold text-brand-navy mb-4">
+                            What&apos;s Not Included
+                          </h2>
+                          <div className="brand-line mx-auto" />
                         </div>
-                      ))}
+                      </ScrollAnimator>
+                      <ScrollAnimator delay={100}>
+                        <div className="grid sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
+                          {(notIncItems as string[]).map((item: string) => (
+                            <div
+                              key={item}
+                              className="flex items-center gap-3 bg-white rounded-xl px-5 py-4 border border-gray-100"
+                            >
+                              <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
+                                <span className="text-gray-400 text-xs font-bold">—</span>
+                              </div>
+                              <span className="text-gray-600 text-sm">{item}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </ScrollAnimator>
                     </div>
-                  </ScrollAnimator>
-                </div>
-              </section>
+                  </section>
+                );
+              })()}
 
-              <section className="py-16 bg-white">
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                  <ScrollAnimator>
-                    <div className="text-center mb-10">
-                      <p className="text-brand-teal font-semibold text-sm uppercase tracking-wider mb-2">
-                        Get Started
-                      </p>
-                      <h2 className="text-2xl md:text-3xl font-bold text-brand-navy mb-4">
-                        How to Enroll
-                      </h2>
-                      <div className="brand-line mx-auto" />
-                      <p className="text-gray-500 mt-4">
-                        Send us the following documents via WhatsApp or email at{" "}
-                        <a
-                          href="mailto:info@unistation.org"
-                          className="text-brand-teal hover:underline font-medium"
-                        >
-                          info@unistation.org
-                        </a>
-                      </p>
-                    </div>
-                  </ScrollAnimator>
-                  <ScrollAnimator delay={100}>
-                    <div className="grid gap-4 max-w-xl mx-auto">
-                      {[
-                        { label: "A copy of your passport", icon: "1" },
-                        { label: "A personal photo", icon: "2" },
-                        { label: "Your most recent academic transcript", icon: "3" },
-                      ].map((item) => (
-                        <div
-                          key={item.label}
-                          className="flex items-center gap-4 bg-gray-50 rounded-xl px-6 py-5"
-                        >
-                          <span className="w-8 h-8 rounded-lg bg-brand-teal text-white text-sm font-bold flex items-center justify-center shrink-0">
-                            {item.icon}
-                          </span>
-                          <span className="text-gray-700 font-medium">{item.label}</span>
+              {(slug === "spain-foundation-year" || findSection("enrollment-info")) && (() => {
+                const enrollData = findSection("enrollment-info");
+                const enrollTitle = enrollData?.title || "How to Enroll";
+                const enrollDesc = enrollData?.description || "Send us the following documents via WhatsApp or email at";
+                const enrollEmail = enrollData?.email || "info@unistation.org";
+                const enrollSteps = enrollData?.steps || [
+                  { label: "A copy of your passport", icon: "1" },
+                  { label: "A personal photo", icon: "2" },
+                  { label: "Your most recent academic transcript", icon: "3" },
+                ];
+                return (
+                  <section className="py-16 bg-white">
+                    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                      <ScrollAnimator>
+                        <div className="text-center mb-10">
+                          <p className="text-brand-teal font-semibold text-sm uppercase tracking-wider mb-2">
+                            Get Started
+                          </p>
+                          <h2 className="text-2xl md:text-3xl font-bold text-brand-navy mb-4">
+                            {enrollTitle}
+                          </h2>
+                          <div className="brand-line mx-auto" />
+                          <p className="text-gray-500 mt-4">
+                            {enrollDesc}{" "}
+                            <a
+                              href={`mailto:${enrollEmail}`}
+                              className="text-brand-teal hover:underline font-medium"
+                            >
+                              {enrollEmail}
+                            </a>
+                          </p>
                         </div>
-                      ))}
+                      </ScrollAnimator>
+                      <ScrollAnimator delay={100}>
+                        <div className="grid gap-4 max-w-xl mx-auto">
+                          {(enrollSteps as { label: string; icon: string }[]).map((item) => (
+                            <div
+                              key={item.label}
+                              className="flex items-center gap-4 bg-gray-50 rounded-xl px-6 py-5"
+                            >
+                              <span className="w-8 h-8 rounded-lg bg-brand-teal text-white text-sm font-bold flex items-center justify-center shrink-0">
+                                {item.icon}
+                              </span>
+                              <span className="text-gray-700 font-medium">{item.label}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </ScrollAnimator>
+                      <ScrollAnimator delay={200}>
+                        <div className="flex flex-col sm:flex-row gap-4 justify-center mt-10">
+                          <a
+                            href="https://wa.me/971522732589"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-[#25D366] hover:bg-[#1ebe5d] text-white font-semibold rounded-xl transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-[#25D366]/30"
+                          >
+                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                            Send Documents via WhatsApp
+                          </a>
+                          <a
+                            href={`mailto:${enrollEmail}`}
+                            className="inline-flex items-center justify-center gap-2 px-7 py-3.5 border-2 border-brand-navy/20 text-brand-navy hover:bg-brand-navy hover:text-white font-semibold rounded-xl transition-all duration-300"
+                          >
+                            <MapPin className="w-4 h-4" />
+                            Send via Email
+                          </a>
+                        </div>
+                      </ScrollAnimator>
                     </div>
-                  </ScrollAnimator>
-                  <ScrollAnimator delay={200}>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center mt-10">
-                      <a
-                        href="https://wa.me/971522732589"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-[#25D366] hover:bg-[#1ebe5d] text-white font-semibold rounded-xl transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-[#25D366]/30"
-                      >
-                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                        Send Documents via WhatsApp
-                      </a>
-                      <a
-                        href="mailto:info@unistation.org"
-                        className="inline-flex items-center justify-center gap-2 px-7 py-3.5 border-2 border-brand-navy/20 text-brand-navy hover:bg-brand-navy hover:text-white font-semibold rounded-xl transition-all duration-300"
-                      >
-                        <MapPin className="w-4 h-4" />
-                        Send via Email
-                      </a>
-                    </div>
-                  </ScrollAnimator>
-                </div>
-              </section>
+                  </section>
+                );
+              })()}
             </>
           )}
 
           {/* Profile Building-specific: Mentorship details, Who It's For, Outcomes, Why Join Early */}
-          {slug === "profile-building" && (
+          {(slug === "profile-building" || findSection("who-is-for")) && (
             <>
               {/* Who Is This Program For? */}
-              <section className="py-20 bg-white">
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                  <ScrollAnimator>
-                    <div className="text-center mb-12">
-                      <p className="text-brand-teal font-semibold text-sm uppercase tracking-wider mb-2">
-                        Is This Right for You?
-                      </p>
-                      <h2 className="text-3xl md:text-4xl font-bold text-brand-navy mb-4">
-                        Who Is This Program For?
-                      </h2>
-                      <div className="brand-line mx-auto" />
-                    </div>
-                  </ScrollAnimator>
-                  <div className="grid gap-4 max-w-2xl mx-auto">
-                    {[
-                      "Gain admission to the world's leading universities.",
-                      "Win competitive merit-based scholarships.",
-                      "Study Medicine, Dentistry, Engineering, Computer Science, Business, Law, or other highly competitive programs.",
-                      "Build an exceptional profile that stands out among thousands of applicants.",
-                      "Maximize their chances of admission before beginning the university application process.",
-                    ].map((item, i) => (
-                      <ScrollAnimator key={i} delay={i * 60}>
-                        <div className="flex items-start gap-4 bg-gray-50 rounded-xl px-6 py-5">
-                          <div className="w-8 h-8 rounded-lg bg-brand-teal/10 flex items-center justify-center shrink-0 mt-0.5">
-                            <CheckCircle2 className="w-4 h-4 text-brand-teal" />
-                          </div>
-                          <span className="text-gray-700 leading-relaxed">{item}</span>
+              {(slug === "profile-building" || findSection("who-is-for")) && (() => {
+                const wfData = findSection("who-is-for");
+                const wfItems = wfData?.items || [
+                  "Gain admission to the world's leading universities.",
+                  "Win competitive merit-based scholarships.",
+                  "Study Medicine, Dentistry, Engineering, Computer Science, Business, Law, or other highly competitive programs.",
+                  "Build an exceptional profile that stands out among thousands of applicants.",
+                  "Maximize their chances of admission before beginning the university application process.",
+                ];
+                const wfClosing = wfData?.closingText || "Whether you are in high school or taking a gap year, starting early provides a significant advantage.";
+                return (
+                  <section className="py-20 bg-white">
+                    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                      <ScrollAnimator>
+                        <div className="text-center mb-12">
+                          <p className="text-brand-teal font-semibold text-sm uppercase tracking-wider mb-2">
+                            Is This Right for You?
+                          </p>
+                          <h2 className="text-3xl md:text-4xl font-bold text-brand-navy mb-4">
+                            Who Is This Program For?
+                          </h2>
+                          <div className="brand-line mx-auto" />
                         </div>
                       </ScrollAnimator>
-                    ))}
-                  </div>
-                  <ScrollAnimator delay={300}>
-                    <p className="text-gray-500 text-center mt-8 max-w-xl mx-auto">
-                      Whether you are in high school or taking a gap year, starting early provides a significant advantage.
-                    </p>
-                  </ScrollAnimator>
-                </div>
-              </section>
+                      <div className="grid gap-4 max-w-2xl mx-auto">
+                        {(wfItems as string[]).map((item: string, i: number) => (
+                          <ScrollAnimator key={i} delay={i * 60}>
+                            <div className="flex items-start gap-4 bg-gray-50 rounded-xl px-6 py-5">
+                              <div className="w-8 h-8 rounded-lg bg-brand-teal/10 flex items-center justify-center shrink-0 mt-0.5">
+                                <CheckCircle2 className="w-4 h-4 text-brand-teal" />
+                              </div>
+                              <span className="text-gray-700 leading-relaxed">{item}</span>
+                            </div>
+                          </ScrollAnimator>
+                        ))}
+                      </div>
+                      <ScrollAnimator delay={300}>
+                        <p className="text-gray-500 text-center mt-8 max-w-xl mx-auto">
+                          {wfClosing}
+                        </p>
+                      </ScrollAnimator>
+                    </div>
+                  </section>
+                );
+              })()}
 
               {/* A Long-Term Mentorship */}
-              <section className="py-20 bg-gray-50">
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                  <ScrollAnimator>
-                    <div className="relative">
-                      <div className="absolute -left-4 top-0 w-1 h-full bg-gradient-to-b from-brand-teal to-brand-teal/20 rounded-full hidden md:block" />
-                      <p className="text-brand-teal font-semibold text-sm uppercase tracking-wider mb-2 md:pl-6">
-                        Not Just Advice
-                      </p>
-                      <h2 className="text-2xl md:text-3xl font-bold text-brand-navy mb-6 md:pl-6">
-                        A Long-Term Mentorship, Not Just Advice
-                      </h2>
-                      <div className="space-y-4 text-gray-600 leading-relaxed text-lg md:pl-6">
-                        <p>Unlike traditional admissions consulting, this program is built around continuous mentorship and accountability.</p>
-                        <p>Over a period of at least six months, you&apos;ll work closely with your dedicated mentor through weekly or monthly coaching sessions, depending on your personalized development plan. Each session is focused on reviewing your progress, setting new goals, overcoming challenges, and ensuring that every step strengthens your university application.</p>
-                        <p>Between sessions, our team remains available to provide ongoing guidance, feedback, and support whenever needed. Your mentor becomes your long-term advisor throughout your university preparation journey.</p>
-                      </div>
+              {(slug === "profile-building" || findSection("mentorship-info")) && (() => {
+                const mData = findSection("mentorship-info");
+                const mTitle = mData?.title || "A Long-Term Mentorship, Not Just Advice";
+                const mSubtitle = mData?.subtitle || "Not Just Advice";
+                const mParagraphs = mData?.paragraphs || [
+                  "Unlike traditional admissions consulting, this program is built around continuous mentorship and accountability.",
+                  "Over a period of at least six months, you'll work closely with your dedicated mentor through weekly or monthly coaching sessions, depending on your personalized development plan. Each session is focused on reviewing your progress, setting new goals, overcoming challenges, and ensuring that every step strengthens your university application.",
+                  "Between sessions, our team remains available to provide ongoing guidance, feedback, and support whenever needed. Your mentor becomes your long-term advisor throughout your university preparation journey.",
+                ];
+                return (
+                  <section className="py-20 bg-gray-50">
+                    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                      <ScrollAnimator>
+                        <div className="relative">
+                          <div className="absolute -left-4 top-0 w-1 h-full bg-gradient-to-b from-brand-teal to-brand-teal/20 rounded-full hidden md:block" />
+                          <p className="text-brand-teal font-semibold text-sm uppercase tracking-wider mb-2 md:pl-6">
+                            {mSubtitle}
+                          </p>
+                          <h2 className="text-2xl md:text-3xl font-bold text-brand-navy mb-6 md:pl-6">
+                            {mTitle}
+                          </h2>
+                          <div className="space-y-4 text-gray-600 leading-relaxed text-lg md:pl-6">
+                            {(mParagraphs as string[]).map((p: string, i: number) => <p key={i}>{p}</p>)}
+                          </div>
+                        </div>
+                      </ScrollAnimator>
                     </div>
-                  </ScrollAnimator>
-                </div>
-              </section>
+                  </section>
+                );
+              })()}
 
               {/* What We Build Together - Grid */}
-              <section className="py-20 bg-white">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                  <ScrollAnimator>
-                    <div className="text-center mb-14">
-                      <p className="text-brand-teal font-semibold text-sm uppercase tracking-wider mb-2">
-                        Program Pillars
-                      </p>
-                      <h2 className="text-3xl md:text-4xl font-bold text-brand-navy mb-4">
-                        What We&apos;ll Build Together
-                      </h2>
-                      <div className="brand-line mx-auto" />
-                    </div>
-                  </ScrollAnimator>
-                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {[
-                      {
-                        icon: "📚",
-                        title: "Academic Excellence",
-                        desc: "Develop a stronger academic profile through carefully selected university-level courses, certifications, competitions, enrichment programs, and advanced learning opportunities aligned with your intended field of study.",
-                      },
-                      {
-                        icon: "🏆",
-                        title: "Leadership & Impact",
-                        desc: "Top universities seek students who create meaningful impact. We'll help you develop leadership experience through clubs, initiatives, volunteering, entrepreneurship, and passion projects that genuinely reflect your interests and values.",
-                      },
-                      {
-                        icon: "🔬",
-                        title: "Research Experience",
-                        desc: "For students pursuing competitive disciplines such as Medicine, Dentistry, Engineering, and Science, research can be a significant advantage. We'll guide you in finding opportunities, collaborating with academics, and writing scientific papers.",
-                      },
-                      {
-                        icon: "💼",
-                        title: "Internships & Professional Exposure",
-                        desc: "Gain practical experience through internships, shadowing opportunities, professional projects, and industry engagement that demonstrate maturity and career commitment.",
-                      },
-                      {
-                        icon: "✍️",
-                        title: "Personal Branding",
-                        desc: "A compelling Personal Statement, Professional Academic CV, Scholarship Essays, Motivation Letters, University Portfolio, and Activity Descriptions — all refined through multiple rounds of feedback.",
-                      },
-                      {
-                        icon: "🎯",
-                        title: "Scholarship Strategy",
-                        desc: "Building a strong profile is only part of the journey. We also help you identify suitable scholarship opportunities and position your achievements effectively to maximize your competitiveness.",
-                      },
-                    ].map((item, i) => (
-                      <ScrollAnimator key={item.title} delay={i * 80}>
-                        <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 h-full card-hover">
-                          <span className="text-3xl mb-4 block">{item.icon}</span>
-                          <h3 className="text-lg font-bold text-brand-navy mb-3">{item.title}</h3>
-                          <p className="text-gray-600 text-sm leading-relaxed">{item.desc}</p>
+              {(slug === "profile-building" || findSection("build-together")) && (() => {
+                const btData = findSection("build-together");
+                const btTitle = btData?.title || "What We'll Build Together";
+                const btSubtitle = btData?.subtitle || "Program Pillars";
+                const btItems = btData?.items || [
+                  { icon: "📚", title: "Academic Excellence", desc: "Develop a stronger academic profile through carefully selected university-level courses, certifications, competitions, enrichment programs, and advanced learning opportunities aligned with your intended field of study." },
+                  { icon: "🏆", title: "Leadership & Impact", desc: "Top universities seek students who create meaningful impact. We'll help you develop leadership experience through clubs, initiatives, volunteering, entrepreneurship, and passion projects that genuinely reflect your interests and values." },
+                  { icon: "🔬", title: "Research Experience", desc: "For students pursuing competitive disciplines such as Medicine, Dentistry, Engineering, and Science, research can be a significant advantage. We'll guide you in finding opportunities, collaborating with academics, and writing scientific papers." },
+                  { icon: "💼", title: "Internships & Professional Exposure", desc: "Gain practical experience through internships, shadowing opportunities, professional projects, and industry engagement that demonstrate maturity and career commitment." },
+                  { icon: "✍️", title: "Personal Branding", desc: "A compelling Personal Statement, Professional Academic CV, Scholarship Essays, Motivation Letters, University Portfolio, and Activity Descriptions — all refined through multiple rounds of feedback." },
+                  { icon: "🎯", title: "Scholarship Strategy", desc: "Building a strong profile is only part of the journey. We also help you identify suitable scholarship opportunities and position your achievements effectively to maximize your competitiveness." },
+                ];
+                return (
+                  <section className="py-20 bg-white">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                      <ScrollAnimator>
+                        <div className="text-center mb-14">
+                          <p className="text-brand-teal font-semibold text-sm uppercase tracking-wider mb-2">
+                            {btSubtitle}
+                          </p>
+                          <h2 className="text-3xl md:text-4xl font-bold text-brand-navy mb-4">
+                            {btTitle}
+                          </h2>
+                          <div className="brand-line mx-auto" />
                         </div>
                       </ScrollAnimator>
-                    ))}
-                  </div>
-                </div>
-              </section>
+                      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {(btItems as { icon: string; title: string; desc: string }[]).map((item, i) => (
+                          <ScrollAnimator key={item.title} delay={i * 80}>
+                            <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 h-full card-hover">
+                              <span className="text-3xl mb-4 block">{item.icon}</span>
+                              <h3 className="text-lg font-bold text-brand-navy mb-3">{item.title}</h3>
+                              <p className="text-gray-600 text-sm leading-relaxed">{item.desc}</p>
+                            </div>
+                          </ScrollAnimator>
+                        ))}
+                      </div>
+                    </div>
+                  </section>
+                );
+              })()}
 
               {/* Premium Coaching */}
-              <section className="py-20 bg-gray-50">
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                  <ScrollAnimator>
-                    <div className="text-center mb-12">
-                      <p className="text-brand-teal font-semibold text-sm uppercase tracking-wider mb-2">
-                        Coaching Model
-                      </p>
-                      <h2 className="text-3xl md:text-4xl font-bold text-brand-navy mb-4">
-                        Premium Coaching & Accountability
-                      </h2>
-                      <div className="brand-line mx-auto" />
-                    </div>
-                  </ScrollAnimator>
-                  <div className="grid sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
-                    {[
-                      "Regular one-to-one coaching sessions (weekly or monthly)",
-                      "Personalized goal setting",
-                      "Progress monitoring",
-                      "Continuous feedback",
-                      "Accountability check-ins",
-                      "Direct access to experienced university advisors",
-                      "Ongoing adjustments to your development plan",
-                    ].map((item, i) => (
-                      <ScrollAnimator key={i} delay={i * 50}>
-                        <div className="flex items-start gap-3 bg-white rounded-xl px-5 py-4 border border-gray-100">
-                          <CheckCircle2 className="w-5 h-5 text-brand-teal shrink-0 mt-0.5" />
-                          <span className="text-gray-600 text-sm leading-relaxed">{item}</span>
+              {(slug === "profile-building" || findSection("coaching-list")) && (() => {
+                const clData = findSection("coaching-list");
+                const clTitle = clData?.title || "Premium Coaching & Accountability";
+                const clSubtitle = clData?.subtitle || "Coaching Model";
+                const clItems = clData?.items || [
+                  "Regular one-to-one coaching sessions (weekly or monthly)",
+                  "Personalized goal setting",
+                  "Progress monitoring",
+                  "Continuous feedback",
+                  "Accountability check-ins",
+                  "Direct access to experienced university advisors",
+                  "Ongoing adjustments to your development plan",
+                ];
+                const clClosing = clData?.closingText || "Our goal is to ensure that every month of the program results in measurable progress.";
+                return (
+                  <section className="py-20 bg-gray-50">
+                    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                      <ScrollAnimator>
+                        <div className="text-center mb-12">
+                          <p className="text-brand-teal font-semibold text-sm uppercase tracking-wider mb-2">
+                            {clSubtitle}
+                          </p>
+                          <h2 className="text-3xl md:text-4xl font-bold text-brand-navy mb-4">
+                            {clTitle}
+                          </h2>
+                          <div className="brand-line mx-auto" />
                         </div>
                       </ScrollAnimator>
-                    ))}
-                  </div>
-                  <ScrollAnimator delay={300}>
-                    <p className="text-gray-500 text-center mt-8 max-w-xl mx-auto">
-                      Our goal is to ensure that every month of the program results in measurable progress.
-                    </p>
-                  </ScrollAnimator>
-                </div>
-              </section>
+                      <div className="grid sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
+                        {(clItems as string[]).map((item: string, i: number) => (
+                          <ScrollAnimator key={i} delay={i * 50}>
+                            <div className="flex items-start gap-3 bg-white rounded-xl px-5 py-4 border border-gray-100">
+                              <CheckCircle2 className="w-5 h-5 text-brand-teal shrink-0 mt-0.5" />
+                              <span className="text-gray-600 text-sm leading-relaxed">{item}</span>
+                            </div>
+                          </ScrollAnimator>
+                        ))}
+                      </div>
+                      <ScrollAnimator delay={300}>
+                        <p className="text-gray-500 text-center mt-8 max-w-xl mx-auto">
+                          {clClosing}
+                        </p>
+                      </ScrollAnimator>
+                    </div>
+                  </section>
+                );
+              })()}
 
               {/* Why Students Join Early */}
-              <section className="py-20 bg-brand-navy">
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                  <ScrollAnimator>
-                    <p className="text-brand-teal font-semibold text-sm uppercase tracking-wider mb-2">
-                      Start Early, Stand Out
-                    </p>
-                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-                      Why Students Join Early
-                    </h2>
-                    <div className="brand-line mx-auto mb-8" />
-                    <p className="text-gray-300 text-lg leading-relaxed max-w-2xl mx-auto">
-                      Building an exceptional university profile cannot be accomplished in a few weeks. The strongest applicants begin preparing months — or even years — before they submit their applications. This program provides the time, structure, mentorship, and accountability needed to build a profile that reflects sustained excellence rather than last-minute preparation.
-                    </p>
-                  </ScrollAnimator>
-                </div>
-              </section>
+              {(slug === "profile-building" || findSection("why-join-early")) && (() => {
+                const wjeData = findSection("why-join-early");
+                const wjeTitle = wjeData?.title || "Why Students Join Early";
+                const wjeSubtitle = wjeData?.subtitle || "Start Early, Stand Out";
+                const wjeDesc = wjeData?.description || "Building an exceptional university profile cannot be accomplished in a few weeks. The strongest applicants begin preparing months — or even years — before they submit their applications. This program provides the time, structure, mentorship, and accountability needed to build a profile that reflects sustained excellence rather than last-minute preparation.";
+                return (
+                  <section className="py-20 bg-brand-navy">
+                    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                      <ScrollAnimator>
+                        <p className="text-brand-teal font-semibold text-sm uppercase tracking-wider mb-2">
+                          {wjeSubtitle}
+                        </p>
+                        <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+                          {wjeTitle}
+                        </h2>
+                        <div className="brand-line mx-auto mb-8" />
+                        <p className="text-gray-300 text-lg leading-relaxed max-w-2xl mx-auto">
+                          {wjeDesc}
+                        </p>
+                      </ScrollAnimator>
+                    </div>
+                  </section>
+                );
+              })()}
 
               {/* Expected Outcomes */}
-              <section className="py-20 bg-white">
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                  <ScrollAnimator>
-                    <div className="text-center mb-12">
-                      <p className="text-brand-teal font-semibold text-sm uppercase tracking-wider mb-2">
-                        By the End of the Program
-                      </p>
-                      <h2 className="text-3xl md:text-4xl font-bold text-brand-navy mb-4">
-                        Expected Outcomes
-                      </h2>
-                      <div className="brand-line mx-auto" />
-                    </div>
-                  </ScrollAnimator>
-                  <div className="grid sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
-                    {[
-                      "A significantly stronger academic profile",
-                      "Meaningful leadership and extracurricular achievements",
-                      "Research and professional experience where appropriate",
-                      "A polished academic CV",
-                      "Outstanding application essays",
-                      "A competitive scholarship profile",
-                      "A clear university application strategy",
-                      "Greater confidence throughout the admissions process",
-                    ].map((item, i) => (
-                      <ScrollAnimator key={i} delay={i * 50}>
-                        <div className="flex items-start gap-3 bg-gray-50 rounded-xl px-5 py-4">
-                          <Sparkles className="w-5 h-5 text-brand-teal shrink-0 mt-0.5" />
-                          <span className="text-gray-700 text-sm leading-relaxed">{item}</span>
+              {(slug === "profile-building" || findSection("expected-outcomes")) && (() => {
+                const eoData = findSection("expected-outcomes");
+                const eoTitle = eoData?.title || "Expected Outcomes";
+                const eoSubtitle = eoData?.subtitle || "By the End of the Program";
+                const eoItems = eoData?.items || [
+                  "A significantly stronger academic profile",
+                  "Meaningful leadership and extracurricular achievements",
+                  "Research and professional experience where appropriate",
+                  "A polished academic CV",
+                  "Outstanding application essays",
+                  "A competitive scholarship profile",
+                  "A clear university application strategy",
+                  "Greater confidence throughout the admissions process",
+                ];
+                return (
+                  <section className="py-20 bg-white">
+                    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                      <ScrollAnimator>
+                        <div className="text-center mb-12">
+                          <p className="text-brand-teal font-semibold text-sm uppercase tracking-wider mb-2">
+                            {eoSubtitle}
+                          </p>
+                          <h2 className="text-3xl md:text-4xl font-bold text-brand-navy mb-4">
+                            {eoTitle}
+                          </h2>
+                          <div className="brand-line mx-auto" />
                         </div>
                       </ScrollAnimator>
-                    ))}
-                  </div>
-                </div>
-              </section>
+                      <div className="grid sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
+                        {(eoItems as string[]).map((item: string, i: number) => (
+                          <ScrollAnimator key={i} delay={i * 50}>
+                            <div className="flex items-start gap-3 bg-gray-50 rounded-xl px-5 py-4">
+                              <Sparkles className="w-5 h-5 text-brand-teal shrink-0 mt-0.5" />
+                              <span className="text-gray-700 text-sm leading-relaxed">{item}</span>
+                            </div>
+                          </ScrollAnimator>
+                        ))}
+                      </div>
+                    </div>
+                  </section>
+                );
+              })()}
 
               {/* Why Choose UniStation + CTA */}
-              <section className="py-20 bg-gray-50">
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                  <ScrollAnimator>
-                    <div className="relative">
-                      <div className="absolute -left-4 top-0 w-1 h-full bg-gradient-to-b from-brand-teal to-brand-teal/20 rounded-full hidden md:block" />
-                      <p className="text-brand-teal font-semibold text-sm uppercase tracking-wider mb-2 md:pl-6">
-                        The UniStation Advantage
-                      </p>
-                      <h2 className="text-2xl md:text-3xl font-bold text-brand-navy mb-6 md:pl-6">
-                        Why Choose UniStation?
-                      </h2>
-                      <div className="space-y-4 text-gray-600 leading-relaxed text-lg md:pl-6">
-                        <p>Our advisors have worked with students applying to leading universities across Europe, the United Kingdom, North America, Australia, and beyond. Rather than offering generic admissions advice, we provide structured mentorship tailored to each student&apos;s ambitions, strengths, and long-term goals.</p>
-                        <p>Every recommendation is made with one objective in mind: <strong className="text-brand-navy">Helping exceptional students become exceptional university applicants.</strong></p>
-                      </div>
+              {(slug === "profile-building" || findSection("why-unistation-cta")) && (() => {
+                const wuData = findSection("why-unistation-cta");
+                const wuTitle = wuData?.title || "Why Choose UniStation?";
+                const wuDesc = wuData?.description || "Our advisors have worked with students applying to leading universities across Europe, the United Kingdom, North America, Australia, and beyond. Rather than offering generic admissions advice, we provide structured mentorship tailored to each student's ambitions, strengths, and long-term goals.";
+                const wuCtaTitle = wuData?.ctaTitle || "Application Process";
+                const wuCtaDesc = wuData?.ctaDescription || "To maintain the quality of mentorship and personalized support, places in this program are limited. Every applicant completes an initial consultation and profile assessment before admission.";
+                return (
+                  <section className="py-20 bg-gray-50">
+                    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                      <ScrollAnimator>
+                        <div className="relative">
+                          <div className="absolute -left-4 top-0 w-1 h-full bg-gradient-to-b from-brand-teal to-brand-teal/20 rounded-full hidden md:block" />
+                          <p className="text-brand-teal font-semibold text-sm uppercase tracking-wider mb-2 md:pl-6">
+                            The UniStation Advantage
+                          </p>
+                          <h2 className="text-2xl md:text-3xl font-bold text-brand-navy mb-6 md:pl-6">
+                            {wuTitle}
+                          </h2>
+                          <div className="space-y-4 text-gray-600 leading-relaxed text-lg md:pl-6">
+                            <p>{wuDesc}</p>
+                            <p>Every recommendation is made with one objective in mind: <strong className="text-brand-navy">Helping exceptional students become exceptional university applicants.</strong></p>
+                          </div>
+                        </div>
+                      </ScrollAnimator>
+                      <ScrollAnimator delay={200}>
+                        <div className="mt-12 p-8 bg-brand-navy rounded-2xl text-center">
+                          <h3 className="text-2xl font-bold text-white mb-3">
+                            {wuCtaTitle}
+                          </h3>
+                          <p className="text-gray-300 mb-8 max-w-xl mx-auto">
+                            {wuCtaDesc}
+                          </p>
+                          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                            <a
+                              href="https://calendly.com/unistation-info/30min"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-brand-teal hover:bg-brand-teal-light text-white font-semibold rounded-xl btn-primary-hover transition-all duration-300"
+                            >
+                              Book a Free Consultation
+                              <ArrowRight className="w-4 h-4" />
+                            </a>
+                            <a
+                              href="https://wa.me/971522732589"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center justify-center gap-2 px-8 py-3.5 border border-white/20 text-white hover:bg-white/10 font-semibold rounded-xl backdrop-blur-sm transition-all duration-300"
+                            >
+                              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                              WhatsApp Us
+                            </a>
+                          </div>
+                        </div>
+                      </ScrollAnimator>
                     </div>
-                  </ScrollAnimator>
-                  <ScrollAnimator delay={200}>
-                    <div className="mt-12 p-8 bg-brand-navy rounded-2xl text-center">
-                      <h3 className="text-2xl font-bold text-white mb-3">
-                        Application Process
-                      </h3>
-                      <p className="text-gray-300 mb-8 max-w-xl mx-auto">
-                        To maintain the quality of mentorship and personalized support, places in this program are limited. Every applicant completes an initial consultation and profile assessment before admission.
-                      </p>
-                      <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <a
-                          href="https://calendly.com/unistation-info/30min"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-brand-teal hover:bg-brand-teal-light text-white font-semibold rounded-xl btn-primary-hover transition-all duration-300"
-                        >
-                          Book a Free Consultation
-                          <ArrowRight className="w-4 h-4" />
-                        </a>
-                        <a
-                          href="https://wa.me/971522732589"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center justify-center gap-2 px-8 py-3.5 border border-white/20 text-white hover:bg-white/10 font-semibold rounded-xl backdrop-blur-sm transition-all duration-300"
-                        >
-                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                          WhatsApp Us
-                        </a>
-                      </div>
-                    </div>
-                  </ScrollAnimator>
-                </div>
-              </section>
+                  </section>
+                );
+              })()}
             </>
           )}
         </>
@@ -950,8 +1038,8 @@ export default async function PackageDetailPage({
         </section>
       )}
 
-      {/* ── How It Works (skip for Spain) ── */}
-      {slug !== "spain-foundation-year" && slug !== "profile-building" && (
+      {/* ── How It Works (skip for Spain if no processSteps) ── */}
+      {(slug !== "spain-foundation-year" && slug !== "profile-building") || processSteps !== PROCESS_STEPS ? (
       <section className="py-20 bg-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollAnimator>
@@ -967,10 +1055,10 @@ export default async function PackageDetailPage({
           </ScrollAnimator>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {PROCESS_STEPS.map((step, i) => (
+            {processSteps.map((step, i) => (
               <ScrollAnimator key={step.step} delay={i * 100}>
                 <div className="relative text-center group">
-                  {i < PROCESS_STEPS.length - 1 && (
+                  {i < processSteps.length - 1 && (
                     <div className="hidden lg:block absolute top-8 left-[60%] w-[80%] h-px bg-gradient-to-r from-brand-teal/30 to-transparent" />
                   )}
                   <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-brand-navy text-white text-xl font-bold mb-5 group-hover:bg-brand-teal transition-colors duration-300">
@@ -984,7 +1072,7 @@ export default async function PackageDetailPage({
           </div>
         </div>
       </section>
-      )}
+      ) : null}
 
       {/* ── Library Section (filtered by relevant tags) ── */}
       <LibrarySection topicName={pkg.name} tags={tags} />

@@ -17,6 +17,11 @@ export interface WhyChooseItem {
   description: string;
 }
 
+export interface AdditionalSection {
+  type: string;
+  data: Record<string, unknown>;
+}
+
 export interface PackageContent {
   slug: string;
   intro: string;
@@ -26,6 +31,9 @@ export interface PackageContent {
     title: string;
     items: WhyChooseItem[];
   };
+  stats?: { label: string; value: string }[];
+  processSteps?: { step: string; title: string; desc: string }[];
+  additionalSections?: AdditionalSection[];
 }
 
 export const packagesContent: Record<string, PackageContent> = {

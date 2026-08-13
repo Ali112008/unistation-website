@@ -253,6 +253,7 @@ function PackagesEditor({ data, onChange }: { data: any; onChange: (d: any) => v
   const packages = data || {};
   const slugs = Object.keys(packages);
   const [selectedSlug, setSelectedSlug] = useState<string>(slugs[0] || "");
+  const [activeSection, setActiveSection] = useState<string>("basic");
 
   useEffect(() => {
     if (!selectedSlug && slugs.length > 0) setSelectedSlug(slugs[0]);
@@ -261,61 +262,324 @@ function PackagesEditor({ data, onChange }: { data: any; onChange: (d: any) => v
   if (slugs.length === 0) return <div>No packages found</div>;
 
   const pkg = packages[selectedSlug];
+  const sections = pkg?.additionalSections || [];
 
   const updatePkg = (newPkg: any) => {
     onChange({ ...packages, [selectedSlug]: newPkg });
   };
+
+  const sectionTypes = [
+    { type: "not-included", label: "Not Included" },
+    { type: "enrollment-info", label: "Enrollment Info" },
+    { type: "who-is-for", label: "Who Is This For" },
+    { type: "mentorship-info", label: "Mentorship Info" },
+    { type: "build-together", label: "Build Together" },
+    { type: "coaching-list", label: "Coaching List" },
+    { type: "why-join-early", label: "Why Join Early" },
+    { type: "expected-outcomes", label: "Expected Outcomes" },
+    { type: "why-unistation-cta", label: "Why UniStation CTA" },
+  ];
+
+  const addSection = (type: string) => {
+    const defaultData: Record<string, any> = {};
+    switch (type) {
+      case "not-included": defaultData.items = []; break;
+      case "enrollment-info": defaultData.title = ""; defaultData.description = ""; defaultData.email = "info@unistation.org"; defaultData.steps = []; break;
+      case "who-is-for": defaultData.items = []; defaultData.closingText = ""; break;
+      case "mentorship-info": defaultData.title = ""; defaultData.subtitle = ""; defaultData.paragraphs = []; break;
+      case "build-together": defaultData.title = ""; defaultData.subtitle = ""; defaultData.items = []; break;
+      case "coaching-list": defaultData.title = ""; defaultData.subtitle = ""; defaultData.items = []; defaultData.closingText = ""; break;
+      case "why-join-early": defaultData.title = ""; defaultData.subtitle = ""; defaultData.description = ""; break;
+      case "expected-outcomes": defaultData.title = ""; defaultData.subtitle = ""; defaultData.items = []; break;
+      case "why-unistation-cta": defaultData.title = ""; defaultData.description = ""; defaultData.ctaTitle = ""; defaultData.ctaDescription = ""; break;
+    }
+    updatePkg({ ...pkg, additionalSections: [...sections, { type, data: defaultData }] });
+  };
+
+  const removeSection = (index: number) => {
+    updatePkg({ ...pkg, additionalSections: sections.filter((_: any, i: number) => i !== index) });
+  };
+
+  const updateSectionData = (index: number, newData: any) => {
+    const n = [...sections];
+    n[index] = { ...n[index], data: { ...n[index].data, ...newData } };
+    updatePkg({ ...pkg, additionalSections: n });
+  };
+
+  const renderSectionEditor = (index: number) => {
+    const section = sections[index];
+    if (!section) return null;
+    const d = section.data;
+    const type = section.type;
+    switch (type) {
+      case "not-included":
+        return (
+          <div key={index}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <h4 style={{ fontWeight: 700, fontSize: 15 }}>Not Included</h4>
+              <button onClick={() => removeSection(index)} style={S.deleteBtn}>Delete Section</button>
+            </div>
+            <StringListEditor items={d.items || []} onChange={items => updateSectionData(index, { items })} label="Items not included" addLabel="+ Add Item" />
+          </div>
+        );
+      case "enrollment-info":
+        return (
+          <div key={index}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <h4 style={{ fontWeight: 700, fontSize: 15 }}>Enrollment Info</h4>
+              <button onClick={() => removeSection(index)} style={S.deleteBtn}>Delete Section</button>
+            </div>
+            <Field label="Title"><TextInput value={d.title || ""} onChange={v => updateSectionData(index, { title: v })} /></Field>
+            <Field label="Description"><TextArea value={d.description || ""} onChange={v => updateSectionData(index, { description: v })} /></Field>
+            <Field label="Email"><TextInput value={d.email || ""} onChange={v => updateSectionData(index, { email: v })} /></Field>
+            <strong style={{ display: "block", marginTop: 12, marginBottom: 8, fontSize: 13 }}>Steps ({(d.steps || []).length})</strong>
+            {(d.steps || []).map((step: any, i: number) => (
+              <div key={i} style={{ ...S.card, background: "white", marginBottom: 8 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                  <small>Step #{i + 1}</small>
+                  <button onClick={() => { const steps = [...(d.steps || [])]; steps.splice(i, 1); updateSectionData(index, { steps }); }} style={S.deleteBtn}>X</button>
+                </div>
+                <Field label="Label"><TextInput value={step.label || ""} onChange={v => { const steps = [...d.steps]; steps[i] = { ...step, label: v }; updateSectionData(index, { steps }); }} /></Field>
+                <Field label="Icon (number or emoji)"><TextInput value={step.icon || ""} onChange={v => { const steps = [...d.steps]; steps[i] = { ...step, icon: v }; updateSectionData(index, { steps }); }} /></Field>
+              </div>
+            ))}
+            <button onClick={() => updateSectionData(index, { steps: [...(d.steps || []), { label: "", icon: "" }] })} style={S.addBtn}>+ Add Step</button>
+          </div>
+        );
+      case "who-is-for":
+        return (
+          <div key={index}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <h4 style={{ fontWeight: 700, fontSize: 15 }}>Who Is This For</h4>
+              <button onClick={() => removeSection(index)} style={S.deleteBtn}>Delete Section</button>
+            </div>
+            <StringListEditor items={d.items || []} onChange={items => updateSectionData(index, { items })} label="Who the program is for" addLabel="+ Add Item" />
+            <Field label="Closing Text"><TextArea value={d.closingText || ""} onChange={v => updateSectionData(index, { closingText: v })} /></Field>
+          </div>
+        );
+      case "mentorship-info":
+        return (
+          <div key={index}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <h4 style={{ fontWeight: 700, fontSize: 15 }}>Mentorship Info</h4>
+              <button onClick={() => removeSection(index)} style={S.deleteBtn}>Delete Section</button>
+            </div>
+            <Field label="Title"><TextInput value={d.title || ""} onChange={v => updateSectionData(index, { title: v })} /></Field>
+            <Field label="Subtitle"><TextInput value={d.subtitle || ""} onChange={v => updateSectionData(index, { subtitle: v })} /></Field>
+            <strong style={{ display: "block", marginTop: 12, marginBottom: 8, fontSize: 13 }}>Paragraphs ({(d.paragraphs || []).length})</strong>
+            {(d.paragraphs || []).map((p: string, i: number) => (
+              <div key={i} style={{ display: "flex", gap: 8, marginBottom: 6 }}>
+                <textarea value={p} onChange={e => { const ps = [...d.paragraphs]; ps[i] = e.target.value; updateSectionData(index, { paragraphs: ps }); }} style={{ ...S.textarea, minHeight: 80 }} />
+                <button onClick={() => { const ps = [...d.paragraphs]; ps.splice(i, 1); updateSectionData(index, { paragraphs: ps }); }} style={S.deleteBtn}>X</button>
+              </div>
+            ))}
+            <button onClick={() => updateSectionData(index, { paragraphs: [...(d.paragraphs || []), ""] })} style={S.addBtn}>+ Add Paragraph</button>
+          </div>
+        );
+      case "build-together":
+        return (
+          <div key={index}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <h4 style={{ fontWeight: 700, fontSize: 15 }}>Build Together</h4>
+              <button onClick={() => removeSection(index)} style={S.deleteBtn}>Delete Section</button>
+            </div>
+            <Field label="Title"><TextInput value={d.title || ""} onChange={v => updateSectionData(index, { title: v })} /></Field>
+            <Field label="Subtitle"><TextInput value={d.subtitle || ""} onChange={v => updateSectionData(index, { subtitle: v })} /></Field>
+            <strong style={{ display: "block", marginTop: 12, marginBottom: 8, fontSize: 13 }}>Items ({(d.items || []).length})</strong>
+            {(d.items || []).map((item: any, i: number) => (
+              <div key={i} style={{ ...S.card, background: "white", marginBottom: 10 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                  <small>Item #{i + 1}</small>
+                  <button onClick={() => { const items = [...(d.items || [])]; items.splice(i, 1); updateSectionData(index, { items }); }} style={S.deleteBtn}>X</button>
+                </div>
+                <Field label="Icon (emoji)"><TextInput value={item.icon || ""} onChange={v => { const items = [...d.items]; items[i] = { ...item, icon: v }; updateSectionData(index, { items }); }} /></Field>
+                <Field label="Title"><TextInput value={item.title || ""} onChange={v => { const items = [...d.items]; items[i] = { ...item, title: v }; updateSectionData(index, { items }); }} /></Field>
+                <Field label="Description"><TextArea value={item.desc || ""} onChange={v => { const items = [...d.items]; items[i] = { ...item, desc: v }; updateSectionData(index, { items }); }} /></Field>
+              </div>
+            ))}
+            <button onClick={() => updateSectionData(index, { items: [...(d.items || []), { icon: "", title: "", desc: "" }] })} style={S.addBtn}>+ Add Item</button>
+          </div>
+        );
+      case "coaching-list":
+        return (
+          <div key={index}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <h4 style={{ fontWeight: 700, fontSize: 15 }}>Coaching List</h4>
+              <button onClick={() => removeSection(index)} style={S.deleteBtn}>Delete Section</button>
+            </div>
+            <Field label="Title"><TextInput value={d.title || ""} onChange={v => updateSectionData(index, { title: v })} /></Field>
+            <Field label="Subtitle"><TextInput value={d.subtitle || ""} onChange={v => updateSectionData(index, { subtitle: v })} /></Field>
+            <StringListEditor items={d.items || []} onChange={items => updateSectionData(index, { items })} label="Coaching Items" addLabel="+ Add Item" />
+            <Field label="Closing Text"><TextArea value={d.closingText || ""} onChange={v => updateSectionData(index, { closingText: v })} /></Field>
+          </div>
+        );
+      case "why-join-early":
+        return (
+          <div key={index}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <h4 style={{ fontWeight: 700, fontSize: 15 }}>Why Join Early</h4>
+              <button onClick={() => removeSection(index)} style={S.deleteBtn}>Delete Section</button>
+            </div>
+            <Field label="Title"><TextInput value={d.title || ""} onChange={v => updateSectionData(index, { title: v })} /></Field>
+            <Field label="Subtitle"><TextInput value={d.subtitle || ""} onChange={v => updateSectionData(index, { subtitle: v })} /></Field>
+            <Field label="Description"><TextArea value={d.description || ""} onChange={v => updateSectionData(index, { description: v })} /></Field>
+          </div>
+        );
+      case "expected-outcomes":
+        return (
+          <div key={index}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <h4 style={{ fontWeight: 700, fontSize: 15 }}>Expected Outcomes</h4>
+              <button onClick={() => removeSection(index)} style={S.deleteBtn}>Delete Section</button>
+            </div>
+            <Field label="Title"><TextInput value={d.title || ""} onChange={v => updateSectionData(index, { title: v })} /></Field>
+            <Field label="Subtitle"><TextInput value={d.subtitle || ""} onChange={v => updateSectionData(index, { subtitle: v })} /></Field>
+            <StringListEditor items={d.items || []} onChange={items => updateSectionData(index, { items })} label="Outcome Items" addLabel="+ Add Item" />
+          </div>
+        );
+      case "why-unistation-cta":
+        return (
+          <div key={index}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <h4 style={{ fontWeight: 700, fontSize: 15 }}>Why UniStation CTA</h4>
+              <button onClick={() => removeSection(index)} style={S.deleteBtn}>Delete Section</button>
+            </div>
+            <Field label="Title"><TextInput value={d.title || ""} onChange={v => updateSectionData(index, { title: v })} /></Field>
+            <Field label="Description"><TextArea value={d.description || ""} onChange={v => updateSectionData(index, { description: v })} /></Field>
+            <Field label="CTA Title"><TextInput value={d.ctaTitle || ""} onChange={v => updateSectionData(index, { ctaTitle: v })} /></Field>
+            <Field label="CTA Description"><TextArea value={d.ctaDescription || ""} onChange={v => updateSectionData(index, { ctaDescription: v })} /></Field>
+          </div>
+        );
+      default:
+        return <div key={index} style={{ padding: 12, background: "#fef3c7", borderRadius: 8, fontSize: 12, color: "#92400e" }}>Unknown section type: {type}</div>;
+    }
+  };
+
+  const sectionTabs = ["basic", "tiers", "whyChoose", ...sections.map((_: any, i: number) => 'section-' + i)];
 
   return (
     <div>
       <Field label="Select Package">
         <select
           value={selectedSlug}
-          onChange={e => setSelectedSlug(e.target.value)}
+          onChange={e => { setSelectedSlug(e.target.value); setActiveSection("basic"); }}
           style={{ ...S.input, padding: "10px 12px", cursor: "pointer" }}
         >
           {slugs.map(s => <option key={s} value={s}>{pkgLabels[s] || s}</option>)}
         </select>
       </Field>
 
+      <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 12, padding: "0 0 8px 0", borderBottom: "2px solid #e5e7eb" }}>
+        <button onClick={() => setActiveSection("basic")} style={{ ...S.addBtn, background: activeSection === "basic" ? "#0d9488" : undefined, color: activeSection === "basic" ? "white" : undefined, fontWeight: activeSection === "basic" ? 700 : 400 }}>Basic Info</button>
+        <button onClick={() => setActiveSection("tiers")} style={{ ...S.addBtn, background: activeSection === "tiers" ? "#0d9488" : undefined, color: activeSection === "tiers" ? "white" : undefined, fontWeight: activeSection === "tiers" ? 700 : 400 }}>Tier Cards</button>
+        <button onClick={() => setActiveSection("whyChoose")} style={{ ...S.addBtn, background: activeSection === "whyChoose" ? "#0d9488" : undefined, color: activeSection === "whyChoose" ? "white" : undefined, fontWeight: activeSection === "whyChoose" ? 700 : 400 }}>Why Choose</button>
+        {sections.map((s: any, i: number) => {
+          const st = sectionTypes.find(t => t.type === s.type);
+          return (
+            <button key={i} onClick={() => setActiveSection('section-' + i)} style={{ ...S.addBtn, background: activeSection === 'section-' + i ? "#0d9488" : undefined, color: activeSection === 'section-' + i ? "white" : undefined, fontWeight: activeSection === 'section-' + i ? 700 : 400 }}>
+              {st?.label || s.type}
+            </button>
+          );
+        })}
+      </div>
+
       <div style={S.card}>
         <div style={{ fontSize: 12, color: "#9ca3af", marginBottom: 8 }}>Package ID: <code>{selectedSlug}</code></div>
 
-        <Field label="Introduction"><TextArea value={pkg.intro} onChange={v => updatePkg({ ...pkg, intro: v })} /></Field>
-
-        {/* Tiers */}
-        <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #e5e7eb" }}>
-          <strong style={{ display: "block", marginBottom: 10 }}>Package Tiers ({(pkg.tiers || []).length})</strong>
-          {(pkg.tiers || []).map((tier: any, ti: number) => (
-            <div key={ti} style={{ ...S.card, background: "white" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-                <strong>Tier #{ti + 1}</strong>
-                <button onClick={() => updatePkg({ ...pkg, tiers: pkg.tiers.filter((_: any, idx: number) => idx !== ti) })} style={S.deleteBtn}>Delete</button>
-              </div>
-              <Field label="Tier Name"><TextInput value={tier.name} onChange={v => { const n = [...pkg.tiers]; n[ti] = { ...tier, name: v }; updatePkg({ ...pkg, tiers: n }); }} /></Field>
-              <Field label="Subtitle"><TextInput value={tier.subtitle} onChange={v => { const n = [...pkg.tiers]; n[ti] = { ...tier, subtitle: v }; updatePkg({ ...pkg, tiers: n }); }} /></Field>
-              {tier.price && <Field label="Price"><TextInput value={tier.price} onChange={v => { const n = [...pkg.tiers]; n[ti] = { ...tier, price: v }; updatePkg({ ...pkg, tiers: n }); }} /></Field>}
-              <Field label="Best For"><TextArea value={tier.idealFor} onChange={v => { const n = [...pkg.tiers]; n[ti] = { ...tier, idealFor: v }; updatePkg({ ...pkg, tiers: n }); }} /></Field>
-
-              {/* Features */}
-              <div style={{ marginTop: 10 }}>
-                <strong style={{ display: "block", marginBottom: 6, fontSize: 13 }}>Features ({(tier.features || []).length})</strong>
-                {(tier.features || []).map((f: any, fi: number) => (
-                  <div key={fi} style={{ ...S.card, background: "#f9fafb", marginBottom: 8 }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
-                      <small>Feature #{fi + 1}</small>
-                      <button onClick={() => { const n = [...pkg.tiers]; n[ti] = { ...tier, features: tier.features.filter((_: any, idx: number) => idx !== fi) }; updatePkg({ ...pkg, tiers: n }); }} style={S.deleteBtn}>✕</button>
-                    </div>
-                    <Field label="Title"><TextInput value={f.title} onChange={v => { const feats = [...tier.features]; feats[fi] = { ...f, title: v }; const n = [...pkg.tiers]; n[ti] = { ...tier, features: feats }; updatePkg({ ...pkg, tiers: n }); }} /></Field>
-                    <Field label="Description"><TextArea value={f.description} onChange={v => { const feats = [...tier.features]; feats[fi] = { ...f, description: v }; const n = [...pkg.tiers]; n[ti] = { ...tier, features: feats }; updatePkg({ ...pkg, tiers: n }); }} /></Field>
+        {activeSection === "basic" && (
+          <>
+            <Field label="Introduction"><TextArea value={pkg.intro} onChange={v => updatePkg({ ...pkg, intro: v })} /></Field>
+            <Field label="Countries"><TextInput value={pkg.countries || ""} onChange={v => updatePkg({ ...pkg, countries: v })} /></Field>
+            <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #e5e7eb" }}>
+              <strong style={{ display: "block", marginBottom: 10 }}>Stats ({(pkg.stats || []).length})</strong>
+              {(pkg.stats || []).map((s: any, si: number) => (
+                <div key={si} style={{ display: "flex", gap: 8, marginBottom: 6 }}>
+                  <input type="text" placeholder="value" value={s.value} onChange={e => { const n = [...(pkg.stats || [])]; n[si] = { ...s, value: e.target.value }; updatePkg({ ...pkg, stats: n }); }} style={S.input} />
+                  <input type="text" placeholder="label" value={s.label} onChange={e => { const n = [...(pkg.stats || [])]; n[si] = { ...s, label: e.target.value }; updatePkg({ ...pkg, stats: n }); }} style={S.input} />
+                  <button onClick={() => updatePkg({ ...pkg, stats: (pkg.stats || []).filter((_: any, idx: number) => idx !== si) })} style={S.deleteBtn}>X</button>
+                </div>
+              ))}
+              <button onClick={() => updatePkg({ ...pkg, stats: [...(pkg.stats || []), { label: "", value: "" }] })} style={S.addBtn}>+ Add Stat</button>
+            </div>
+            <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #e5e7eb" }}>
+              <strong style={{ display: "block", marginBottom: 10 }}>Process Steps ({(pkg.processSteps || []).length})</strong>
+              {(pkg.processSteps || []).map((step: any, pi: number) => (
+                <div key={pi} style={{ ...S.card, background: "white", marginBottom: 8 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                    <small>Step #{pi + 1}</small>
+                    <button onClick={() => updatePkg({ ...pkg, processSteps: (pkg.processSteps || []).filter((_: any, idx: number) => idx !== pi) })} style={S.deleteBtn}>X</button>
                   </div>
+                  <Field label="Step Number"><TextInput value={step.step || ""} onChange={v => { const n = [...pkg.processSteps]; n[pi] = { ...step, step: v }; updatePkg({ ...pkg, processSteps: n }); }} /></Field>
+                  <Field label="Title"><TextInput value={step.title || ""} onChange={v => { const n = [...pkg.processSteps]; n[pi] = { ...step, title: v }; updatePkg({ ...pkg, processSteps: n }); }} /></Field>
+                  <Field label="Description"><TextArea value={step.desc || ""} onChange={v => { const n = [...pkg.processSteps]; n[pi] = { ...step, desc: v }; updatePkg({ ...pkg, processSteps: n }); }} /></Field>
+                </div>
+              ))}
+              <button onClick={() => updatePkg({ ...pkg, processSteps: [...(pkg.processSteps || []), { step: "", title: "", desc: "" }] })} style={S.addBtn}>+ Add Step</button>
+            </div>
+            <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #e5e7eb" }}>
+              <strong style={{ display: "block", marginBottom: 10 }}>Add Page Section</strong>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                {sectionTypes.map(st => (
+                  <button key={st.type} onClick={() => addSection(st.type)} style={{ ...S.addBtn, fontSize: 12, padding: "6px 12px" }}>{st.label}</button>
                 ))}
-                <button onClick={() => { const feats = [...(tier.features || []), { title: "", description: "" }]; const n = [...pkg.tiers]; n[ti] = { ...tier, features: feats }; updatePkg({ ...pkg, tiers: n }); }} style={S.addBtn}>+ Add Feature</button>
               </div>
             </div>
-          ))}
-          <button onClick={() => updatePkg({ ...pkg, tiers: [...(pkg.tiers || []), { name: "", subtitle: "", features: [], idealFor: "" }] })} style={S.addBtn}>+ Add Tier</button>
-        </div>
+            {sections.length === 0 && (
+              <div style={{ marginTop: 16, padding: 12, background: "#eff6ff", borderRadius: 8, fontSize: 12, color: "#1e40af" }}>No additional sections yet.</div>
+            )}
+          </>
+        )}
+
+        {activeSection === "tiers" && (
+          <>
+            {(pkg.tiers || []).map((tier: any, ti: number) => (
+              <div key={ti} style={{ ...S.card, background: "white" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+                  <strong>Tier #{ti + 1}</strong>
+                  <button onClick={() => updatePkg({ ...pkg, tiers: pkg.tiers.filter((_: any, idx: number) => idx !== ti) })} style={S.deleteBtn}>Delete</button>
+                </div>
+                <Field label="Tier Name"><TextInput value={tier.name} onChange={v => { const n = [...pkg.tiers]; n[ti] = { ...tier, name: v }; updatePkg({ ...pkg, tiers: n }); }} /></Field>
+                <Field label="Subtitle"><TextInput value={tier.subtitle} onChange={v => { const n = [...pkg.tiers]; n[ti] = { ...tier, subtitle: v }; updatePkg({ ...pkg, tiers: n }); }} /></Field>
+                {tier.price && <Field label="Price"><TextInput value={tier.price} onChange={v => { const n = [...pkg.tiers]; n[ti] = { ...tier, price: v }; updatePkg({ ...pkg, tiers: n }); }} /></Field>}
+                <Field label="Best For"><TextArea value={tier.idealFor} onChange={v => { const n = [...pkg.tiers]; n[ti] = { ...tier, idealFor: v }; updatePkg({ ...pkg, tiers: n }); }} /></Field>
+                <div style={{ marginTop: 10 }}>
+                  <strong style={{ display: "block", marginBottom: 6, fontSize: 13 }}>Features ({(tier.features || []).length})</strong>
+                  {(tier.features || []).map((f: any, fi: number) => (
+                    <div key={fi} style={{ ...S.card, background: "#f9fafb", marginBottom: 8 }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                        <small>Feature #{fi + 1}</small>
+                        <button onClick={() => { const feats = [...tier.features]; feats.splice(fi, 1); const n = [...pkg.tiers]; n[ti] = { ...tier, features: feats }; updatePkg({ ...pkg, tiers: n }); }} style={S.deleteBtn}>X</button>
+                      </div>
+                      <Field label="Title"><TextInput value={f.title} onChange={v => { const feats = [...tier.features]; feats[fi] = { ...f, title: v }; const n = [...pkg.tiers]; n[ti] = { ...tier, features: feats }; updatePkg({ ...pkg, tiers: n }); }} /></Field>
+                      <Field label="Description"><TextArea value={f.description} onChange={v => { const feats = [...tier.features]; feats[fi] = { ...f, description: v }; const n = [...pkg.tiers]; n[ti] = { ...tier, features: feats }; updatePkg({ ...pkg, tiers: n }); }} /></Field>
+                    </div>
+                  ))}
+                  <button onClick={() => { const feats = [...(tier.features || []), { title: "", description: "" }]; const n = [...pkg.tiers]; n[ti] = { ...tier, features: feats }; updatePkg({ ...pkg, tiers: n }); }} style={S.addBtn}>+ Add Feature</button>
+                </div>
+              </div>
+            ))}
+            <button onClick={() => updatePkg({ ...pkg, tiers: [...(pkg.tiers || []), { name: "", subtitle: "", features: [], idealFor: "" }] })} style={S.addBtn}>+ Add Tier</button>
+          </>
+        )}
+
+        {activeSection === "whyChoose" && (
+          <>
+            <Field label="Why Choose Title"><TextInput value={pkg.whyChoose?.title || ""} onChange={v => updatePkg({ ...pkg, whyChoose: { ...(pkg.whyChoose || { items: [] }), title: v } })} /></Field>
+            {(pkg.whyChoose?.items || []).map((item: any, i: number) => (
+              <div key={i} style={{ ...S.card, background: "white", marginBottom: 8 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                  <small>Item #{i + 1}</small>
+                  <button onClick={() => { const items = [...(pkg.whyChoose?.items || [])]; items.splice(i, 1); updatePkg({ ...pkg, whyChoose: { ...(pkg.whyChoose || { title: "" }), items } }); }} style={S.deleteBtn}>X</button>
+                </div>
+                <Field label="Title"><TextInput value={item.title || ""} onChange={v => { const items = [...pkg.whyChoose.items]; items[i] = { ...item, title: v }; updatePkg({ ...pkg, whyChoose: { ...pkg.whyChoose, items } }); }} /></Field>
+                <Field label="Description"><TextArea value={item.description || ""} onChange={v => { const items = [...pkg.whyChoose.items]; items[i] = { ...item, description: v }; updatePkg({ ...pkg, whyChoose: { ...pkg.whyChoose, items } }); }} /></Field>
+              </div>
+            ))}
+            <button onClick={() => updatePkg({ ...pkg, whyChoose: { ...(pkg.whyChoose || { title: "" }), items: [...(pkg.whyChoose?.items || []), { title: "", description: "" }] } })} style={S.addBtn}>+ Add Item</button>
+          </>
+        )}
+
+        {activeSection.startsWith("section-") && renderSectionEditor(parseInt(activeSection.split("-")[1]))}
       </div>
     </div>
   );
